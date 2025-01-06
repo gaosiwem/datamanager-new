@@ -1,0 +1,83 @@
+#
+# Translators:
+# Mostafa Heidarian <tabvar@gmail.com>, 2020
+# Mohammad Hossein Mojtahedi <Mhm5000@gmail.com>, 2021
+# pyzenberg <pyzenberg@gmail.com>, 2021
+# Ehsan jahanbakhsh <man207ej@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Ehsan jahanbakhsh <man207ej@gmail.com>, 2024\n"
+"Language-Team: Persian (https://app.transifex.com/torchbox/teams/8009/fa/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fa\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "[DELETED]"
+msgstr "[حذف شده]"
+
+msgid "Actions"
+msgstr "اعمال"
+
+msgid "Apply editor lock"
+msgstr "گذاشتن قفل ویراستاری"
+
+msgid "Cancel"
+msgstr "انصراف"
+
+msgid "Change image"
+msgstr "تغییر تصویر"
+
+msgid "Changed"
+msgstr "تغییر یافته"
+
+msgid "Choose a document"
+msgstr "یک سند انتخاب کنید"
+
+msgid "Choose a page"
+msgstr "صفحه را انتخاب کنید"
+
+msgid "Choose an image"
+msgstr "تصویر را انتخاب کنید"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "Edit"
+msgstr "ویرایش"
+
+msgid "Edit this %s"
+msgstr "ویرایش این %s"
+
+msgid "Edit this document"
+msgstr "ویرایش این سند"
+
+msgid "Edit this image"
+msgstr "ویرایش این تصویر"
+
+msgid "Edit this page"
+msgstr "ویرایش این صفحه"
+
+msgid "Lock"
+msgstr "قفل"
+
+msgid "Preview"
+msgstr "پیش‌نمایش"
+
+msgid "Publishing..."
+msgstr "درحال انتشار..."
+
+msgid "Remove editor lock"
+msgstr "حذف قفل ویراستار"
+
+msgid "Save"
+msgstr "ذخیره"
+
+msgid "Saving..."
+msgstr "درحال ذخیره..."
+
+msgid "Unlock"
+msgstr "حذف قفل"
+
+msgid "Unpublish"
+msgstr "لغو انتشار"

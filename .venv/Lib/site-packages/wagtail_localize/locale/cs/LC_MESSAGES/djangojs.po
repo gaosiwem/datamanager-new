@@ -1,0 +1,133 @@
+#
+# Translators:
+# Mirek Zvolský <zvolsky@seznam.cz>, 2021
+# IT Management <hudan@itmanagement.cz>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: IT Management <hudan@itmanagement.cz>, 2024\n"
+"Language-Team: Czech (https://app.transifex.com/torchbox/teams/8009/cs/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: cs\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
+"<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+
+msgid "[DELETED]"
+msgstr "[ZRUŠENO]"
+
+msgid "Actions"
+msgstr "Akce"
+
+msgid "Apply editor lock"
+msgstr "Uzamknout pro úpravy"
+
+msgid "Cancel"
+msgstr "Storno"
+
+msgid "Change document"
+msgstr "Změnit dokument"
+
+msgid "Change image"
+msgstr "Změnit obrázek"
+
+msgid "Change page"
+msgstr "Změnit stránku"
+
+msgid "Changed"
+msgstr "Změněno"
+
+msgid "Choose a document"
+msgstr "Vybrat dokument"
+
+msgid "Choose a page"
+msgstr "Vybrat stránku"
+
+msgid "Choose an image"
+msgstr "Vybrat obrázek"
+
+msgid "Delete"
+msgstr "Zrušit"
+
+msgid "Download PO file"
+msgstr "Stáhnout PO soubor"
+
+msgid "Download PO file and input translations offline"
+msgstr "Stáhnout PO soubor a zadat překlady offline"
+
+msgid "Edit"
+msgstr "Upravit"
+
+msgid "Edit this %s"
+msgstr "Edituj %s"
+
+msgid "Edit this document"
+msgstr "Upravit tento dokument"
+
+msgid "Edit this image"
+msgstr "Upravit tento obrázek"
+
+msgid "Edit this page"
+msgstr "Upravit tuto stránku"
+
+msgid "Fetching document information..."
+msgstr "Získávají se informace o dokumentu..."
+
+msgid "Fetching image information..."
+msgstr "Získávají se informace o obrázku..."
+
+msgid "Fetching page information..."
+msgstr "Získávají se informace o stránce..."
+
+msgid "Lock"
+msgstr "Uzamknout"
+
+msgid "Not translated"
+msgstr "Není přeloženo"
+
+msgid "Preview"
+msgstr "Náhled"
+
+msgid "Publish in "
+msgstr "Publikovat"
+
+msgid "Publishing..."
+msgstr "Publikování..."
+
+msgid "Remove editor lock"
+msgstr "Zrušit uzamčení pro úpravy"
+
+msgid "Save"
+msgstr "Uložit"
+
+msgid "Saving..."
+msgstr "Ukládá se..."
+
+msgid "segments translated"
+msgstr "úseků přeloženo"
+
+msgid "Server error"
+msgstr "Chyba na serveru"
+
+msgid "Translate"
+msgstr "Přeložit"
+
+msgid "Translate all missing strings with "
+msgstr "Přeložit všechny chybějící řetězce pomocí"
+
+msgid "Translate with "
+msgstr "Přeložit pomocí"
+
+msgid "Unlock"
+msgstr "Odemknout"
+
+msgid "Unpublish"
+msgstr "Zrušit zveřejnění"
+
+msgid "Upload PO file"
+msgstr "Nahrát PO soubor"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Nahrát přeložený PO soubor pro akceptování překladu"
+
+msgid "Uses %s version"
+msgstr "Používá %s verzi"

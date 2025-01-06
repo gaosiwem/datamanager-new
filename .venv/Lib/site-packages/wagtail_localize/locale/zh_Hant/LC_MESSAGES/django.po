@@ -1,0 +1,39 @@
+#
+# Translators:
+# Yeh Yen-Ke <yyken@outlook.com>, 2021
+# Chih Wang <ihcgno@icloud.com>, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Chih Wang <ihcgno@icloud.com>, 2023\n"
+"Language-Team: Chinese Traditional (https://app.transifex.com/torchbox/"
+"teams/8009/zh-Hant/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh-Hant\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Disable"
+msgstr "禁用"
+
+msgid "Enable"
+msgstr "啟用"
+
+msgid "Yes, convert it"
+msgstr "是，確認轉換"
+
+msgid "Go back"
+msgstr "返回"
+
+msgid "Status"
+msgstr "狀態"
+
+msgid "Content"
+msgstr "內容"
+
+msgid "All"
+msgstr "全部"
+
+msgid "Select all"
+msgstr "全選"

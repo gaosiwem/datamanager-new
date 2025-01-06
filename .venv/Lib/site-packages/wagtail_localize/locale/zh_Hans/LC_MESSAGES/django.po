@@ -1,0 +1,280 @@
+#
+# Translators:
+# hanfeng <appweb.cn@gmail.com>, 2021
+# Favo Yang <favoyang@gmail.com>, 2021
+# 汇民 王 <whuim@qq.com>, 2021
+# Ford Guo <agile.guo@gmail.com>, 2023
+# Yin Guanhao <sopium@mysterious.site>, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Yin Guanhao <sopium@mysterious.site>, 2023\n"
+"Language-Team: Chinese (China) (https://app.transifex.com/torchbox/"
+"teams/8009/zh_CN/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Disable"
+msgstr "禁用"
+
+msgid "Dummy translator"
+msgstr "虚拟译者"
+
+msgid "Translate"
+msgstr "翻译"
+
+#, python-format
+msgid "Sync translated %(model_name)s"
+msgstr "同步翻译的 %(model_name)s"
+
+msgid "Start Synced translation"
+msgstr "同步翻译"
+
+#, python-brace-format
+msgid "Translate {model_name}"
+msgstr "翻译 {model_name}"
+
+#, python-brace-format
+msgid ""
+"The {model_name} '{object}' was successfully submitted for translation into "
+"{locales}"
+msgstr "{model_name} '{object}' 的翻译成功提交到 {locales}"
+
+msgid "Up to date"
+msgstr "保持最新"
+
+msgid "Waiting for translations"
+msgstr "待翻译"
+
+msgid "Manual"
+msgstr "人工"
+
+msgid "Machine"
+msgstr "机器"
+
+#, python-brace-format
+msgid "Translated with {tool_name} on {date}"
+msgstr "由 {tool_name} 翻译于 {date}"
+
+#, python-brace-format
+msgid "Translated manually on {date}"
+msgstr "手工翻译于 {date}"
+
+#, python-brace-format
+msgid "Machine translated on {date}"
+msgstr "机器翻译于 {date}"
+
+msgid "This locale cannot be synced into itself."
+msgstr "此区域无法被同步到自身。"
+
+msgid "Synchronise content from another locale"
+msgstr "从另一个区域同步内容。"
+
+msgid ""
+"Choose a locale to synchronise content from. Any existing and future content "
+"authored in the selected locale will be automatically copied to this one."
+msgstr ""
+"选择要同步内容的区域。在所选区域中编写的任何现有和将来的内容都将自动复制到此"
+"区域。"
+
+msgid ""
+"<{}> tag is not allowed. Strings can only contain standard HTML inline tags "
+"(such as <b>, <a>)"
+msgstr "<{}> 标签不被允许。字符串只能包含标准的 HTML 内联标签（比如 <b>, <a>）"
+
+msgid ""
+"Strings cannot have any HTML tags with attributes (except for 'id' in <a> "
+"tags)"
+msgstr "字符串不能包含任何带有属性的 HTML 标签（除了<a>标签的“id”属性）"
+
+msgid "Unrecognised id found in an <a> tag: {}"
+msgstr "在一个<a>标签中存在无法被识别的ID：{}"
+
+msgid "Enable"
+msgstr "启用"
+
+#, python-format
+msgid "Convert to alias %(title)s"
+msgstr "转换成别名 %(title)s"
+
+msgid "Convert to alias"
+msgstr "转换成别名"
+
+msgid "Yes, convert it"
+msgstr "是, 转换它"
+
+msgid "No, leave it as a page"
+msgstr "否，保留为页面"
+
+#, python-format
+msgid ""
+"This page hasn't been translated yet. It is mirroring the <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">%(original_locale)s "
+"page</a>."
+msgstr ""
+"这个页面还未被翻译。它将镜像<a href=\"%(edit_original_page_url)s\" "
+"target=\"_blank\">%(original_locale)s页面</a>。"
+
+msgid "Translate this page"
+msgstr "翻译此页"
+
+#, python-format
+msgid "Translation of %(instance)s into %(locale)s"
+msgstr "由%(instance)s翻译到%(locale)s"
+
+msgid "Translations"
+msgstr "翻译"
+
+msgid "Submit"
+msgstr "提交"
+
+msgid "Go back"
+msgstr "返回"
+
+msgid "Content type"
+msgstr "内容类型"
+
+msgid "Source"
+msgstr "源"
+
+msgid "Target"
+msgstr "目标"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "No translations found."
+msgstr "未能找到翻译。"
+
+msgid "Why would I sync my page?"
+msgstr "我为什么需要同步我的页面？"
+
+msgid ""
+"Changes are not automatically applied between translated pages. Syncing will "
+"add new content for translation and remove deleted content."
+msgstr ""
+"改动无法自动应用于翻译的页面。同步会添加待翻译的新内容，并移除已删除的内容。"
+
+#, python-format
+msgid ""
+"The last sync date was %(last_sync_date)s. You are about to sync the "
+"following:"
+msgstr "上次同步在%(last_sync_date)s。将同步这些："
+
+msgid "Content"
+msgstr "内容"
+
+#, python-brace-format
+msgid ""
+"New validation errors were found when publishing '{object}' in {locale}. "
+"Please fix them or click publish again to ignore these translations for now."
+msgstr ""
+"在发布{locale}的“{object}”时发现了新的验证错误。请修复他们或再次点击发布以暂"
+"时忽略这些有错误的翻译。"
+
+#, python-brace-format
+msgid "Published '{object}' in {locale} with missing translations - see below."
+msgstr "在 {locale} 中发布未翻译的 '{object}' - 详情如下."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale}."
+msgstr "已在 {locale} 中发布 '{object}' ."
+
+#, python-brace-format
+msgid ""
+"The data model for '{model_name}' has been changed since the last "
+"translation sync. If any new fields have been added recently, these may not "
+"be visible until the next translation sync."
+msgstr ""
+"自从上次翻译同步后，“{model_name}”的数据模型已经被修改。如果新的字段于近期被"
+"添加，这些字段可能不可见直到下一次翻译同步。"
+
+msgid "Translation has been stopped."
+msgstr "翻译已停止"
+
+msgid "Translation has been restarted."
+msgstr "翻译已重新开始"
+
+msgid "Please upload a valid PO file."
+msgstr "请上传一个有效的 PO 文件."
+
+msgid "Cannot import PO file that was created for a different translation."
+msgstr "不能导入其他翻译创建的 PO 文件."
+
+msgid "Successfully imported translations from PO File."
+msgstr "成功从PO文件导入翻译."
+
+msgid "Successfully translated with {}."
+msgstr "成功翻译 {}."
+
+msgid "There isn't anything left to translate."
+msgstr "无任何需要翻译的."
+
+msgid "Source title"
+msgstr "原标题"
+
+msgid "All"
+msgstr "所有"
+
+msgid "Select all"
+msgstr "全选"
+
+msgid "Locales"
+msgstr "区域"
+
+msgid "All child pages will be created."
+msgstr "所有的子页面将被创建."
+
+msgid "Include subtree ({} page)"
+msgid_plural "Include subtree ({} pages)"
+msgstr[0] "包含下级 ({} 页面)"
+
+msgid "{} locales"
+msgstr "{} 区域"
+
+msgid "Translate page"
+msgstr "翻译页面"
+
+#, python-brace-format
+msgid ""
+"The page '{page_title}' was successfully submitted for translation into "
+"{locales}"
+msgstr "页面 '{page_title}' 的翻译成功提交到 {locales}"
+
+msgid "Publish immediately"
+msgstr "立即发布"
+
+msgid ""
+"This will apply the updates and publish immediately, before any new "
+"translations happen."
+msgstr "这将立即应用更改并发布，不等待新的翻译完成。"
+
+msgid "Update existing translations"
+msgstr "更新已存在的翻译"
+
+#, python-brace-format
+msgid "Successfully updated translations for '{object}'"
+msgstr "成功更新翻译 '{object}' "
+
+msgid "Sync translated pages"
+msgstr "同步翻译的页面"
+
+#, python-format
+msgid "Translate '%(title)s'"
+msgstr "翻译 '%(title)s'"
+
+msgid "Sync translated snippets"
+msgstr "同步翻译的片段"
+
+#, python-format
+msgid "Sync translations of '%(title)s'"
+msgstr "同步 '%(title)s' 的翻译"
+
+msgid "Convert to alias page"
+msgstr "转换成页面别名"
+
+msgid "Convert page to alias"
+msgstr "将页面转换为别名"

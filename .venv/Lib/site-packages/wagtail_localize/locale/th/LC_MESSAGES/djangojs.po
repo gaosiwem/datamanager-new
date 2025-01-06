@@ -1,0 +1,54 @@
+#
+# Translators:
+# Amawalee Combe <dang@getsalebox.com>, 2021
+# Walaksawan Vervoort <nula_wala@yahoo.com>, 2021
+#
+msgid ""
+msgstr ""
+"Last-Translator: Walaksawan Vervoort <nula_wala@yahoo.com>, 2021\n"
+"Language-Team: Thai (https://app.transifex.com/torchbox/teams/8009/th/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: th\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Change image"
+msgstr "เปลี่ยนรูปภาพ"
+
+msgid "Choose a document"
+msgstr "เลือกเอกสาร"
+
+msgid "Choose a page"
+msgstr "เลือกหน้า"
+
+msgid "Choose an image"
+msgstr "เลือกรูปภาพ"
+
+msgid "Delete"
+msgstr "ลบ,ลบทิ้ง"
+
+msgid "Edit"
+msgstr "แก้ไข"
+
+msgid "Edit this %s"
+msgstr "แก้ไขสิ่งนี้ %s"
+
+msgid "Edit this document"
+msgstr "แก้ไขเอกสารนี้"
+
+msgid "Edit this image"
+msgstr "แก้ไขรูปภาพนี้"
+
+msgid "Edit this page"
+msgstr "แก้ไขหน้านี้"
+
+msgid "Lock"
+msgstr "ล็อค"
+
+msgid "Preview"
+msgstr "ภาพตัวอย่าง"
+
+msgid "Save"
+msgstr "เซฟ,เก็บข้อมูล"
+
+msgid "Unpublish"
+msgstr "ยกเลิกประกาศ"

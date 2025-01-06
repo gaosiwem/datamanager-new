@@ -1,0 +1,163 @@
+#
+# Translators:
+# Bogdan Mateescu, 2024
+# Dan Braghis, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Dan Braghis, 2024\n"
+"Language-Team: Romanian (https://app.transifex.com/torchbox/teams/8009/ro/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ro\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
+"2:1));\n"
+
+msgid "[DELETED]"
+msgstr "[ȘTERS]"
+
+msgid "Actions"
+msgstr "Acțiuni"
+
+msgid "Apply editor lock"
+msgstr "Aplică blocaj editorial"
+
+msgid "Cancel"
+msgstr "Anulează"
+
+msgid "Change %s"
+msgstr "Modifică %s"
+
+msgid "Change document"
+msgstr "Schimbă document"
+
+msgid "Change image"
+msgstr "Schimbă imagine"
+
+msgid "Change page"
+msgstr "Schimbă pagină"
+
+msgid "Changed"
+msgstr "Schimbat"
+
+msgid "Choose a %s"
+msgstr "Alege %s"
+
+msgid "Choose a document"
+msgstr "Selectează un document"
+
+msgid "Choose a page"
+msgstr "Selectează o pagină"
+
+msgid "Choose an image"
+msgstr "Selectează o imagine"
+
+msgid "Convert to alias page"
+msgstr "Convertează în pagină alias"
+
+msgid "Converting to alias page"
+msgstr "Se convertește în pagină alias"
+
+msgid "Delete"
+msgstr "Șterge"
+
+msgid "Download PO file"
+msgstr "Descarcă fișier PO"
+
+msgid "Download PO file and input translations offline"
+msgstr "Descarcă fișier PO și adaugă traduceri offline"
+
+msgid "Edit"
+msgstr "Editează"
+
+msgid "Edit this %s"
+msgstr "Editează %s"
+
+msgid "Edit this document"
+msgstr "Editează acest document"
+
+msgid "Edit this image"
+msgstr "Editează această imagine"
+
+msgid "Edit this page"
+msgstr "Editează această pagină"
+
+msgid "Fetching %s information..."
+msgstr "Preluare informație despre %s..."
+
+msgid "Fetching document information..."
+msgstr "Preluare informație despre document..."
+
+msgid "Fetching image information..."
+msgstr "Preluare informație despre imagine..."
+
+msgid "Fetching page information..."
+msgstr "Preluare informație despre pagină..."
+
+msgid "Lock"
+msgstr "Încuie"
+
+msgid "Not translated"
+msgstr "Netradus"
+
+msgid "Preview"
+msgstr "Examinare"
+
+msgid "Publish in "
+msgstr "Publică în"
+
+msgid "Publishing..."
+msgstr "Publicare..."
+
+msgid "Remove editor lock"
+msgstr "Elimină blocaj editorial"
+
+msgid "Removing editor lock"
+msgstr "Se elimină blocajul editorial"
+
+msgid "Revert to %s version"
+msgstr "Revină la versiunea %s"
+
+msgid "Save"
+msgstr "Salvează"
+
+msgid "Saving..."
+msgstr "În curs de salvare..."
+
+msgid "segments translated"
+msgstr "segmente traduse"
+
+msgid "Server error"
+msgstr "Eroare de server"
+
+msgid "Stop Synced translation"
+msgstr "Oprește traducere sincronizată"
+
+msgid "Stopping Synced translation"
+msgstr "Se oprește traducerea sincronizată"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr "Există segment nesalvate. Salvează sau anulează înainte de plecare."
+
+msgid "Translate"
+msgstr "Traduce"
+
+msgid "Translate all missing strings with "
+msgstr "Traduce toate șirurile lipsă cu"
+
+msgid "Translate with "
+msgstr "Traduce cu"
+
+msgid "Unlock"
+msgstr "Deblochează"
+
+msgid "Unpublish"
+msgstr "Anulează publicarea"
+
+msgid "Upload PO file"
+msgstr "Încarcă fișier PO"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Încarcă fișier PO tradus pentru a trimite traduceri"
+
+msgid "Uses %s version"
+msgstr "Utilizează versiunea %s"

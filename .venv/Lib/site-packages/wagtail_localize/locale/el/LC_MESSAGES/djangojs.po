@@ -1,0 +1,72 @@
+#
+# Translators:
+# 79353a696ad19dc202b261b3067b7640_bec941e, 2021
+# Nick Mavrakis <mavrakis.n@gmail.com>, 2021
+# Yiannis Inglessis <negtheone@gmail.com>, 2021
+# fekioh, 2022
+# serafeim <serafeim@torchbox.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: serafeim <serafeim@torchbox.com>, 2024\n"
+"Language-Team: Greek (https://app.transifex.com/torchbox/teams/8009/el/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: el\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Actions"
+msgstr "Ενέργειες"
+
+msgid "Apply editor lock"
+msgstr "Κλείδωμα επεξεργαστή κειμένου"
+
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+msgid "Choose a document"
+msgstr "Επιλογή εγγράφου"
+
+msgid "Choose a page"
+msgstr "Επιλογή σελίδας"
+
+msgid "Choose an image"
+msgstr "Επιλέξατε εικόνα"
+
+msgid "Delete"
+msgstr "Διαγραφή"
+
+msgid "Edit"
+msgstr "Επεξεργασία"
+
+msgid "Edit this %s"
+msgstr "Επεξεργαστείτε το %s"
+
+msgid "Edit this document"
+msgstr "Επεξεργασία αυτού του εγγράφου"
+
+msgid "Edit this image"
+msgstr "Επεξεργασία αυτής της εικόνας"
+
+msgid "Edit this page"
+msgstr "Επεξεργασία αυτής της σελίδας"
+
+msgid "Lock"
+msgstr "Κλείδωμα"
+
+msgid "Preview"
+msgstr "Προεπισκόπηση"
+
+msgid "Publishing..."
+msgstr "Γίνεται δημοσίευση..."
+
+msgid "Save"
+msgstr "Αποθηκευση"
+
+msgid "Saving..."
+msgstr "Αποθήκευση..."
+
+msgid "Unlock"
+msgstr "Ξεκλείδωμα"
+
+msgid "Unpublish"
+msgstr "Κατάργηση δημοσίευσης"

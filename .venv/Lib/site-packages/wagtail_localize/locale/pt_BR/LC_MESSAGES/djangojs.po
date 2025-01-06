@@ -1,0 +1,168 @@
+#
+# Translators:
+# Iuri L. Machado, 2021
+# Rodrigo Sottomaior Macedo <sottomaiormacedotec@sottomaiormacedo.tech>, 2022
+# Luiz Boaretto <lboaretto@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Luiz Boaretto <lboaretto@gmail.com>, 2024\n"
+"Language-Team: Portuguese (Brazil) (https://app.transifex.com/torchbox/"
+"teams/8009/pt_BR/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
+"1000000 == 0 ? 1 : 2;\n"
+
+msgid "[DELETED]"
+msgstr "[REMOVIDO]"
+
+msgid "Actions"
+msgstr "Ações"
+
+msgid "Apply editor lock"
+msgstr "Aplicar bloqueio do editor"
+
+msgid "Applying editor lock"
+msgstr "Aplicando bloqueio de editor"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Change %s"
+msgstr "Alterar %s"
+
+msgid "Change document"
+msgstr "Alterar documento"
+
+msgid "Change image"
+msgstr "Alterar imagem"
+
+msgid "Change page"
+msgstr "Alterar página"
+
+msgid "Changed"
+msgstr "Alterado"
+
+msgid "Choose a %s"
+msgstr "Escolha um %s"
+
+msgid "Choose a document"
+msgstr "Escolha um documento"
+
+msgid "Choose a page"
+msgstr "Escolha uma página"
+
+msgid "Choose an image"
+msgstr "Escolha uma imagem"
+
+msgid "Convert to alias page"
+msgstr "Converter em página de atalho"
+
+msgid "Converting to alias page"
+msgstr "Convertendo para página de atalho"
+
+msgid "Delete"
+msgstr "Excluir"
+
+msgid "Download PO file"
+msgstr "Baixar arquivo PO"
+
+msgid "Download PO file and input translations offline"
+msgstr "Baixe o arquivo PO e insira traduções offline"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "Edit this %s"
+msgstr "Editar este %s"
+
+msgid "Edit this document"
+msgstr "Editar este documento"
+
+msgid "Edit this image"
+msgstr "Editar esta imagem"
+
+msgid "Edit this page"
+msgstr "Editar esta página"
+
+msgid "Fetching %s information..."
+msgstr "Buscando %s informação..."
+
+msgid "Fetching document information..."
+msgstr "Buscando informações do documento..."
+
+msgid "Fetching image information..."
+msgstr "Buscando informações da imagem..."
+
+msgid "Fetching page information..."
+msgstr "Buscando informações da página..."
+
+msgid "Lock"
+msgstr "Travar"
+
+msgid "Not translated"
+msgstr "Não traduzido"
+
+msgid "Preview"
+msgstr "Pré-visualizar"
+
+msgid "Publish in "
+msgstr "Publicar em"
+
+msgid "Publishing..."
+msgstr "Publicando..."
+
+msgid "Remove editor lock"
+msgstr "Remover bloqueio do editor"
+
+msgid "Removing editor lock"
+msgstr "Removendo bloqueio do editor"
+
+msgid "Revert to %s version"
+msgstr "Reverter para %s versão"
+
+msgid "Save"
+msgstr "Salvar"
+
+msgid "Saving..."
+msgstr "Salvando..."
+
+msgid "segments translated"
+msgstr "segmentos traduzidos"
+
+msgid "Server error"
+msgstr "Erro de servidor"
+
+msgid "Stop Synced translation"
+msgstr "Parar tradução sincronizada"
+
+msgid "Stopping Synced translation"
+msgstr "Parando a tradução sincronizada"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr "Existem segmentos não salvos. Salve ou cancele-os antes de sair."
+
+msgid "Translate"
+msgstr "Traduzir"
+
+msgid "Translate all missing strings with "
+msgstr "Traduzir todas as frases ausentes com"
+
+msgid "Translate with "
+msgstr "Traduzir com"
+
+msgid "Unlock"
+msgstr "Desbloquear"
+
+msgid "Unpublish"
+msgstr "Despublicar"
+
+msgid "Upload PO file"
+msgstr "Carregar arquivo PO"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Faça upload do arquivo PO traduzido para enviar traduções"
+
+msgid "Uses %s version"
+msgstr "Use a versão %s "

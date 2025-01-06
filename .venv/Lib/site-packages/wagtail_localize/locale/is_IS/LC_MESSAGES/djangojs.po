@@ -1,0 +1,168 @@
+#
+# Translators:
+# saevarom <saevar@saevar.is>, 2024
+# Arnar Tumi Þorsteinsson <arnartumi@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Arnar Tumi Þorsteinsson <arnartumi@gmail.com>, 2024\n"
+"Language-Team: Icelandic (Iceland) (https://app.transifex.com/torchbox/"
+"teams/8009/is_IS/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: is_IS\n"
+"Plural-Forms: nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);\n"
+
+msgid "[DELETED]"
+msgstr "[EYDD]"
+
+msgid "Actions"
+msgstr "Aðgerðir"
+
+msgid "Apply editor lock"
+msgstr "Kveikja á skriflás"
+
+msgid "Applying editor lock"
+msgstr "Kveikja á skriflás"
+
+msgid "Cancel"
+msgstr "Hætta við"
+
+msgid "Change %s"
+msgstr "Breyta %s"
+
+msgid "Change document"
+msgstr "Breyta skrá"
+
+msgid "Change image"
+msgstr "Breyta mynd"
+
+msgid "Change page"
+msgstr "Breyta síðu"
+
+msgid "Changed"
+msgstr "Breytt"
+
+msgid "Choose a %s"
+msgstr "Veldu %s"
+
+msgid "Choose a document"
+msgstr "Veldu skrá"
+
+msgid "Choose a page"
+msgstr "Veldu síðu"
+
+msgid "Choose an image"
+msgstr "Veldu mynd"
+
+msgid "Convert to alias page"
+msgstr "Breyta í spegilsíðu"
+
+msgid "Converting to alias page"
+msgstr "Breyta í spegilsíðu"
+
+msgid "Delete"
+msgstr "Eyða"
+
+msgid "Download PO file"
+msgstr "Hlaða niður PO skrá"
+
+msgid "Download PO file and input translations offline"
+msgstr "Hlaða niður PO skrá og þýða utan nets"
+
+msgid "Edit"
+msgstr "Breyta"
+
+msgid "Edit this %s"
+msgstr "Breyta þessu %s"
+
+msgid "Edit this document"
+msgstr "Breyta þessari skrá"
+
+msgid "Edit this image"
+msgstr "Breyta þessari mynd"
+
+msgid "Edit this page"
+msgstr "Breyta þessari síðu"
+
+msgid "Fetching %s information..."
+msgstr "Sæki upplýsingar um %s ..."
+
+msgid "Fetching document information..."
+msgstr "Sæki upplýsingar um skrá..."
+
+msgid "Fetching image information..."
+msgstr "Sæki upplýsingar um mynd..."
+
+msgid "Fetching page information..."
+msgstr "Sæki upplýsingar um síðu..."
+
+msgid "Lock"
+msgstr "Læsa"
+
+msgid "Not translated"
+msgstr "Ekki þýtt"
+
+msgid "Preview"
+msgstr "Forskoða"
+
+msgid "Publish in "
+msgstr "Birta í"
+
+msgid "Publishing..."
+msgstr "Set í birtingu..."
+
+msgid "Remove editor lock"
+msgstr "Fjarlægja skriflás"
+
+msgid "Removing editor lock"
+msgstr "Fjarlægja skriflás"
+
+msgid "Revert to %s version"
+msgstr "Skipta yfir í útgáfu %s "
+
+msgid "Save"
+msgstr "Vista"
+
+msgid "Saving..."
+msgstr "Vista..."
+
+msgid "segments translated"
+msgstr "hlutar þýddir"
+
+msgid "Server error"
+msgstr "Villa á netþjóni"
+
+msgid "Stop Synced translation"
+msgstr "Stöðva samræmda þýðingu"
+
+msgid "Stopping Synced translation"
+msgstr "Stöðva samræmda þýðingu"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr ""
+"Það eru óvistaðir hlutar. Vinsamlegast vistið eða hættið við breytingarnar "
+"áður en farið er."
+
+msgid "Translate"
+msgstr "Þýða"
+
+msgid "Translate all missing strings with "
+msgstr "Þýða alla strengi sem vantar með"
+
+msgid "Translate with "
+msgstr "Þýða með"
+
+msgid "Unlock"
+msgstr "Aflæsa"
+
+msgid "Unpublish"
+msgstr "Taka úr loftinu"
+
+msgid "Upload PO file"
+msgstr "Hlaða upp PO skrá"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Hlaða upp þýddri PO skrá til að senda inn þýðingar"
+
+msgid "Uses %s version"
+msgstr "Notar útgáfu %s"

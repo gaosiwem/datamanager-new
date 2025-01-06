@@ -1,0 +1,155 @@
+#
+# Translators:
+# Istvan Farkas <istvan.farkas@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Istvan Farkas <istvan.farkas@gmail.com>, 2024\n"
+"Language-Team: Hungarian (https://app.transifex.com/torchbox/teams/8009/"
+"hu/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: hu\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "[DELETED]"
+msgstr "[TÖRÖLT]"
+
+msgid "Actions"
+msgstr "Akciók"
+
+msgid "Apply editor lock"
+msgstr "Szerkesztési zárolás"
+
+msgid "Cancel"
+msgstr "Mégsem"
+
+msgid "Change %s"
+msgstr "%s megváltoztatása"
+
+msgid "Change document"
+msgstr "Dokumentum cseréje"
+
+msgid "Change image"
+msgstr "Kép cseréje"
+
+msgid "Change page"
+msgstr "Oldal megváltoztatása"
+
+msgid "Changed"
+msgstr "Módosítva"
+
+msgid "Choose a %s"
+msgstr "%s kiválasztása"
+
+msgid "Choose a document"
+msgstr "Dokumentum kiválasztása"
+
+msgid "Choose a page"
+msgstr "Oldal kiválasztása"
+
+msgid "Choose an image"
+msgstr "Kép kiválasztása"
+
+msgid "Convert to alias page"
+msgstr "Kapcsolt példánnyá konvertálás"
+
+msgid "Delete"
+msgstr "Törlés"
+
+msgid "Download PO file"
+msgstr "PO fájl letöltése"
+
+msgid "Download PO file and input translations offline"
+msgstr "PO fájl letöltése, és a fordítások kitöltése külön"
+
+msgid "Edit"
+msgstr "Szerkesztés"
+
+msgid "Edit this %s"
+msgstr "%s szerkesztése"
+
+msgid "Edit this document"
+msgstr "Dokumentum szerkesztése"
+
+msgid "Edit this image"
+msgstr "Kép szerkesztése"
+
+msgid "Edit this page"
+msgstr "Oldal szerkesztése"
+
+msgid "Fetching %s information..."
+msgstr "%s adatainak lekérdezése..."
+
+msgid "Fetching document information..."
+msgstr "Dokumentum információinak lekérése..."
+
+msgid "Fetching image information..."
+msgstr "Kép információinak lekérése..."
+
+msgid "Fetching page information..."
+msgstr "Oldal információinak lekérése"
+
+msgid "Lock"
+msgstr "Zárol"
+
+msgid "Not translated"
+msgstr "Nincs lefordítva"
+
+msgid "Preview"
+msgstr "Előnézet"
+
+msgid "Publish in "
+msgstr "Közzététel: "
+
+msgid "Publishing..."
+msgstr "Közzététel..."
+
+msgid "Remove editor lock"
+msgstr "Szerkesztési zár feloldása"
+
+msgid "Revert to %s version"
+msgstr "Visszaváltás erre a verzióra: %s"
+
+msgid "Save"
+msgstr "Mentés"
+
+msgid "Saving..."
+msgstr "Mentés..."
+
+msgid "segments translated"
+msgstr "részek lefordítva"
+
+msgid "Server error"
+msgstr "Szerverhiba"
+
+msgid "Stop Synced translation"
+msgstr "Szinkronizált fordítás befejezése"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr ""
+"Mentetlen részeket találtunk. Kérjük mentse vagy dobja el őket, mielőtt "
+"elhagyja az oldalt."
+
+msgid "Translate"
+msgstr "Fordítás"
+
+msgid "Translate all missing strings with "
+msgstr "Összes hiányzó fordítása ezzel: "
+
+msgid "Translate with "
+msgstr "Fordítás ezzel: "
+
+msgid "Unlock"
+msgstr "Feloldás"
+
+msgid "Unpublish"
+msgstr "Visszavonás"
+
+msgid "Upload PO file"
+msgstr "PO fájl feltöltése"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Lefordított PO fájl feltöltése a fordítás frissítéséhez"
+
+msgid "Uses %s version"
+msgstr "%s verziót használ"

@@ -1,0 +1,80 @@
+#
+# Translators:
+# Tetsuya Morimoto <tetsuya.morimoto@gmail.com>, 2021
+# Daigo Shitara <stain.witness@gmail.com>, 2021
+# 石田秀 <ishidashu@gmail.com>, 2021
+# Yudai Kobayashi <yudai.kobayashi.miraidenshi@gmail.com>, 2021
+# shuhei hirota, 2021
+# kojikojikojikoji, 2021
+# 小口英昭 <oguchi@bluff-lab.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: 小口英昭 <oguchi@bluff-lab.com>, 2024\n"
+"Language-Team: Japanese (https://app.transifex.com/torchbox/teams/8009/ja/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Actions"
+msgstr "操作"
+
+msgid "Apply editor lock"
+msgstr "エディターロック機能を適用する"
+
+msgid "Cancel"
+msgstr "キャンセル"
+
+msgid "Change image"
+msgstr "画像を変更"
+
+msgid "Change page"
+msgstr "ページを変更"
+
+msgid "Choose a document"
+msgstr "ドキュメントを選択"
+
+msgid "Choose a page"
+msgstr "ページを選択"
+
+msgid "Choose an image"
+msgstr "画像を選択"
+
+msgid "Delete"
+msgstr "削除"
+
+msgid "Edit"
+msgstr "編集"
+
+msgid "Edit this %s"
+msgstr "%sを編集"
+
+msgid "Edit this document"
+msgstr "ドキュメントを編集"
+
+msgid "Edit this image"
+msgstr "画像を編集"
+
+msgid "Edit this page"
+msgstr "ページを編集"
+
+msgid "Lock"
+msgstr "ロックする"
+
+msgid "Preview"
+msgstr "プレビュー"
+
+msgid "Publishing..."
+msgstr "公開中..."
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Saving..."
+msgstr "保存中"
+
+msgid "Unlock"
+msgstr "ロックを解除"
+
+msgid "Unpublish"
+msgstr "非公開"

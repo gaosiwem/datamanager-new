@@ -1,0 +1,317 @@
+#
+# Translators:
+# saevarom <saevar@saevar.is>, 2022
+# Arnar Tumi Þorsteinsson <arnartumi@gmail.com>, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Arnar Tumi Þorsteinsson <arnartumi@gmail.com>, 2023\n"
+"Language-Team: Icelandic (Iceland) (https://app.transifex.com/torchbox/"
+"teams/8009/is_IS/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: is_IS\n"
+"Plural-Forms: nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);\n"
+
+msgid "Disable"
+msgstr "Afvirkja"
+
+msgid "Dummy translator"
+msgstr "Gervi þýðandi"
+
+msgid "Translate"
+msgstr "Þýða"
+
+#, python-format
+msgid "Sync translated %(model_name)s"
+msgstr "Samræma þýdd %(model_name)s"
+
+msgid "Start Synced translation"
+msgstr "Hefja samræmda þýðingu"
+
+#, python-brace-format
+msgid "Translate {model_name}"
+msgstr "Þýða {model_name}"
+
+#, python-brace-format
+msgid ""
+"The {model_name} '{object}' was successfully submitted for translation into "
+"{locales}"
+msgstr ""
+"Tókst að senda inn þýðingar fyrir {model_name} '{object}' inn í {locales}"
+
+msgid "Up to date"
+msgstr "Uppfært"
+
+msgid "Waiting for translations"
+msgstr "Bíð eftir þýðingum"
+
+msgid "Manual"
+msgstr "Handvirk"
+
+msgid "Machine"
+msgstr "Sjálfvirk"
+
+#, python-brace-format
+msgid "Translated with {tool_name} on {date}"
+msgstr "Þýtt með {tool_name} þann {date}"
+
+#, python-brace-format
+msgid "Translated manually on {date}"
+msgstr "Þýtt handvirkt þann {date}"
+
+#, python-brace-format
+msgid "Machine translated on {date}"
+msgstr "Þýtt sjálfkrafa þann {date}"
+
+msgid "This locale cannot be synced into itself."
+msgstr "Þetta tungumál er ekki hægt að uppfæra með sjálfum sér."
+
+msgid "Synchronise content from another locale"
+msgstr "Uppfæra efni frá öðru tungumáli"
+
+msgid ""
+"Choose a locale to synchronise content from. Any existing and future content "
+"authored in the selected locale will be automatically copied to this one."
+msgstr ""
+"Veldu tungumál til að uppfæra efni frá. Allt núverandi og framtíðar efni sem "
+"skrifað er í völdu tungumál verður sjálfvirkt afritað yfir í þetta tungumál."
+
+msgid ""
+"<{}> tag is not allowed. Strings can only contain standard HTML inline tags "
+"(such as <b>, <a>)"
+msgstr ""
+"<{}> tag er ekki leyft. Eingöngu má nota stöðluð HTML tög (til dæmis <b>, "
+"<a>)"
+
+msgid ""
+"Strings cannot have any HTML tags with attributes (except for 'id' in <a> "
+"tags)"
+msgstr "Texti má ekki innihalda HTML tög með eigindum (nema 'id' í <a> tögum)"
+
+msgid "Unrecognised id found in an <a> tag: {}"
+msgstr "Óþekkt id fannst í <a> tagi: {}"
+
+msgid "Enable"
+msgstr "Virkja"
+
+#, python-format
+msgid "Convert to alias %(title)s"
+msgstr "Breyta yfir í spegilsíðu %(title)s"
+
+msgid "Convert to alias"
+msgstr "Breyta í spegilsíðu"
+
+#, python-format
+msgid ""
+"Are you sure you want to convert this page into an alias? This will "
+"overwrite the content of the page with the content of "
+"'%(source_page_title)s' (%(source_page_locale)s)"
+msgstr ""
+"Ertu viss um að þú viljir breyta þessari síðu í spegilsíðu? Þetta mun "
+"yfirskrifa efni síðunnar með efni '%(source_page_title)s' "
+"(%(source_page_locale)s)"
+
+msgid "Yes, convert it"
+msgstr "Já, breyta"
+
+msgid "No, leave it as a page"
+msgstr "Nei, ekki breyta"
+
+#, python-format
+msgid ""
+"This page hasn't been translated yet. It is mirroring the <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">%(original_locale)s "
+"page</a>."
+msgstr ""
+"Þessi síða hefur enn ekki verið þýdd. Hún er að spegla <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">%(original_locale)s "
+"síðuna.</a>."
+
+msgid "Translate this page"
+msgstr "Þýða þessa síðu"
+
+#, python-format
+msgid "Translation of %(instance)s into %(locale)s"
+msgstr "Þýðing á %(instance)s í %(locale)s"
+
+msgid "Translations"
+msgstr "Þýðingar"
+
+#, python-format
+msgid "Editing %(object_type)s %(title)s"
+msgstr "Breyti %(object_type)s %(title)s"
+
+msgid "Submit"
+msgstr "Senda"
+
+msgid "Go back"
+msgstr "Til baka"
+
+msgid "Content type"
+msgstr "efnistegund"
+
+msgid "Source"
+msgstr "Upprunasíða"
+
+msgid "Target"
+msgstr "Þýdd síða"
+
+msgid "Status"
+msgstr "Staða"
+
+msgid "No translations found."
+msgstr "Engar þýðingar fundust."
+
+msgid "Why would I sync my page?"
+msgstr "Af hverju ætti ég að samræma síðuna mína?"
+
+msgid ""
+"Changes are not automatically applied between translated pages. Syncing will "
+"add new content for translation and remove deleted content."
+msgstr ""
+"Breytingar eru ekki sjálfkrafa samræmdar milli þýddra síðna. Samræming mun "
+"bæta við nýju efni fyrir þýðingu og fjarlægja efni sem hefur verið eytt."
+
+#, python-format
+msgid ""
+"The last sync date was %(last_sync_date)s. You are about to sync the "
+"following:"
+msgstr ""
+"Síðasta samræmingar dagsetning var %(last_sync_date)s. Þú ert að fara að "
+"samræma eftirfarandi:"
+
+msgid "Page '{}' has been converted into an alias."
+msgstr "Síðu '{}' hefur verið breytt í spegilsíðu."
+
+msgid "Content"
+msgstr "Innihald"
+
+#, python-brace-format
+msgid ""
+"New validation errors were found when publishing '{object}' in {locale}. "
+"Please fix them or click publish again to ignore these translations for now."
+msgstr ""
+"Nýjar prófunarvillur fundust við birtingu á '{object}' í {locale}. "
+"Vinsamlegast lagið þær eða smellið á setja í birtingu aftur til að hunsa "
+"þessar þýðingar í bili."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale} with missing translations - see below."
+msgstr "Birti '{object}' í {locale} en það vantar þýðingar - sjá hér að neðan."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale}."
+msgstr "Birti '{object}' í {locale}."
+
+#, python-brace-format
+msgid ""
+"The data model for '{model_name}' has been changed since the last "
+"translation sync. If any new fields have been added recently, these may not "
+"be visible until the next translation sync."
+msgstr ""
+"Módelinu '{model_name}' hefur verið breytt síðan þýðingar voru síðast "
+"uppfærðar. Ef einhverjum nýjum svæðum hefur verið bætt við nýlega, þá eru "
+"þeir mögulega ekki sjáanlegir fyrr en þýðingar verða uppfærðar næst."
+
+msgid "Translation has been stopped."
+msgstr "Þýðing hefur verið stöðvuð."
+
+msgid "Translation has been restarted."
+msgstr "Þýðing hefur verið endurhafin."
+
+msgid "Please upload a valid PO file."
+msgstr "Vinsamlegast hlaðið inn gildri PO skrá."
+
+msgid "Cannot import PO file that was created for a different translation."
+msgstr "Get ekki flutt inn PO skrá sem var búin til fyrir annað tungumál."
+
+msgid "Successfully imported translations from PO File."
+msgstr "Tókst að flytja inn þýðingar úr PO skrá."
+
+msgid "Successfully translated with {}."
+msgstr "Tókast að þýða með {}"
+
+msgid "There isn't anything left to translate."
+msgstr "Það er ekkert eftir til að þýða."
+
+msgid "Source title"
+msgstr "Titill upprunasíðu"
+
+msgid "All"
+msgstr "Allar"
+
+msgid "Select all"
+msgstr "Velja allt"
+
+msgid "Locales"
+msgstr "Þýðingar"
+
+msgid "All child pages will be created."
+msgstr "Allar undirsíður verða búnar til"
+
+msgid "Include subtree ({} page)"
+msgid_plural "Include subtree ({} pages)"
+msgstr[0] "Innifela undirsíður ({} síður)"
+msgstr[1] "Innifela undirsíður ({} síður)"
+
+msgid "{} locales"
+msgstr "{} þýðingar"
+
+msgid "Translate page"
+msgstr "Þýða síðu"
+
+#, python-brace-format
+msgid ""
+"The page '{page_title}' was successfully submitted for translation into "
+"{locales}"
+msgstr "Tókst að senda inn síðuna '{page_title}' í þýðingu fyrir {locales}"
+
+msgid "Publish immediately"
+msgstr "Setja í birtingu strax"
+
+msgid ""
+"This will apply the updates and publish immediately, before any new "
+"translations happen."
+msgstr ""
+"Þetta keyrir uppfærsluna og setur í birtingu strax, áður en fleiri þýðingar "
+"verða gerðar."
+
+msgid "Update existing translations"
+msgstr "Uppfæra núverandi þýðingar"
+
+#, python-brace-format
+msgid "Successfully updated translations for '{object}'"
+msgstr "Tókst að uppfæra þýðingar fyrir '{object}'"
+
+msgid "Sync translated pages"
+msgstr "Samræma þýddar síður"
+
+#, python-format
+msgid "Translate '%(title)s'"
+msgstr "Þýða '%(title)s'"
+
+msgid "Sync translated snippets"
+msgstr "Samræma þýdd snifsi"
+
+#, python-format
+msgid "Sync translations of '%(title)s'"
+msgstr "Samræma þýðingar á '%(title)s'"
+
+msgid "Convert to alias page"
+msgstr "Breyta í spegilsíðu"
+
+msgid "Convert page to alias"
+msgstr " Breyta síðu í spegilsíðu"
+
+#, python-format
+msgid ""
+"Converted page '%(title)s' to an alias of the translation source page "
+"'%(source_title)s'"
+msgstr ""
+"Breytti '%(title)s' í spegilsíðu af upprunasíðu þýðingarinnar "
+"'%(source_title)s'"
+
+msgid "Converted page to an alias of the translation source page"
+msgstr "Breytti síðu í spegilsíðu af þýðingu upprunasíðunnar."

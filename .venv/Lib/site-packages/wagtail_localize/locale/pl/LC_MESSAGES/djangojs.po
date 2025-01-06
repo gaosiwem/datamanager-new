@@ -1,0 +1,156 @@
+#
+# Translators:
+# Łukasz Bołdys (Lukasz Boldys), 2021
+# Krzysztof Jeziorny <github@jeziorny.net>, 2023
+# Miłosz Miśkiewicz, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Miłosz Miśkiewicz, 2024\n"
+"Language-Team: Polish (https://app.transifex.com/torchbox/teams/8009/pl/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: pl\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
+"(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
+"n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+
+msgid "[DELETED]"
+msgstr "[USUNIĘTE]"
+
+msgid "Actions"
+msgstr "Akcje"
+
+msgid "Apply editor lock"
+msgstr "Zastosuj blokadę edytorską"
+
+msgid "Cancel"
+msgstr "Anuluj"
+
+msgid "Change %s"
+msgstr "Zmień %s"
+
+msgid "Change document"
+msgstr "Zmień dokument"
+
+msgid "Change image"
+msgstr "Zmień obraz"
+
+msgid "Change page"
+msgstr "Zmień stronę"
+
+msgid "Changed"
+msgstr "Zmieniono"
+
+msgid "Choose a %s"
+msgstr "Wybierz %s"
+
+msgid "Choose a document"
+msgstr "Wybierz dokument"
+
+msgid "Choose a page"
+msgstr "Wybierz stronę"
+
+msgid "Choose an image"
+msgstr "Wybierz obraz"
+
+msgid "Convert to alias page"
+msgstr "Konwertuj na alias strony"
+
+msgid "Delete"
+msgstr "Usuń"
+
+msgid "Download PO file"
+msgstr "Pobierz plik PO"
+
+msgid "Download PO file and input translations offline"
+msgstr "Pobierz plik PO i wprowadź tłumaczenia offline"
+
+msgid "Edit"
+msgstr "Edytuj"
+
+msgid "Edit this %s"
+msgstr "Edytuj ten %s"
+
+msgid "Edit this document"
+msgstr "Edytuj ten dokument"
+
+msgid "Edit this image"
+msgstr "Edytuj obraz"
+
+msgid "Edit this page"
+msgstr "Edytuj tę stronę"
+
+msgid "Fetching %s information..."
+msgstr "Pobieranie informacji o %s..."
+
+msgid "Fetching document information..."
+msgstr "Pobieranie informacji na temat dokumentu..."
+
+msgid "Fetching image information..."
+msgstr "Pobieranie informacji na temat obrazu"
+
+msgid "Fetching page information..."
+msgstr "Pobieranie informacji na temat strony..."
+
+msgid "Lock"
+msgstr "Zablokuj"
+
+msgid "Not translated"
+msgstr "Nie przetłumaczone"
+
+msgid "Preview"
+msgstr "Podgląd"
+
+msgid "Publish in "
+msgstr "Opublikuj w"
+
+msgid "Publishing..."
+msgstr "Publikowanie..."
+
+msgid "Remove editor lock"
+msgstr "Usuń blokadę edytorską"
+
+msgid "Revert to %s version"
+msgstr "Przywróć wersję %s"
+
+msgid "Save"
+msgstr "Zapisz"
+
+msgid "Saving..."
+msgstr "Zapisywanie..."
+
+msgid "segments translated"
+msgstr "segmenty przetłumaczone"
+
+msgid "Server error"
+msgstr "Błąd serwera"
+
+msgid "Stop Synced translation"
+msgstr "Zatrzymaj zsynchronizowane tłumaczenie"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr "Istnieją niezapisane fragmenty. Zapisz lub anuluj je przed wyjściem."
+
+msgid "Translate"
+msgstr "Tłumacz"
+
+msgid "Translate all missing strings with "
+msgstr "Przetłumacz wszystkie brakujące ciągi na"
+
+msgid "Translate with "
+msgstr "Przetłumacz z"
+
+msgid "Unlock"
+msgstr "Odblokuj"
+
+msgid "Unpublish"
+msgstr "Odpublikuj"
+
+msgid "Upload PO file"
+msgstr "Wgraj plik PO"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Wgraj przetłumaczony plik PO do wysłanych tłumaczeń"
+
+msgid "Uses %s version"
+msgstr "Używa wersji %s "

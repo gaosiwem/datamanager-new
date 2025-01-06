@@ -1,0 +1,72 @@
+#
+# Translators:
+# Cihad GÜNDOĞDU <cihadgundogdu@gmail.com>, 2021
+# Ragıp Ünal <ragip@ragipunal.com>, 2021
+# Halim Turan <halim_turan_61@hotmail.com>, 2021
+# Basitlik İyidir, 2021
+# Py Data Geek <pydatageek@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Py Data Geek <pydatageek@gmail.com>, 2024\n"
+"Language-Team: Turkish (https://app.transifex.com/torchbox/teams/8009/tr/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Actions"
+msgstr "Eylemler"
+
+msgid "Apply editor lock"
+msgstr "Editör kilidini kaldır"
+
+msgid "Change image"
+msgstr "Resmi değiştir"
+
+msgid "Choose a document"
+msgstr "Belge seç"
+
+msgid "Choose a page"
+msgstr "Bir sayfa seç"
+
+msgid "Choose an image"
+msgstr "Bir resim seç"
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "Edit"
+msgstr "Düzenle"
+
+msgid "Edit this %s"
+msgstr "%s düzenle"
+
+msgid "Edit this document"
+msgstr "Belgeyi düzenle"
+
+msgid "Edit this image"
+msgstr "Resmi düzenle"
+
+msgid "Edit this page"
+msgstr "Sayfayı düzenle"
+
+msgid "Lock"
+msgstr "Kilitle"
+
+msgid "Preview"
+msgstr "Önizleme"
+
+msgid "Remove editor lock"
+msgstr "Editör kilidini kaldır"
+
+msgid "Save"
+msgstr "Kaydet"
+
+msgid "Saving..."
+msgstr "Kaydediliyor"
+
+msgid "Unlock"
+msgstr "Kilidini aç"
+
+msgid "Unpublish"
+msgstr "Yayından kaldır"

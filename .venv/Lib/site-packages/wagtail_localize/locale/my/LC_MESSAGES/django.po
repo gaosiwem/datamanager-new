@@ -1,0 +1,16 @@
+#
+# Translators:
+# ime11 <pmh.yourworstnightmare@gmail.com>, 2021
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: ime11 <pmh.yourworstnightmare@gmail.com>, 2021\n"
+"Language-Team: Burmese (https://app.transifex.com/torchbox/teams/8009/my/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: my\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Status"
+msgstr "အခြေအနေ"

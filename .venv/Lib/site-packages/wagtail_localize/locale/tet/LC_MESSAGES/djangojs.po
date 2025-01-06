@@ -1,0 +1,57 @@
+#
+# Translators:
+# Onorio de Jesus Afonso <onorio@catalpa.io>, 2021
+# Joanico Barros <joanico@catalpa.io>, 2021
+# Mariano de Deus <dedeus_mariano@yahoo.com>, 2021
+# Peter Coward <peter@catalpa.io>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Peter Coward <peter@catalpa.io>, 2024\n"
+"Language-Team: Tetum (Tetun) (https://app.transifex.com/torchbox/teams/8009/"
+"tet/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: tet\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Actions"
+msgstr "Asaun sira"
+
+msgid "Change image"
+msgstr "Troka imajen"
+
+msgid "Choose a page"
+msgstr "Hili pajina ida"
+
+msgid "Choose an image"
+msgstr "Hili imagen ida"
+
+msgid "Delete"
+msgstr "Hamoos"
+
+msgid "Edit"
+msgstr "Hadia"
+
+msgid "Edit this %s"
+msgstr "hadia iha %s"
+
+msgid "Edit this document"
+msgstr "Hadia dokumentu nee"
+
+msgid "Edit this image"
+msgstr "Hadia imajen ne'e"
+
+msgid "Edit this page"
+msgstr "Hadia pajina nee"
+
+msgid "Lock"
+msgstr "Xavi"
+
+msgid "Preview"
+msgstr "Pré-visualizasaun"
+
+msgid "Save"
+msgstr "Rai"
+
+msgid "Unpublish"
+msgstr "La publika "

@@ -1,0 +1,137 @@
+#
+# Translators:
+# Aarni Koskela, 2021
+# Jiri Grönroos <jiri.gronroos@iki.fi>, 2022
+# Valter Maasalo <vmaasalo@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Valter Maasalo <vmaasalo@gmail.com>, 2024\n"
+"Language-Team: Finnish (https://app.transifex.com/torchbox/teams/8009/fi/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fi\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "[DELETED]"
+msgstr "[POISTETTU]"
+
+msgid "Actions"
+msgstr "Toimet"
+
+msgid "Apply editor lock"
+msgstr "Toteuta editorin lukitus"
+
+msgid "Cancel"
+msgstr "Peruuta"
+
+msgid "Change %s"
+msgstr "Vaihda %s"
+
+msgid "Change document"
+msgstr "Vaihda dokumentti"
+
+msgid "Change image"
+msgstr "Vaihda kuva"
+
+msgid "Change page"
+msgstr "Vaihda sivu"
+
+msgid "Changed"
+msgstr "Vaihdettu"
+
+msgid "Choose a %s"
+msgstr "Valitse %s"
+
+msgid "Choose a document"
+msgstr "Valitse dokumentti"
+
+msgid "Choose a page"
+msgstr "Valitse sivu"
+
+msgid "Choose an image"
+msgstr "Valitse kuva"
+
+msgid "Convert to alias page"
+msgstr "Muunna aliassivuksi"
+
+msgid "Delete"
+msgstr "Poista"
+
+msgid "Download PO file"
+msgstr "Lataa PO-tiedosto"
+
+msgid "Download PO file and input translations offline"
+msgstr "Lataa PO-tiedosto ja syötä käännökset offline-tilassa"
+
+msgid "Edit"
+msgstr "Muokkaa"
+
+msgid "Edit this %s"
+msgstr "Muokkaa %s-kohdetta"
+
+msgid "Edit this document"
+msgstr "Muokkaa tätä dokumenttia"
+
+msgid "Edit this image"
+msgstr "Muokkaa tätä kuvaa"
+
+msgid "Edit this page"
+msgstr "Muokkaa tätä sivua"
+
+msgid "Fetching document information..."
+msgstr "Noudetaan dokumentin tietoja..."
+
+msgid "Fetching image information..."
+msgstr "Noudetaan kuvan tietoja..."
+
+msgid "Fetching page information..."
+msgstr "Noudetaan sivun tietoja..."
+
+msgid "Lock"
+msgstr "Lukitse"
+
+msgid "Not translated"
+msgstr "Ei käännetty"
+
+msgid "Preview"
+msgstr "Esikatsele"
+
+msgid "Publishing..."
+msgstr "Julkaistaan..."
+
+msgid "Remove editor lock"
+msgstr "Poista editorin lukitus"
+
+msgid "Save"
+msgstr "Tallenna"
+
+msgid "Saving..."
+msgstr "Tallennetaan..."
+
+msgid "segments translated"
+msgstr "segmenttiä käännetty"
+
+msgid "Server error"
+msgstr "Palvelinvirhe"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr ""
+"Tallentamattomia segmenttejä. Tallenna ne tai peruuta ennen poistumista."
+
+msgid "Translate"
+msgstr "Käännä"
+
+msgid "Translate with "
+msgstr "Käännä käyttäen"
+
+msgid "Unlock"
+msgstr "Avaa lukitus"
+
+msgid "Unpublish"
+msgstr "Piilota"
+
+msgid "Upload PO file"
+msgstr "Lähetä PO-tiedosto"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Lähetä käännetty PO-tiedosto lähettääksesi käännökset"

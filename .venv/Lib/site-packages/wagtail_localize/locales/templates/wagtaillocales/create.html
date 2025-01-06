@@ -1,0 +1,8 @@
+{% extends "./edit.html" %}
+{% load i18n %}
+
+{% block titletag %}{{ view.page_title }}{% endblock %}
+
+{% block actions %}
+    <input type="submit" value="{% trans 'Save' %}" class="button" />
+{% endblock %}

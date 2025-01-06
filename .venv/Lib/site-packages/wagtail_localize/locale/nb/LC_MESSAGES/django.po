@@ -1,0 +1,34 @@
+#
+# Translators:
+# Eirik Krogstad <eirikkr@gmail.com>, 2021
+# Ole Kristian Losvik <ole@losol.no>, 2023
+# Jonathan D, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Jonathan D, 2023\n"
+"Language-Team: Norwegian Bokmål (https://app.transifex.com/torchbox/"
+"teams/8009/nb/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: nb\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Go back"
+msgstr "Gå tilbake"
+
+msgid "Content type"
+msgstr "Innholdstype"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Content"
+msgstr "Innhold"
+
+msgid "All"
+msgstr "Alle"
+
+msgid "Select all"
+msgstr "Velg alle"

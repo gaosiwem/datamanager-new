@@ -1,0 +1,59 @@
+#
+# Translators:
+# Delgermurun Purevkhuuu <info@delgermurun.com>, 2021
+# Myagmarjav Enkhbileg <miigaa.lucky@gmail.com>, 2021
+# visual, 2022
+#
+msgid ""
+msgstr ""
+"Last-Translator: visual, 2022\n"
+"Language-Team: Mongolian (https://app.transifex.com/torchbox/teams/8009/"
+"mn/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: mn\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Change image"
+msgstr "Зураг солих"
+
+msgid "Choose a document"
+msgstr "Файл сонгох"
+
+msgid "Choose a page"
+msgstr "Хуудас сонгох"
+
+msgid "Choose an image"
+msgstr "Зургаа сонгоно уу"
+
+msgid "Delete"
+msgstr "Устгах"
+
+msgid "Edit"
+msgstr "Засах"
+
+msgid "Edit this %s"
+msgstr "%s-г засах"
+
+msgid "Edit this document"
+msgstr "Файлыг засах"
+
+msgid "Edit this image"
+msgstr "Энэ зургийг засах"
+
+msgid "Edit this page"
+msgstr "Энэ хуудсыг засах"
+
+msgid "Lock"
+msgstr "Түгжих"
+
+msgid "Preview"
+msgstr "Урдчилж харах"
+
+msgid "Save"
+msgstr "Хадгалах"
+
+msgid "Unlock"
+msgstr "Түгжээг тайлах"
+
+msgid "Unpublish"
+msgstr "Нийтлэхгүй байх"

@@ -1,0 +1,52 @@
+{
+  "departments": [
+    {
+      "geo_source.government": "South Africa",
+      "vote_number.department": "Agriculture, Forestry and Fisheries",
+      "programme_number.programme": "Test Program",
+      "_count": 755,
+      "value.sum": 7164998000.0
+    },
+    {
+      "geo_source.government": "South Africa",
+      "vote_number.department": "Arts and Culture",
+      "programme_number.programme": "Test Program",
+      "_count": 365,
+      "value.sum": 4372264000.0
+    },
+    {
+      "geo_source.government": "South Africa",
+      "vote_number.department": "Basic Education",
+      "programme_number.programme": "Test Program",
+      "_count": 494,
+      "value.sum": 22722437000.0
+    }
+  ],
+  "programmes": [
+    {
+      "geo_source.government": "South Africa",
+      "_count": 217,
+      "programme_number.programme": "Administration",
+      "value.sum": 923178000.0,
+      "function_group_1.function_group_1": "Economic development",
+      "vote_number.department": "Agriculture, Forestry and Fisheries"
+    },
+    {
+      "geo_source.government": "South Africa",
+      "_count": 137,
+      "programme_number.programme": "Agricultural Production, Health and Food Safety",
+      "value.sum": 2367078000.0,
+      "function_group_1.function_group_1": "Economic development",
+      "vote_number.department": "Agriculture, Forestry and Fisheries"
+    },
+    {
+      "geo_source.government": "South Africa",
+      "_count": 20,
+      "programme_number.programme": "Fisheries",
+      "value.sum": 487811000.0,
+      "function_group_1.function_group_1": "Economic development",
+      "vote_number.department": "Agriculture, Forestry and Fisheries"
+    }
+  ]
+}
+

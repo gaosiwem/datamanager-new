@@ -1,0 +1,156 @@
+#
+# Translators:
+# Martin Sandström <martin@marteinn.se>, 2021
+# Thomas Kunambi <kunambi@gmail.com>, 2021
+# Philip Andersen <renegadevi@codeofmagi.net>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Philip Andersen <renegadevi@codeofmagi.net>, 2024\n"
+"Language-Team: Swedish (https://app.transifex.com/torchbox/teams/8009/sv/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: sv\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "[DELETED]"
+msgstr "[RADERAD]"
+
+msgid "Actions"
+msgstr "Handlingar"
+
+msgid "Apply editor lock"
+msgstr "Tillämpa redaktörslås"
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Change %s"
+msgstr "Ändra %s"
+
+msgid "Change document"
+msgstr "Ändra dokument"
+
+msgid "Change image"
+msgstr "Ändra bild"
+
+msgid "Change page"
+msgstr "Ändra sida"
+
+msgid "Changed"
+msgstr "Ändrad"
+
+msgid "Choose a %s"
+msgstr "Välj en %s"
+
+msgid "Choose a document"
+msgstr "Välj ett dokument"
+
+msgid "Choose a page"
+msgstr "Välj en sida"
+
+msgid "Choose an image"
+msgstr "Välj en bild"
+
+msgid "Convert to alias page"
+msgstr "Konvertera till alias"
+
+msgid "Delete"
+msgstr "Radera"
+
+msgid "Download PO file"
+msgstr "Ladda ner PO fil"
+
+msgid "Download PO file and input translations offline"
+msgstr "Ladda ner PO fil och uppdatera översättningar offline"
+
+msgid "Edit"
+msgstr "Redigera"
+
+msgid "Edit this %s"
+msgstr "Redigera %s"
+
+msgid "Edit this document"
+msgstr "Redigera detta dokument"
+
+msgid "Edit this image"
+msgstr "Redigera denna bild"
+
+msgid "Edit this page"
+msgstr "Redigera denna sida"
+
+msgid "Fetching %s information..."
+msgstr "Hämtar %s information..."
+
+msgid "Fetching document information..."
+msgstr "Hämtar dokumentinformation"
+
+msgid "Fetching image information..."
+msgstr "Hämtar bildinformation"
+
+msgid "Fetching page information..."
+msgstr "Hämtar sidoinformation"
+
+msgid "Lock"
+msgstr "Lås"
+
+msgid "Not translated"
+msgstr "Inte översatt"
+
+msgid "Preview"
+msgstr "Förhandsgranska"
+
+msgid "Publish in "
+msgstr "Publicera på"
+
+msgid "Publishing..."
+msgstr "Publicerar..."
+
+msgid "Remove editor lock"
+msgstr "Ta bort redaktörslås"
+
+msgid "Revert to %s version"
+msgstr "Återställ till %s version"
+
+msgid "Save"
+msgstr "Spara"
+
+msgid "Saving..."
+msgstr "Sparar..."
+
+msgid "segments translated"
+msgstr "segment översatta"
+
+msgid "Server error"
+msgstr "Serverfel"
+
+msgid "Stop Synced translation"
+msgstr "Stoppa synkroniserad översättning"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr ""
+"Det finns osparade segment. Vänligen spara eller återställ dem innan du "
+"lämnar."
+
+msgid "Translate"
+msgstr "Översätt"
+
+msgid "Translate all missing strings with "
+msgstr "Översätt alla saknade strängar med"
+
+msgid "Translate with "
+msgstr "Översätt med"
+
+msgid "Unlock"
+msgstr "Lås upp"
+
+msgid "Unpublish"
+msgstr "Avpublicera"
+
+msgid "Upload PO file"
+msgstr "Ladda upp PO fil"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Ladda upp översatt PO-fil för att spara översättningar"
+
+msgid "Uses %s version"
+msgstr "Använder version %s "

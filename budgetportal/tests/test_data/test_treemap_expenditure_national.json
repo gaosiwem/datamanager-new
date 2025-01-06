@@ -1,0 +1,25 @@
+{
+  "complete": [
+    {
+      "budget_phase.budget_phase": "Main appropriation",
+      "vote_number.department": "Agriculture, Forestry and Fisheries",
+      "_count": 517,
+      "financial_year.financial_year": 2019,
+      "value.sum": 7664889000
+    },
+    {
+      "budget_phase.budget_phase": "Main appropriation",
+      "vote_number.department": "Arts and Culture",
+      "_count": 246,
+      "financial_year.financial_year": 2019,
+      "value.sum": 4617485000
+    },
+    {
+      "budget_phase.budget_phase": "Main appropriation",
+      "vote_number.department": "Basic Education",
+      "_count": 326,
+      "financial_year.financial_year": 2019,
+      "value.sum": 24504531000
+    }
+  ]
+}

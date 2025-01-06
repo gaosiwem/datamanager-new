@@ -1,0 +1,321 @@
+#
+# Translators:
+# Mitja Pagon <mitja.pagon@inueni.com>, 2021
+# andrej55 <andrej.marsetic@gmail.com>, 2022
+# Andrej Marsetič, 2024
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Andrej Marsetič, 2024\n"
+"Language-Team: Slovenian (https://app.transifex.com/torchbox/teams/8009/"
+"sl/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: sl\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
+"n%100==4 ? 2 : 3);\n"
+
+msgid "Disable"
+msgstr "Onemogoči"
+
+msgid "Dummy translator"
+msgstr "Lažni prevajalec"
+
+msgid "Translate"
+msgstr "Prevedi"
+
+#, python-format
+msgid "Sync translated %(model_name)s"
+msgstr "Sinhroniziraj preveden %(model_name)s"
+
+msgid "Start Synced translation"
+msgstr "Začnite sinhronizirani prevod"
+
+#, python-brace-format
+msgid "Translate {model_name}"
+msgstr "Prevesti {model_name}"
+
+#, python-brace-format
+msgid ""
+"The {model_name} '{object}' was successfully submitted for translation into "
+"{locales}"
+msgstr "{model_name} '{object}' je bil uspešno poslan v prevod v {locales}"
+
+msgid "Up to date"
+msgstr "Ažurno"
+
+msgid "Waiting for translations"
+msgstr "Čakam na prevode"
+
+msgid "Manual"
+msgstr "Navodila"
+
+msgid "Machine"
+msgstr "Stroj"
+
+#, python-brace-format
+msgid "Translated with {tool_name} on {date}"
+msgstr "Prevedeno z {tool_name} dne {date}"
+
+#, python-brace-format
+msgid "Translated manually on {date}"
+msgstr "Ročno prevedeno dne {date}"
+
+#, python-brace-format
+msgid "Machine translated on {date}"
+msgstr "Strojno prevedeno dne {date}"
+
+msgid "This locale cannot be synced into itself."
+msgstr "Tega jezika ni mogoče sinhronizirati samega s seboj."
+
+msgid "Synchronise content from another locale"
+msgstr "Sinhronizirajte vsebino iz drugega jezika"
+
+msgid ""
+"Choose a locale to synchronise content from. Any existing and future content "
+"authored in the selected locale will be automatically copied to this one."
+msgstr ""
+"Izberite jezik, iz katerega želite sinhronizirati vsebino. Vsaka obstoječa "
+"in prihodnja vsebina, ki je avtorska v izbranem jeziku, bo samodejno "
+"kopirana v tega."
+
+msgid ""
+"<{}> tag is not allowed. Strings can only contain standard HTML inline tags "
+"(such as <b>, <a>)"
+msgstr ""
+"Oznaka <{}> ni dovoljena. Nizi lahko vsebujejo samo standardne oznake HTML v "
+"vrstici (kot so <b>, <a>)"
+
+msgid ""
+"Strings cannot have any HTML tags with attributes (except for 'id' in <a> "
+"tags)"
+msgstr "Nizi ne smejo imeti oznak HTML z atributi (razen 'id' <a> v oznakah)"
+
+msgid "Unrecognised id found in an <a> tag: {}"
+msgstr "V oznaki <a> je bil najden neprepoznan ID: {}"
+
+msgid "Enable"
+msgstr "Omogoči"
+
+#, python-format
+msgid "Convert to alias %(title)s"
+msgstr "Pretvori v vzdevek %(title)s"
+
+msgid "Convert to alias"
+msgstr "Pretvori v vzdevek"
+
+#, python-format
+msgid ""
+"Are you sure you want to convert this page into an alias? This will "
+"overwrite the content of the page with the content of "
+"'%(source_page_title)s' (%(source_page_locale)s)"
+msgstr ""
+"Ste prepričani, da želite to stran pretvoriti v vzdevek? To bo vsebino "
+"strani prepisalo z vsebino '%(source_page_title)s' (%(source_page_locale)s)"
+
+msgid "Yes, convert it"
+msgstr "Da, pretvori ga"
+
+msgid "No, leave it as a page"
+msgstr "Ne, pustite to kot stran"
+
+#, python-format
+msgid ""
+"This page hasn't been translated yet. It is mirroring the <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">%(original_locale)s "
+"page</a>."
+msgstr ""
+"Ta stran še ni bila prevedena in zrcali <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">%(original_locale)s "
+"stran</a>."
+
+msgid "Translate this page"
+msgstr "Prevedi to stran"
+
+#, python-format
+msgid "Translation of %(instance)s into %(locale)s"
+msgstr "Prevod od %(instance)s v%(locale)s"
+
+msgid "Translations"
+msgstr "Prevodi"
+
+#, python-format
+msgid "Editing %(object_type)s %(title)s"
+msgstr "Urejanje %(object_type)s %(title)s"
+
+msgid "Submit"
+msgstr "Pošlji"
+
+msgid "Go back"
+msgstr "Pojdi nazaj"
+
+msgid "Content type"
+msgstr "Vrsta vsebine"
+
+msgid "Source"
+msgstr "Vir"
+
+msgid "Target"
+msgstr "Tarča"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "No translations found."
+msgstr "Prevodi niso bili najdeni"
+
+msgid "Why would I sync my page?"
+msgstr "Zakaj bi sinhroniziral svojo stran?"
+
+msgid ""
+"Changes are not automatically applied between translated pages. Syncing will "
+"add new content for translation and remove deleted content."
+msgstr ""
+"Spremembe se med prevedenimi stranmi ne prenašajo samodejno. Sinhronizacija "
+"dodaja nove vsebine za prevod in odstranjuje izbrisane."
+
+#, python-format
+msgid ""
+"The last sync date was %(last_sync_date)s. You are about to sync the "
+"following:"
+msgstr ""
+"Datum zadnje sinhronizacije je bil %(last_sync_date)s. Sinhronizirali boste "
+"naslednje:"
+
+msgid "Page '{}' has been converted into an alias."
+msgstr "Stran '{}' je bila pretvorjena v vzdevek."
+
+msgid "Content"
+msgstr "Vsebina"
+
+#, python-brace-format
+msgid ""
+"New validation errors were found when publishing '{object}' in {locale}. "
+"Please fix them or click publish again to ignore these translations for now."
+msgstr ""
+"Pri objavi '{object}' v {locale} so bile najdene nove napake pri "
+"preverjanju. Prosimo, popravite jih ali znova kliknite Objavi, da za zdaj "
+"prezrete te prevode."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale} with missing translations - see below."
+msgstr ""
+"Objavljen '{object}' v {locale} z manjkajočimi prevodi - glejte spodaj."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale}."
+msgstr "Objavljen '{object}' v {locale}."
+
+#, python-brace-format
+msgid ""
+"The data model for '{model_name}' has been changed since the last "
+"translation sync. If any new fields have been added recently, these may not "
+"be visible until the next translation sync."
+msgstr ""
+"Podatkovni model za '{model_name}' je bil spremenjen od zadnje "
+"sinhronizacije prevoda. Če so bila nedavno dodana nova polja, ta morda ne "
+"bodo vidna do naslednje sinhronizacije prevoda."
+
+msgid "Translation has been stopped."
+msgstr "Prevajanje je bilo ustavljeno."
+
+msgid "Translation has been restarted."
+msgstr "Prevajanje je bilo znova zagnano."
+
+msgid "Please upload a valid PO file."
+msgstr "Naložite veljavno PO datoteko."
+
+msgid "Cannot import PO file that was created for a different translation."
+msgstr "Datoteke PO, ki je bila ustvarjena za drug prevod, ni mogoče uvoziti."
+
+msgid "Successfully imported translations from PO File."
+msgstr "Prevodi so bili uspešno uvoženi iz datoteke PO."
+
+msgid "Successfully translated with {}."
+msgstr "Uspešno prevedeno z {}."
+
+msgid "There isn't anything left to translate."
+msgstr "Nič več ni za prevesti."
+
+msgid "Source title"
+msgstr "Naslov izvirnika"
+
+msgid "All"
+msgstr "Vse"
+
+msgid "Select all"
+msgstr "Izberi vse"
+
+msgid "Locales"
+msgstr "Območja"
+
+msgid "All child pages will be created."
+msgstr "Vse podrejene strani bodo ustvarjene."
+
+msgid "Include subtree ({} page)"
+msgid_plural "Include subtree ({} pages)"
+msgstr[0] "Vključi poddrevo ({} stran)"
+msgstr[1] "Vključi poddrevo ({} strani)"
+msgstr[2] "Vključi poddrevo ({} strani)"
+msgstr[3] "Vključi poddrevo ({} strani)"
+
+msgid "{} locales"
+msgstr "{} lokalizacij"
+
+msgid "Translate page"
+msgstr "Prevedi stran"
+
+#, python-brace-format
+msgid ""
+"The page '{page_title}' was successfully submitted for translation into "
+"{locales}"
+msgstr "Stran '{page_title}' je bila uspešno poslana v prevajanje v {locales}"
+
+msgid "Publish immediately"
+msgstr "Objavi takoj"
+
+msgid ""
+"This will apply the updates and publish immediately, before any new "
+"translations happen."
+msgstr ""
+"S tem bodo posodobitve uporabljene in objavljene takoj, preden pride do "
+"novih prevodov."
+
+msgid "Update existing translations"
+msgstr "Posodobite obstoječe prevode"
+
+#, python-brace-format
+msgid "Successfully updated translations for '{object}'"
+msgstr "Uspešno posodobljeni prevodi za '{object}'"
+
+msgid "Sync translated pages"
+msgstr "Sinhroniziraj prevedene strani"
+
+#, python-format
+msgid "Translate '%(title)s'"
+msgstr "Prevedite '%(title)s'"
+
+msgid "Sync translated snippets"
+msgstr "Sinhroniziraj prevedene izrezke"
+
+#, python-format
+msgid "Sync translations of '%(title)s'"
+msgstr "Sinhroniziraj prevod  '%(title)s'"
+
+msgid "Convert to alias page"
+msgstr "Pretvori v vzdevek strani"
+
+msgid "Convert page to alias"
+msgstr "Pretvori stran v vzdevek"
+
+#, python-format
+msgid ""
+"Converted page '%(title)s' to an alias of the translation source page "
+"'%(source_title)s'"
+msgstr ""
+"Pretvorjena stran '%(title)s' v vzdevek izvorne strani prevoda "
+"'%(source_title)s'"
+
+msgid "Converted page to an alias of the translation source page"
+msgstr "Stran pretvorjena v vzdevek izvorne strani prevoda"

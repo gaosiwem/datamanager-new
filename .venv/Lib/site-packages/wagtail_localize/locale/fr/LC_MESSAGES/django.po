@@ -1,0 +1,330 @@
+#
+# Translators:
+# Karl Hobley <karl@torchbox.com>, 2021
+# Benoît Bar <bar.benoit@gmail.com>, 2021
+# Loic Teixeira, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Loic Teixeira, 2023\n"
+"Language-Team: French (https://app.transifex.com/torchbox/teams/8009/fr/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
+"1000000 == 0 ? 1 : 2;\n"
+
+msgid "Disable"
+msgstr "Désactiver"
+
+msgid "Dummy translator"
+msgstr "Traducteur factice"
+
+msgid "Translate"
+msgstr "Traduire"
+
+#, python-format
+msgid "Sync translated %(model_name)s"
+msgstr "Synchroniser le/la %(model_name)s traduit(e)"
+
+msgid "Start Synced translation"
+msgstr "Commencer la synchronisation des traductions"
+
+#, python-brace-format
+msgid "Translate {model_name}"
+msgstr "Traduire {model_name}"
+
+#, python-brace-format
+msgid ""
+"The {model_name} '{object}' was successfully submitted for translation into "
+"{locales}"
+msgstr ""
+"Le {model_name} « {object} » a été soumis avec succès pour traduction en "
+"{locales}"
+
+msgid "Up to date"
+msgstr "À jour"
+
+msgid "Waiting for translations"
+msgstr "En attente de traduction"
+
+msgid "Manual"
+msgstr "Manuel"
+
+msgid "Machine"
+msgstr "Traduction automatique"
+
+#, python-brace-format
+msgid "Translated with {tool_name} on {date}"
+msgstr "Traduit avec {tool_name} le {date}"
+
+#, python-brace-format
+msgid "Translated manually on {date}"
+msgstr "Traduit manuellement le {date}"
+
+#, python-brace-format
+msgid "Machine translated on {date}"
+msgstr "Traduit automatiquement le {date}"
+
+msgid "This locale cannot be synced into itself."
+msgstr "Cette région ne peut pas être synchronisée avec elle-même."
+
+msgid "Synchronise content from another locale"
+msgstr "Synchroniser le contenu d'une autre région"
+
+msgid ""
+"Choose a locale to synchronise content from. Any existing and future content "
+"authored in the selected locale will be automatically copied to this one."
+msgstr ""
+"Choisissez une région à partir de laquelle effectuer la synchronisation. "
+"Tout contenu existant et futur, créé ou modifié dans la région sélectionnée "
+"sera automatiquement copié vers cette région."
+
+msgid ""
+"<{}> tag is not allowed. Strings can only contain standard HTML inline tags "
+"(such as <b>, <a>)"
+msgstr ""
+"La balise <{}> n'est pas autorisée. Les chaînes de caractères ne peuvent "
+"contenir que des balises de niveau ligne (comme <b> ou <a>)"
+
+msgid ""
+"Strings cannot have any HTML tags with attributes (except for 'id' in <a> "
+"tags)"
+msgstr ""
+"Les chaînes de caractères ne peuvent pas contenir de balises HTML avec des "
+"attributs (sauf 'id' dans la balise <a>)"
+
+msgid "Unrecognised id found in an <a> tag: {}"
+msgstr "ID non reconnu dans la balise <a> : {}"
+
+msgid "Enable"
+msgstr "Activer"
+
+#, python-format
+msgid "Convert to alias %(title)s"
+msgstr "Convertir en alias « %(title)s »"
+
+msgid "Convert to alias"
+msgstr "Convertir en alias"
+
+#, python-format
+msgid ""
+"Are you sure you want to convert this page into an alias? This will "
+"overwrite the content of the page with the content of "
+"'%(source_page_title)s' (%(source_page_locale)s)"
+msgstr ""
+"Êtes-vous sûr(e) de vouloir convertir cette pas en un alias ? Cela va "
+"remplacer le contenu de la page par le contenu de « %(source_page_title)s » "
+"(%(source_page_locale)s)"
+
+msgid "Yes, convert it"
+msgstr "Oui, convertir"
+
+msgid "No, leave it as a page"
+msgstr "Non, conserver en tant que page"
+
+#, python-format
+msgid ""
+"This page hasn't been translated yet. It is mirroring the <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">%(original_locale)s "
+"page</a>."
+msgstr ""
+"Cette page n'a pas encore été traduite. La <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">page en "
+"%(original_locale)s</a> est utilisée."
+
+msgid "Translate this page"
+msgstr "Traduire cette page"
+
+#, python-format
+msgid "Translation of %(instance)s into %(locale)s"
+msgstr "Traduction de %(instance)s en %(locale)s"
+
+msgid "Translations"
+msgstr "Traductions"
+
+#, python-format
+msgid "Editing %(object_type)s %(title)s"
+msgstr "Modification de %(object_type)s «  %(title)s »"
+
+msgid "Submit"
+msgstr "Soumettre"
+
+msgid "Go back"
+msgstr "Retour"
+
+msgid "Content type"
+msgstr "Type de contenu"
+
+msgid "Source"
+msgstr "Source"
+
+msgid "Target"
+msgstr "Cible"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "No translations found."
+msgstr "Aucune traduction trouvée."
+
+msgid "Why would I sync my page?"
+msgstr "Pourquoi voudrais-je que ma page soit synchronisée ?"
+
+msgid ""
+"Changes are not automatically applied between translated pages. Syncing will "
+"add new content for translation and remove deleted content."
+msgstr ""
+"Les modifications ne sont pas automatiquement appliquées entre les pages "
+"traduites. La synchronisation ajoutera le nouveau contenu pour traduction et "
+"enlèvera le contenu supprimé."
+
+#, python-format
+msgid ""
+"The last sync date was %(last_sync_date)s. You are about to sync the "
+"following:"
+msgstr ""
+"La dernière synchronisation a eu lieu le %(last_sync_date)s. Vous êtes sur "
+"le point de synchroniser les changements suivants :"
+
+msgid "Page '{}' has been converted into an alias."
+msgstr "La page « {} » a été convertie en un alias."
+
+msgid "Content"
+msgstr "Contenu"
+
+#, python-brace-format
+msgid ""
+"New validation errors were found when publishing '{object}' in {locale}. "
+"Please fix them or click publish again to ignore these translations for now."
+msgstr ""
+"De nouvelles erreurs de validations ont été trouvé lors de la publication de "
+"« {object} » en {locale}. Veuillez les corriger ou cliquez à nouveau "
+"« publier » afin d'ignorer ces traductions pour le moment."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale} with missing translations - see below."
+msgstr ""
+"'{object}' a été publié(e) en {locale} avec des traductions manquantes, voir "
+"ci-dessous :"
+
+#, python-brace-format
+msgid "Published '{object}' in {locale}."
+msgstr "« {object} » a été publié(e) en {locale}."
+
+#, python-brace-format
+msgid ""
+"The data model for '{model_name}' has been changed since the last "
+"translation sync. If any new fields have been added recently, these may not "
+"be visible until the next translation sync."
+msgstr ""
+"Les attributs du modèle « {model_name}' » ont changés depuis la dernière "
+"synchronisation. Si des champs ont été rajoutés, ils ne seront visible qu'à "
+"partir de la prochaine synchronisation."
+
+msgid "Translation has been stopped."
+msgstr "La traduction a été arrêtée."
+
+msgid "Translation has been restarted."
+msgstr "La traduction a été recommencée."
+
+msgid "Please upload a valid PO file."
+msgstr "Veuillez transférer un fichier PO valide."
+
+msgid "Cannot import PO file that was created for a different translation."
+msgstr ""
+"Impossible d'importé le fichier PO qui correspond à une traduction "
+"différente."
+
+msgid "Successfully imported translations from PO File."
+msgstr "Les traductions ont été importées depuis le fichier PO avec succès."
+
+msgid "Successfully translated with {}."
+msgstr "Traduction effectuée avec succès avec {}."
+
+msgid "There isn't anything left to translate."
+msgstr "Il n'y a plus rien à traduire."
+
+msgid "Source title"
+msgstr "Titre source"
+
+msgid "All"
+msgstr "Tous"
+
+msgid "Select all"
+msgstr "Tout sélectionner"
+
+msgid "Locales"
+msgstr "Régions"
+
+msgid "All child pages will be created."
+msgstr "Toutes les sous-pages seront crées."
+
+msgid "Include subtree ({} page)"
+msgid_plural "Include subtree ({} pages)"
+msgstr[0] "Inclure le sous-arbre ({} page)"
+msgstr[1] "Inclure le sous-arbre ({} pages)"
+msgstr[2] "Inclure le sous-arbre ({} pages)"
+
+msgid "{} locales"
+msgstr "{} régions"
+
+msgid "Translate page"
+msgstr "Traduire la page"
+
+#, python-brace-format
+msgid ""
+"The page '{page_title}' was successfully submitted for translation into "
+"{locales}"
+msgstr ""
+"La page « {page_title} » a été soumise avec succès pour traduction en "
+"{locales}"
+
+msgid "Publish immediately"
+msgstr "Publier immédiatement"
+
+msgid ""
+"This will apply the updates and publish immediately, before any new "
+"translations happen."
+msgstr ""
+"Ceci appliquera et publiera immédiatement les modifications, avant que les "
+"nouvelles traductions ne soient effectuées."
+
+msgid "Update existing translations"
+msgstr "Mettre à jour les traductions existantes"
+
+#, python-brace-format
+msgid "Successfully updated translations for '{object}'"
+msgstr "Les traductions ont été mises à jour avec succès pour « {object} »"
+
+msgid "Sync translated pages"
+msgstr "Synchroniser les pages traduites"
+
+#, python-format
+msgid "Translate '%(title)s'"
+msgstr "Traduire « %(title)s »"
+
+msgid "Sync translated snippets"
+msgstr "Synchroniser les fragments traduits"
+
+#, python-format
+msgid "Sync translations of '%(title)s'"
+msgstr "Synchroniser les traductions de « %(title)s »"
+
+msgid "Convert to alias page"
+msgstr "Convertir en alias"
+
+msgid "Convert page to alias"
+msgstr "Convertir la page en un alias"
+
+#, python-format
+msgid ""
+"Converted page '%(title)s' to an alias of the translation source page "
+"'%(source_title)s'"
+msgstr ""
+"La page « %(title)s » a été convertie en un alias de traduction de la page "
+"source « %(source_title)s »"
+
+msgid "Converted page to an alias of the translation source page"
+msgstr "La page a été convertie en un alias de traduction de la page source"

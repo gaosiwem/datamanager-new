@@ -1,0 +1,169 @@
+#
+# Translators:
+# Léo <leo@naeka.fr>, 2021
+# Loic Teixeira, 2024
+# Sébastien Corbin <seb.corbin@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Sébastien Corbin <seb.corbin@gmail.com>, 2024\n"
+"Language-Team: French (https://app.transifex.com/torchbox/teams/8009/fr/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
+"1000000 == 0 ? 1 : 2;\n"
+
+msgid "[DELETED]"
+msgstr "[SUPPRIMÉ(E)]"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Apply editor lock"
+msgstr "Ajouter un verrou éditeur"
+
+msgid "Applying editor lock"
+msgstr "Application du verrou d'édition"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Change %s"
+msgstr "Modifier %s"
+
+msgid "Change document"
+msgstr "Changer le document"
+
+msgid "Change image"
+msgstr "Changer l'image"
+
+msgid "Change page"
+msgstr "Changer la page"
+
+msgid "Changed"
+msgstr "Modifié(e)(s)"
+
+msgid "Choose a %s"
+msgstr "Choisir un(e) %s"
+
+msgid "Choose a document"
+msgstr "Choisir un document"
+
+msgid "Choose a page"
+msgstr "Choisir une page"
+
+msgid "Choose an image"
+msgstr "Choisir une image"
+
+msgid "Convert to alias page"
+msgstr "Convertir en alias de page"
+
+msgid "Converting to alias page"
+msgstr "Conversion de la page d'alias"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Download PO file"
+msgstr "Télécharger un fichier PO"
+
+msgid "Download PO file and input translations offline"
+msgstr "Télécharger un fichier PO et effectuer les traductions hors-ligne"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Edit this %s"
+msgstr "Modifier ce/cette %s"
+
+msgid "Edit this document"
+msgstr "Modifier ce document"
+
+msgid "Edit this image"
+msgstr "Modifier cette image"
+
+msgid "Edit this page"
+msgstr "Modifier cette page"
+
+msgid "Fetching %s information..."
+msgstr "Récupération des informations de %s en cours."
+
+msgid "Fetching document information..."
+msgstr "Récupération des informations du document en cours."
+
+msgid "Fetching image information..."
+msgstr "Récupération des informations de l'image en cours."
+
+msgid "Fetching page information..."
+msgstr "Récupération des informations de la page en cours."
+
+msgid "Lock"
+msgstr "Verrouiller"
+
+msgid "Not translated"
+msgstr "Pas traduit"
+
+msgid "Preview"
+msgstr "Prévisualiser"
+
+msgid "Publish in "
+msgstr "Publier dans"
+
+msgid "Publishing..."
+msgstr "Publication..."
+
+msgid "Remove editor lock"
+msgstr "Supprimer un verrou éditeur"
+
+msgid "Removing editor lock"
+msgstr "Suppression du verrou d'édition"
+
+msgid "Revert to %s version"
+msgstr "Revenir à la version %s"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Saving..."
+msgstr "Enregistrement…"
+
+msgid "segments translated"
+msgstr "segments traduits"
+
+msgid "Server error"
+msgstr "Erreur du serveur"
+
+msgid "Stop Synced translation"
+msgstr "Arrêter la synchronisation des traductions"
+
+msgid "Stopping Synced translation"
+msgstr "Arrêt de la synchronisation de traduction"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr ""
+"Il y a des segments non enregistrés. Veuillez les enregistrer ou les annuler "
+"avant de quitter."
+
+msgid "Translate"
+msgstr "Traduire"
+
+msgid "Translate all missing strings with "
+msgstr "Traduire toutes les chaînes manquantes avec "
+
+msgid "Translate with "
+msgstr "Traduire avec "
+
+msgid "Unlock"
+msgstr "Déverrouiller"
+
+msgid "Unpublish"
+msgstr "Dépublier"
+
+msgid "Upload PO file"
+msgstr "Transférer un fichier PO"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Transférer un fichier PO traduit afin de mettre à jour les traductions"
+
+msgid "Uses %s version"
+msgstr "Utiliser la version %s"

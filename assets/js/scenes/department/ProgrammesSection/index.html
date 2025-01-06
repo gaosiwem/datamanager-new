@@ -1,0 +1,63 @@
+{% load define_action %}
+
+
+{% assign ""|add:source_type|add:" "|add:year as source_text %}
+
+{% assign "Learn more about these programmes in the "|add:source_type|add:" as PDF" as pdf_text %}
+
+{% assign "Learn more about these programmes in the "|add:source_type|add:" as Excel" as excel_text %}
+
+{% assign "Dataset Guide for "|add:source_type as guide_text %}
+
+
+<div class="ProgrammesSection" id="programmes">
+    <h3 class="Title Title--section">Spending plans by programme and sub-programme</h3>
+
+    <div class="ProgrammesSection-container">
+        <div class="ProgrammesSection-item">
+            <div class="ProgrammesSection-share u-marginTop10 u-marginBottom15">
+                <div data-component="Share" data-anchor="programmes" data-color="{{ color }}"></div>
+            </div>
+
+            <p class="js-tooltips">A department&#x27;s programmes are the activities that it spends money on during the
+                financial year. Different programmes have different budgets, depending on their objectives and available
+                budgets. More detail on the programmes is available in the
+                department's {{ source_type }} documents.</p>
+
+            <ul class="LinksList">
+                {% if subprogramme_viz_data.get_dataset %}
+                {% include 'components/LinksList/item.html' with prefix="Source" text=source_text
+                url=subprogramme_viz_data.get_dataset.get_url_path type="dataset" %}
+                {% endif %}
+
+                {% if subprogramme_viz_data.get_dataset %}
+                {% include 'components/LinksList/item.html' with text="Download this data for analysis (CSV)"
+                url=subprogramme_viz_data.get_detail_csv_url type="download" %}
+                {% endif %}
+
+                {% include 'components/LinksList/item.html' with text=guide_text url=guide type="guide" %}
+
+                {% include 'components/LinksList/item.html' with text=pdf_text url=pdf type="download" %}
+
+                {% include 'components/LinksList/item.html' with text=excel_text url=excel type="download" %}
+            </ul>
+        </div>
+        <!-- {% if subprogramme_viz_data.get_dataset %} -->
+
+        <!-- {% else %}
+        <div class="Message Message--secondary Missing">Data not available.</div>
+        {% endif %} -->
+        <div class="ProgrammesSection-item ProgrammesSection-item--right">
+            <div class="Page-content">
+                <main>
+                    <div class="powerbi-container">
+                        <iframe class="w-full h-[75vh]"
+                            src="http://5cg2126by0/Vulekamali-Report/powerbi/Spending%20plans%20by%20programme%20and%20sub?rs:embed=true&chromeless=true&filter=budgetportal_enedata/financialYear eq {{ selected_financial_year|slice:':4' }} and budgetportal_enedata/department eq '{{ name }}'"
+                            frameborder="0" allowFullScreen="true"></iframe>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+</div>

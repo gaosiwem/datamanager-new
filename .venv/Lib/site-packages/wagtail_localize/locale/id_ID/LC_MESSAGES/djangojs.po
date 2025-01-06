@@ -1,0 +1,70 @@
+#
+# Translators:
+# Sutrisno Efendi <kangfend@gmail.com>, 2021
+# geek pantura <geekpantura@gmail.com>, 2021
+# Ronggo Radityo <radityo3000@yahoo.com>, 2021
+# Andry Widya Putra UN <andrywidyaputra@gmail.com>, 2021
+# M. Febrian Ramadhana <febrian@ramadhana.me>, 2021
+#
+msgid ""
+msgstr ""
+"Last-Translator: M. Febrian Ramadhana <febrian@ramadhana.me>, 2021\n"
+"Language-Team: Indonesian (Indonesia) (https://app.transifex.com/torchbox/"
+"teams/8009/id_ID/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: id_ID\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Apply editor lock"
+msgstr "Terapkan kunci editor"
+
+msgid "Change image"
+msgstr "Ubah gambar"
+
+msgid "Choose a document"
+msgstr "Pilih Dokumen"
+
+msgid "Choose a page"
+msgstr "Pilih halaman"
+
+msgid "Choose an image"
+msgstr "Pilih sebuah gambar"
+
+msgid "Delete"
+msgstr "Hapus"
+
+msgid "Edit"
+msgstr "Ubah"
+
+msgid "Edit this %s"
+msgstr "Ubah %s ini"
+
+msgid "Edit this document"
+msgstr "Ubah dokumen ini"
+
+msgid "Edit this image"
+msgstr "Ubah gambar ini"
+
+msgid "Edit this page"
+msgstr "Ubah halaman ini"
+
+msgid "Lock"
+msgstr "Kunci"
+
+msgid "Preview"
+msgstr "Pratinjau"
+
+msgid "Publishing..."
+msgstr "Publikasikan...."
+
+msgid "Save"
+msgstr "Simpan"
+
+msgid "Saving..."
+msgstr "Menyimpan..."
+
+msgid "Unlock"
+msgstr "Buka kunci"
+
+msgid "Unpublish"
+msgstr "Batal Publikasi"

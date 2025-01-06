@@ -1,0 +1,30 @@
+#
+# Translators:
+# Luan Nguyen <lihavim@gmail.com>, 2021
+# Vu Pham, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Vu Pham, 2023\n"
+"Language-Team: Vietnamese (https://app.transifex.com/torchbox/teams/8009/"
+"vi/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: vi\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Translate"
+msgstr "Dịch"
+
+msgid "Source"
+msgstr "Nguồn"
+
+msgid "Status"
+msgstr "Trạng thái"
+
+msgid "All"
+msgstr "Tất cả"
+
+msgid "Select all"
+msgstr "Chọn tất cả"

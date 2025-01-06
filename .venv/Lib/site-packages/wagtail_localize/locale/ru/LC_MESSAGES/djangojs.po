@@ -1,0 +1,172 @@
+#
+# Translators:
+# 2a01ec1f91c141c338f53ad8cc23abc6_8deca2d, 2021
+# Mikalai Radchuk <radchuk.m@gmail.com>, 2021
+# Влад <integration.into.society@gmail.com>, 2022
+# sergeybe <sergeybe@gmail.com>, 2024
+# Andrei Satsevich, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Andrei Satsevich, 2024\n"
+"Language-Team: Russian (https://app.transifex.com/torchbox/teams/8009/ru/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+msgid "[DELETED]"
+msgstr "[УДАЛЕНО]"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Apply editor lock"
+msgstr "Применить блокировку редактора"
+
+msgid "Applying editor lock"
+msgstr "Применение блокировки редактора"
+
+msgid "Cancel"
+msgstr "Отменить"
+
+msgid "Change %s"
+msgstr "Изменить %s"
+
+msgid "Change document"
+msgstr "Изменить документ"
+
+msgid "Change image"
+msgstr "Изменить изображение"
+
+msgid "Change page"
+msgstr "Изменить страницу"
+
+msgid "Changed"
+msgstr "Изменено"
+
+msgid "Choose a %s"
+msgstr "Выбрать%s"
+
+msgid "Choose a document"
+msgstr "Выберите документ"
+
+msgid "Choose a page"
+msgstr "Выберите страницу"
+
+msgid "Choose an image"
+msgstr "Выберите изображение"
+
+msgid "Convert to alias page"
+msgstr "Преобразовать в псевдоним страницы"
+
+msgid "Converting to alias page"
+msgstr "Преобразование в псевдоним страницы"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Download PO file"
+msgstr "Загрузить PO файл"
+
+msgid "Download PO file and input translations offline"
+msgstr "Скачать PO-файл и вводить переводы в автономном режиме"
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "Edit this %s"
+msgstr "Править %s"
+
+msgid "Edit this document"
+msgstr "Редактировать этот документ"
+
+msgid "Edit this image"
+msgstr "Редактировать это изображение"
+
+msgid "Edit this page"
+msgstr "Редактировать эту страницу"
+
+msgid "Fetching %s information..."
+msgstr "Получение %s информации"
+
+msgid "Fetching document information..."
+msgstr "Получение информации о документе..."
+
+msgid "Fetching image information..."
+msgstr "Получение информации об изображении..."
+
+msgid "Fetching page information..."
+msgstr "Получение информации о странице..."
+
+msgid "Lock"
+msgstr "Блокировка"
+
+msgid "Not translated"
+msgstr "Не переведено"
+
+msgid "Preview"
+msgstr "Предварительный просмотр"
+
+msgid "Publish in "
+msgstr "Опубликовать в"
+
+msgid "Publishing..."
+msgstr "Публикация..."
+
+msgid "Remove editor lock"
+msgstr "Убрать блокировку редактора"
+
+msgid "Removing editor lock"
+msgstr "Снятие блокировки редактора"
+
+msgid "Revert to %s version"
+msgstr "Вернуться к версии %s"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Saving..."
+msgstr "Сохранение..."
+
+msgid "segments translated"
+msgstr "Переведенные сегменты"
+
+msgid "Server error"
+msgstr "Ошибка сервера"
+
+msgid "Stop Synced translation"
+msgstr "Остановить синхронизацию перевода"
+
+msgid "Stopping Synced translation"
+msgstr "Остановка синхронизированного перевода"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr ""
+"Есть несохраненные сегменты. Пожалуйста, сохраните или отмените их перед "
+"выходом."
+
+msgid "Translate"
+msgstr "Перевести"
+
+msgid "Translate all missing strings with "
+msgstr "Перевести все пропущенные строки с"
+
+msgid "Translate with "
+msgstr "Перевести с"
+
+msgid "Unlock"
+msgstr "Разблокировать"
+
+msgid "Unpublish"
+msgstr "Отменить публикацию"
+
+msgid "Upload PO file"
+msgstr "Загрузить PO файл"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Загрузить переведенный PO файл для отправки переводов"
+
+msgid "Uses %s version"
+msgstr "Используется %s версия"

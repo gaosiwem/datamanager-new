@@ -1,0 +1,322 @@
+#
+# Translators:
+# Martin Sandström <martin@marteinn.se>, 2022
+# Philip Andersen <renegadevi@codeofmagi.net>, 2022
+# Thomas Kunambi <kunambi@gmail.com>, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Thomas Kunambi <kunambi@gmail.com>, 2023\n"
+"Language-Team: Swedish (https://app.transifex.com/torchbox/teams/8009/sv/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: sv\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Disable"
+msgstr "Inaktivera"
+
+msgid "Dummy translator"
+msgstr "Testöversättare"
+
+msgid "Translate"
+msgstr "Översätt"
+
+#, python-format
+msgid "Sync translated %(model_name)s"
+msgstr "Synkronisera översatta %(model_name)s"
+
+msgid "Start Synced translation"
+msgstr "Starta synkroniserad översättning"
+
+#, python-brace-format
+msgid "Translate {model_name}"
+msgstr "Översätt {model_name}"
+
+#, python-brace-format
+msgid ""
+"The {model_name} '{object}' was successfully submitted for translation into "
+"{locales}"
+msgstr ""
+"{model_name} '{object}' lyckades skickas för översättning till {locales}"
+
+msgid "Up to date"
+msgstr "Aktuell"
+
+msgid "Waiting for translations"
+msgstr "Väntar på översättningar"
+
+msgid "Manual"
+msgstr "Manuell"
+
+msgid "Machine"
+msgstr "Maskin"
+
+#, python-brace-format
+msgid "Translated with {tool_name} on {date}"
+msgstr "Översatt med {tool_name} på {date}"
+
+#, python-brace-format
+msgid "Translated manually on {date}"
+msgstr "Manuellt översatt på {date}"
+
+#, python-brace-format
+msgid "Machine translated on {date}"
+msgstr "Maskinöversatt på {date}"
+
+msgid "This locale cannot be synced into itself."
+msgstr "Detta språk kan inte bli synkroniserat till sig själv."
+
+msgid "Synchronise content from another locale"
+msgstr "Synkronisera innehållet från annat språk"
+
+msgid ""
+"Choose a locale to synchronise content from. Any existing and future content "
+"authored in the selected locale will be automatically copied to this one."
+msgstr ""
+"Välj ett språk att synkronisera innehåll från. All existerande och framtida "
+"innehåll skriven i det valda språk kommer automatiskt kopieras till detta."
+
+msgid ""
+"<{}> tag is not allowed. Strings can only contain standard HTML inline tags "
+"(such as <b>, <a>)"
+msgstr ""
+"<{}> tagg är inte tillåten. Strängar får bara innehålla standard HTML "
+"inlöpande taggar (som t.ex. <b>, <a>)"
+
+msgid ""
+"Strings cannot have any HTML tags with attributes (except for 'id' in <a> "
+"tags)"
+msgstr ""
+"Strängar får inte innehålla HTML taggar med attribut (förutom 'id' i <a> "
+"taggar)"
+
+msgid "Unrecognised id found in an <a> tag: {}"
+msgstr "Okänt id hittat i en <a> tagg: {}"
+
+msgid "Enable"
+msgstr "Aktivera"
+
+#, python-format
+msgid "Convert to alias %(title)s"
+msgstr "Konvertera till alias %(title)s"
+
+msgid "Convert to alias"
+msgstr "Konvertera till alias"
+
+#, python-format
+msgid ""
+"Are you sure you want to convert this page into an alias? This will "
+"overwrite the content of the page with the content of "
+"'%(source_page_title)s' (%(source_page_locale)s)"
+msgstr ""
+"Är du säker på att du vill konvertera den här sidan till ett alias? Detta "
+"kommer att skriva över innehållet på sidan med innehållet i "
+"'%(source_page_title)s' (%(source_page_locale)s)"
+
+msgid "Yes, convert it"
+msgstr "Ja, konvertera"
+
+msgid "No, leave it as a page"
+msgstr "Nej, lämna den som en sida"
+
+#, python-format
+msgid ""
+"This page hasn't been translated yet. It is mirroring the <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">%(original_locale)s "
+"page</a>."
+msgstr ""
+"Den här sidan har inte blivit översatt ännu. Den speglar <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">%(original_locale)s "
+"sidan</a>."
+
+msgid "Translate this page"
+msgstr "Översätt den här sidan"
+
+#, python-format
+msgid "Translation of %(instance)s into %(locale)s"
+msgstr "Översättning av %(instance)s till %(locale)s"
+
+msgid "Translations"
+msgstr "Översättningar"
+
+#, python-format
+msgid "Editing %(object_type)s %(title)s"
+msgstr "Editerar %(object_type)s %(title)s"
+
+msgid "Submit"
+msgstr "Skicka"
+
+msgid "Go back"
+msgstr "Gå tillbaka"
+
+msgid "Content type"
+msgstr "Innehållstyp"
+
+msgid "Source"
+msgstr "Källa"
+
+msgid "Target"
+msgstr "Mål"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "No translations found."
+msgstr "Inga översättningar funna."
+
+msgid "Why would I sync my page?"
+msgstr "Varför borde jag synkronisera min sida?"
+
+msgid ""
+"Changes are not automatically applied between translated pages. Syncing will "
+"add new content for translation and remove deleted content."
+msgstr ""
+"Ändringar är inte automatiskt applicerade mellan översatta sidor. "
+"Synkronisering kommer lägga till nytt innehåll för översättning och ta bort "
+"raderat innehåll."
+
+#, python-format
+msgid ""
+"The last sync date was %(last_sync_date)s. You are about to sync the "
+"following:"
+msgstr ""
+"Senaste synkroniseringsdatum var %(last_sync_date)s. Du kommer att "
+"synkronisera följande:"
+
+msgid "Page '{}' has been converted into an alias."
+msgstr "Sidan '{}' har blivit konverterad till ett alias."
+
+msgid "Content"
+msgstr "Innehåll"
+
+#, python-brace-format
+msgid ""
+"New validation errors were found when publishing '{object}' in {locale}. "
+"Please fix them or click publish again to ignore these translations for now."
+msgstr ""
+"Nya valideringsproblem hittades vid publicering av '{object}' på {locale}. "
+"Vänliga fixa dem eller klicka publicera igen för att ignorera "
+"översättningarna nu."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale} with missing translations - see below."
+msgstr ""
+"Publicerade '{object}' på {locale} med saknade översättningar - se nedan."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale}."
+msgstr "Publicerade '{object}' på {locale}."
+
+#, python-brace-format
+msgid ""
+"The data model for '{model_name}' has been changed since the last "
+"translation sync. If any new fields have been added recently, these may not "
+"be visible until the next translation sync."
+msgstr ""
+"Datamodellen för '{model_name}' har ändrats sedan den senaste "
+"översättningsynkroniseringen. Om nya fält har lagts till nyligen, kommer de "
+"ev. inte synas förrän nästa överssättningsynkronisering."
+
+msgid "Translation has been stopped."
+msgstr "Översättning har stoppats."
+
+msgid "Translation has been restarted."
+msgstr "Översättning har omstartats."
+
+msgid "Please upload a valid PO file."
+msgstr "Vänligen ladda upp en giltig PO-fil."
+
+msgid "Cannot import PO file that was created for a different translation."
+msgstr ""
+"Kan inte importera en PO-fil som har skapats för en annan översättning."
+
+msgid "Successfully imported translations from PO File."
+msgstr "Lyckades importera översättning från PO-fil."
+
+msgid "Successfully translated with {}."
+msgstr "Lyckades översätta med {}."
+
+msgid "There isn't anything left to translate."
+msgstr "Det finns ingenting kvar att översätta."
+
+msgid "Source title"
+msgstr "Källtitel"
+
+msgid "All"
+msgstr "Alla"
+
+msgid "Select all"
+msgstr "Markera allt"
+
+msgid "Locales"
+msgstr "Språk"
+
+msgid "All child pages will be created."
+msgstr "Alla undersidor kommer bli skapade."
+
+msgid "Include subtree ({} page)"
+msgid_plural "Include subtree ({} pages)"
+msgstr[0] "Inkludera underträd ({} sida)"
+msgstr[1] "Inkludera underträd ({} sidor)"
+
+msgid "{} locales"
+msgstr "{} språk"
+
+msgid "Translate page"
+msgstr "Översätt sida"
+
+#, python-brace-format
+msgid ""
+"The page '{page_title}' was successfully submitted for translation into "
+"{locales}"
+msgstr "Sidan '{page_title}' lyckades skickas för översättning till {locales}"
+
+msgid "Publish immediately"
+msgstr "Publicera omgående"
+
+msgid ""
+"This will apply the updates and publish immediately, before any new "
+"translations happen."
+msgstr ""
+"Detta kommer tillämpa uppdateringar och publicera omgående, innan nya "
+"översättningar sker."
+
+msgid "Update existing translations"
+msgstr "Uppdatera existerande översättningar"
+
+#, python-brace-format
+msgid "Successfully updated translations for '{object}'"
+msgstr "Lyckades uppdatera översättningar för '{object}'"
+
+msgid "Sync translated pages"
+msgstr "Synkronisera översatta sidor"
+
+#, python-format
+msgid "Translate '%(title)s'"
+msgstr "Översätt '%(title)s'"
+
+msgid "Sync translated snippets"
+msgstr "Synkronisera översatta fragment"
+
+#, python-format
+msgid "Sync translations of '%(title)s'"
+msgstr "Synkronisera översättningar av '%(title)s'"
+
+msgid "Convert to alias page"
+msgstr "Konvertera till en alias-sida"
+
+msgid "Convert page to alias"
+msgstr "Konvertera sida alias"
+
+#, python-format
+msgid ""
+"Converted page '%(title)s' to an alias of the translation source page "
+"'%(source_title)s'"
+msgstr ""
+"Konverterade sidan '%(title)s' till ett alias med av översättningskällsidan "
+"'%(source_title)s'"
+
+msgid "Converted page to an alias of the translation source page"
+msgstr "Konverterade sidan till ett alias av översättningskällsidan"

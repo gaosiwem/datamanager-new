@@ -1,0 +1,23 @@
+#
+# Translators:
+# Cihad GÜNDOĞDU <cihadgundogdu@gmail.com>, 2021
+# Halim Turan <halim_turan_61@hotmail.com>, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Halim Turan <halim_turan_61@hotmail.com>, 2023\n"
+"Language-Team: Turkish (https://app.transifex.com/torchbox/teams/8009/tr/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Status"
+msgstr "Durum"
+
+msgid "Content"
+msgstr "İçerik"
+
+msgid "All"
+msgstr "Hepsi"

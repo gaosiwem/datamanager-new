@@ -1,0 +1,169 @@
+#
+# Translators:
+# UP, 2021
+# Mitja Pagon <mitja.pagon@inueni.com>, 2024
+# Andrej Marsetič, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Andrej Marsetič, 2024\n"
+"Language-Team: Slovenian (https://app.transifex.com/torchbox/teams/8009/"
+"sl/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: sl\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
+"n%100==4 ? 2 : 3);\n"
+
+msgid "[DELETED]"
+msgstr "[IZBRISANO]"
+
+msgid "Actions"
+msgstr "Dejanja"
+
+msgid "Apply editor lock"
+msgstr "Uporabi zaklepanje urejevalnika"
+
+msgid "Applying editor lock"
+msgstr "Uporaba zaklepa urejevalnika"
+
+msgid "Cancel"
+msgstr "Prekliči"
+
+msgid "Change %s"
+msgstr "Spremeni %s"
+
+msgid "Change document"
+msgstr "Spremeni dokument"
+
+msgid "Change image"
+msgstr "Spremeni sliko"
+
+msgid "Change page"
+msgstr "Spremeni stran"
+
+msgid "Changed"
+msgstr "Spremenjeno"
+
+msgid "Choose a %s"
+msgstr "Izberite %s"
+
+msgid "Choose a document"
+msgstr "Izberite dokument"
+
+msgid "Choose a page"
+msgstr "Izberite stran"
+
+msgid "Choose an image"
+msgstr "Izberi sliko"
+
+msgid "Convert to alias page"
+msgstr "Pretvori v vzdevek strani"
+
+msgid "Converting to alias page"
+msgstr "Pretvarjanje v stran z vzdevkom"
+
+msgid "Delete"
+msgstr "Izbriši"
+
+msgid "Download PO file"
+msgstr "Prenesi PO datoteko"
+
+msgid "Download PO file and input translations offline"
+msgstr "Prenesite datoteko PO in vnesite prevode brez povezave"
+
+msgid "Edit"
+msgstr "Uredi"
+
+msgid "Edit this %s"
+msgstr "Uredi %s"
+
+msgid "Edit this document"
+msgstr "Uredi dokument"
+
+msgid "Edit this image"
+msgstr "Uredi sliko"
+
+msgid "Edit this page"
+msgstr "Uredi stran"
+
+msgid "Fetching %s information..."
+msgstr "Pridobivanje podatkov %s ..."
+
+msgid "Fetching document information..."
+msgstr "Pridobivanje informacij o dokumentu ..."
+
+msgid "Fetching image information..."
+msgstr "Pridobivanje informacij o sliki ..."
+
+msgid "Fetching page information..."
+msgstr "Pridobivanje informacij o strani ..."
+
+msgid "Lock"
+msgstr "Zakleni"
+
+msgid "Not translated"
+msgstr "Ni prevedeno"
+
+msgid "Preview"
+msgstr "Predogled"
+
+msgid "Publish in "
+msgstr "Objavi v "
+
+msgid "Publishing..."
+msgstr "Objava..."
+
+msgid "Remove editor lock"
+msgstr "Odstranite zaklep urejevalnika"
+
+msgid "Removing editor lock"
+msgstr "Odstranitev ključavnice urejevalnika"
+
+msgid "Revert to %s version"
+msgstr "Povrni na različico %s"
+
+msgid "Save"
+msgstr "Shrani"
+
+msgid "Saving..."
+msgstr "Shranjevanje..."
+
+msgid "segments translated"
+msgstr "segmenti prevedeni"
+
+msgid "Server error"
+msgstr "Napaka strežnika"
+
+msgid "Stop Synced translation"
+msgstr "Ustavi sinhroniziran prevod"
+
+msgid "Stopping Synced translation"
+msgstr "Ustavitev sinhroniziranega prevajanja"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr ""
+"Obstajajo neshranjeni segmenti. Pred odhodom jih shranite ali prekličite."
+
+msgid "Translate"
+msgstr "Prevedi"
+
+msgid "Translate all missing strings with "
+msgstr "prevedite vse manjkajoče nize z"
+
+msgid "Translate with "
+msgstr "Prevedi z"
+
+msgid "Unlock"
+msgstr "Odkleni"
+
+msgid "Unpublish"
+msgstr "Umakni iz objave"
+
+msgid "Upload PO file"
+msgstr "Naložite PO datoteko"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Naložite prevedeno datoteko PO, da objavite prevode"
+
+msgid "Uses %s version"
+msgstr "Uporabi %s različico"

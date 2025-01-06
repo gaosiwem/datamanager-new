@@ -1,0 +1,62 @@
+#
+# Translators:
+# Martin Janšto <mato@jansto.sk>, 2021
+# dellax <michalnebbia@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: dellax <michalnebbia@gmail.com>, 2024\n"
+"Language-Team: Slovak (Slovakia) (https://app.transifex.com/torchbox/"
+"teams/8009/sk_SK/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: sk_SK\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n == 1 ? 0 : n % 1 == 0 && n "
+">= 2 && n <= 4 ? 1 : n % 1 != 0 ? 2: 3);\n"
+
+msgid "Actions"
+msgstr "Akcie"
+
+msgid "Choose a document"
+msgstr "Zvoliť dokument"
+
+msgid "Choose a page"
+msgstr "Zvoliť stránku"
+
+msgid "Choose an image"
+msgstr "Vybrať obrázok"
+
+msgid "Delete"
+msgstr "Vymazať"
+
+msgid "Edit"
+msgstr "Upraviť"
+
+msgid "Edit this %s"
+msgstr "Upraviť toto %s"
+
+msgid "Edit this document"
+msgstr "Upraviť tento dokument"
+
+msgid "Edit this image"
+msgstr "Upraviť tento obrázok"
+
+msgid "Edit this page"
+msgstr "Upraviť túto stránku"
+
+msgid "Lock"
+msgstr "Zamknúť"
+
+msgid "Preview"
+msgstr "Náhľad"
+
+msgid "Publishing..."
+msgstr "Publikujem..."
+
+msgid "Save"
+msgstr "Uložiť"
+
+msgid "Saving..."
+msgstr "Ukladám..."
+
+msgid "Unpublish"
+msgstr "Odpublikovať"

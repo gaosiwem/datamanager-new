@@ -1,0 +1,17 @@
+{% extends "modeladmin/edit.html" %}
+{% load i18n wagtailadmin_tags %}
+
+{% block header %}
+    {% include "modeladmin/includes/header_with_history.html" with title=view.get_page_title subtitle=view.get_page_subtitle icon=view.header_icon tabbed=1 merged=1 latest_log_entry=latest_log_entry history_url=history_url %}
+{% endblock %}
+
+{% block more_action_items %}
+    {{ block.super }}
+
+    {% if user_can_delete and translation %}
+        <form method="POST">
+            <input type="hidden" name="localize-restart-translation">
+            <button class="button">{% trans "Start Synced translation" %}</button>
+        </form>
+    {% endif %}
+{% endblock %}

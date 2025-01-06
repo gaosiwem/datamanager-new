@@ -1,0 +1,134 @@
+#
+# Translators:
+# Aarni Koskela, 2021
+# Glen Somerville <glen.somerville@gmail.com>, 2021
+# Jiri Grönroos <jiri.gronroos@iki.fi>, 2022
+# Valter Maasalo <vmaasalo@gmail.com>, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Valter Maasalo <vmaasalo@gmail.com>, 2023\n"
+"Language-Team: Finnish (https://app.transifex.com/torchbox/teams/8009/fi/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fi\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Disable"
+msgstr "Poista käytöstä"
+
+msgid "Translate"
+msgstr "Käännä"
+
+#, python-brace-format
+msgid "Translate {model_name}"
+msgstr "Käännä {model_name}"
+
+msgid "Up to date"
+msgstr "Ajan tasalla"
+
+msgid "Waiting for translations"
+msgstr "Odottaa käännöksiä"
+
+msgid "Manual"
+msgstr "Manuaalinen"
+
+msgid "Machine"
+msgstr "Kone"
+
+#, python-brace-format
+msgid "Translated manually on {date}"
+msgstr "Käännetty manuaalisesti {date}"
+
+#, python-brace-format
+msgid "Machine translated on {date}"
+msgstr "Käännetty koneellisesti {date}"
+
+msgid "Enable"
+msgstr "Ota käyttöön"
+
+msgid "Yes, convert it"
+msgstr "Kyllä, muunna se"
+
+msgid "Translate this page"
+msgstr "Käännä tämä sivu"
+
+msgid "Translations"
+msgstr "Käännökset"
+
+msgid "Submit"
+msgstr "Lähetä"
+
+msgid "Go back"
+msgstr "Siirry takaisin"
+
+msgid "Content type"
+msgstr "Sisällön tyyppi"
+
+msgid "Source"
+msgstr "Lähde"
+
+msgid "Target"
+msgstr "Kohde"
+
+msgid "Status"
+msgstr "Tila"
+
+msgid "No translations found."
+msgstr "Käännöksiä ei löytynyt."
+
+msgid "Why would I sync my page?"
+msgstr "Miksi synkronoisin sivuni?"
+
+msgid "Content"
+msgstr "Sisältö"
+
+msgid "Translation has been stopped."
+msgstr "Käännös on lopetettu."
+
+msgid "Translation has been restarted."
+msgstr "Käännös on käynnistetty uudelleen."
+
+msgid "Please upload a valid PO file."
+msgstr "Lähetä kelvollinen PO-tiedosto."
+
+msgid "Successfully imported translations from PO File."
+msgstr "Käännökset tuotiin onnistuneesti PO-tiedostosta."
+
+msgid "There isn't anything left to translate."
+msgstr "Mitään käännettävää ei ole enää jäljellä."
+
+msgid "All"
+msgstr "Kaikki"
+
+msgid "Select all"
+msgstr "Valitse kaikki"
+
+msgid "Locales"
+msgstr "Maa-asetustot"
+
+msgid "All child pages will be created."
+msgstr "Kaikki lapsisivut luodaan."
+
+msgid "{} locales"
+msgstr "{} maa-asetustoa"
+
+msgid "Translate page"
+msgstr "Käännä sivu"
+
+msgid "Publish immediately"
+msgstr "Julkaise välittömästi"
+
+msgid "Update existing translations"
+msgstr "Päivitä olemassa olevat käännökset"
+
+msgid "Sync translated pages"
+msgstr "Synkronoi käännetyt sivut"
+
+#, python-format
+msgid "Translate '%(title)s'"
+msgstr "Käännä '%(title)s'"
+
+msgid "Convert to alias page"
+msgstr "Muunna aliassivuksi"

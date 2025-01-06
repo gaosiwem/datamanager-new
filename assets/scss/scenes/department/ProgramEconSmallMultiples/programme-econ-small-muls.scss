@@ -1,0 +1,47 @@
+.ProgramEconSmallMultiplesSection-container {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+
+  @media screen and (min-width: 1000px) {
+    flex-flow: row wrap;
+  }
+}
+
+.ProgramEconSmallMultiplesSection-item {
+  min-width: 0;
+  padding-bottom: 1rem;
+
+  @media screen and (min-width: 1000px) {
+    width: 43%;
+    padding-right: 1rem;
+
+    &--right {
+      width: 50%;
+    }
+  }
+  @media screen and (max-width: 1000px) {
+      &--right {
+          width: calc(100% + 3rem);
+          margin-left: -1.5rem;
+    }
+  }
+
+  &--right .Card {
+
+    iframe {
+      width: 100%;
+      /* Set initial height, but pym will take over */
+      border: 0px;
+    }
+  }
+
+    .legend {
+      margin-top: -20px;
+    }
+
+}
+
+.ProgramEconSmallMultiplesSection-share {
+  max-width: 250px;
+}

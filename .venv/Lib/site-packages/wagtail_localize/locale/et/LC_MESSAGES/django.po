@@ -1,0 +1,29 @@
+#
+# Translators:
+# Ragnar Rebase <rrebase@gmail.com>, 2021
+# Erlend Eelmets <debcf78e@opayq.com>, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Erlend Eelmets <debcf78e@opayq.com>, 2023\n"
+"Language-Team: Estonian (https://app.transifex.com/torchbox/teams/8009/et/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: et\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Disable"
+msgstr "Keela"
+
+msgid "Enable"
+msgstr "Luba"
+
+msgid "Status"
+msgstr "Staatus"
+
+msgid "Content"
+msgstr "Sisu"
+
+msgid "All"
+msgstr "Kõik"

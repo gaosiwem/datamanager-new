@@ -1,0 +1,29 @@
+#
+# Translators:
+# 石田秀 <ishidashu@gmail.com>, 2021
+# kojikojikojikoji, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: kojikojikojikoji, 2023\n"
+"Language-Team: Japanese (https://app.transifex.com/torchbox/teams/8009/ja/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Yes, convert it"
+msgstr "はい。変換します。"
+
+msgid "Content type"
+msgstr "コンテンツの種類"
+
+msgid "Status"
+msgstr "ステータス"
+
+msgid "Content"
+msgstr "コンテンツ"
+
+msgid "All"
+msgstr "全て"

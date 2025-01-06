@@ -1,0 +1,124 @@
+{% extends 'page-shell.html' %}
+{% load define_action %}
+{% load markdownify %}
+{% block page_content %}
+
+<div class="Page-content">
+  <div class="Page-contentInner">
+    <div class="Section is-invisible">
+      <a href="/">vulekamali</a>
+      <span> / </span>
+      <a href="/datasets">Data and Analysis</a>
+      <span> / </span>
+      <a href="/datasets/{{ category.slug }}">{{ category.title }}</a>
+      <span> {{ title }}</span>
+    </div>
+
+    <h1 class="Page-mainHeading u-marginTop15">{{ title }}</h1>
+
+    <main class="Page-main">
+      {% if intro %}
+        <div class="BasicContent">
+
+          {% if external_resource_page %}
+            <div class="Screenshots">
+              {% for resource in resources %}
+                {% if resource.format == 'PNG' %}
+                  <a href="{{ resource.url }}" target="_blank" class="Screenshots-imageWrap">
+                    <img src="{{ resource.url }}" alt="{{ resource.name }}" class="Screenshots-image">
+                  </a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="BasicContent-title">What is this?</div>
+          {{ intro }}
+
+          {% if key_points %}
+            <div class="BasicContent-title u-marginTop20">Key points</div>
+            {{ key_points | markdownify }}
+          {% endif %}
+
+          {% if importance %}
+            <div class="BasicContent-title u-marginTop20">Why is it important?</div>
+            {{ importance | markdownify }}
+          {% endif %}
+
+          {% if use_for %}
+            <div class="BasicContent-title u-marginTop20">What can it be used for?</div>
+            {{ use_for | markdownify }}
+          {% endif %}
+
+          {% if external_resource_page %}
+            {% if resources %}
+              <div>
+                {% for resource in resources %}
+                  {% if resource.format == 'PNG' %}
+                  {% else %}
+                    <a href="{{ resource.url }}" target="_blank" class="Button is-inline u-marginTop15">{{ resource.name }}</a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+
+        {% endif %}
+        </div>
+      {% endif %}
+
+      {% if category.slug == "frameworks-for-conditional-grants-to-provinces" or category.slug == "frameworks-for-conditional-grants-to-municipalities" %}
+        {% assign resources.0.url as source %}
+        {% include 'scenes/government_dataset/PdfEmbed/index.html' with source=source %}
+      {% endif %}
+
+      {% if usage %}
+        <div class="BasicContent u-marginTop20">
+          <div class="BasicContent-title">How can it be accessed and used?</div>
+          {{ usage | markdownify }}
+        </div>
+      {% endif %}
+
+      {% if not external_resource_page %}
+        {% include 'components/universal/Downloads/index.html' with resources=resources utils="u-marginTop20" %}
+      {% endif %}
+
+      {% if comments_enabled %}
+      <div class="Section u-marginBottom20 u-marginTop20">
+        <h2 class="Section-title">Discuss this dataset with others</h2>
+        <div data-enhance-component="Comments" data-url="https://vulekamali.gov.za{{ url_path }}">
+          <div id="discourse-comments"></div>
+        </div>
+      </div>
+      {% endif %}
+
+    </main>
+    <aside class="Page-sidebar">
+
+      <div class="Section u-marginBottom20">
+        <h2 class="Section-title">Share this page:</h2>
+        <div data-component="Share"></div>
+      </div>
+
+      {% if guide %}
+      <div class="Section is-bevel">
+        <div class="Section-card">
+          <h2 class="Section-title">Learn more</h2>
+          {% if guide.external_url %}
+            <p>{{ guide.external_url_description }}</p>
+            <a href="{{ guide.external_url }}" class="Button">
+              Dataset guide
+            </a>
+          {% else %}
+            <p>{{ guide.guide_page.search_description }}</p>
+            <a href="{{ guide.guide_page.url }}" class="Button">
+              Dataset guide
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+    </aside>
+  </div>
+</div>
+{% endblock %}

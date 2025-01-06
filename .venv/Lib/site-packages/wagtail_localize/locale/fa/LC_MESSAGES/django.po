@@ -1,0 +1,30 @@
+#
+# Translators:
+# pyzenberg <pyzenberg@gmail.com>, 2021
+# Amir Mahmoodi, 2023
+# Ehsan jahanbakhsh <man207ej@gmail.com>, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Ehsan jahanbakhsh <man207ej@gmail.com>, 2023\n"
+"Language-Team: Persian (https://app.transifex.com/torchbox/teams/8009/fa/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fa\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Go back"
+msgstr "بازگشت به عقب"
+
+msgid "Status"
+msgstr "وضعیت"
+
+msgid "Content"
+msgstr "محتوا"
+
+msgid "All"
+msgstr "همه"
+
+msgid "Select all"
+msgstr "انتخاب همه"

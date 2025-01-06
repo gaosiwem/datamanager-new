@@ -1,0 +1,20 @@
+#
+# Translators:
+# Orangle Liu <orangleliu@gmail.com>, 2021
+# serafeim <serafeim@torchbox.com>, 2021
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: serafeim <serafeim@torchbox.com>, 2021\n"
+"Language-Team: Chinese (https://app.transifex.com/torchbox/teams/8009/zh/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Content"
+msgstr "内容"

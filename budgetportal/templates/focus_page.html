@@ -1,0 +1,13 @@
+{% extends 'page-shell.html' %}
+{% load define_action %}
+{% load staticfiles %}
+{% block page_content %}
+
+<div
+  data-webapp="focus-areas-preview"
+  data-year="{{ latest_year }}"
+  data-focus-area="{{ focus_area_slug }}"
+  >
+</div>
+
+{% endblock %}

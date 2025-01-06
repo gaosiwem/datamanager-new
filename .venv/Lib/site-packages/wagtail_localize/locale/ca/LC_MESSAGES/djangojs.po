@@ -1,0 +1,166 @@
+#
+# Translators:
+# Antoni Aloy <aaloy@apsl.net>, 2021
+# David Llop, 2021
+# Roger Pons <rogerpons@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Roger Pons <rogerpons@gmail.com>, 2024\n"
+"Language-Team: Catalan (https://app.transifex.com/torchbox/teams/8009/ca/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ca\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "[DELETED]"
+msgstr "[ESBORRAT]"
+
+msgid "Actions"
+msgstr "Accions"
+
+msgid "Apply editor lock"
+msgstr "Aplica bloqueig d'editor"
+
+msgid "Applying editor lock"
+msgstr "Aplicant bloqueig d'editor"
+
+msgid "Cancel"
+msgstr "Cancel·lar"
+
+msgid "Change %s"
+msgstr "Canviar %s"
+
+msgid "Change document"
+msgstr "Canviar document"
+
+msgid "Change image"
+msgstr "Substituir imatge"
+
+msgid "Change page"
+msgstr "Canviar pàgina"
+
+msgid "Changed"
+msgstr "Canviat/da"
+
+msgid "Choose a %s"
+msgstr "Triar un/a %s"
+
+msgid "Choose a document"
+msgstr "Escull un document"
+
+msgid "Choose a page"
+msgstr "Escull una pàgina"
+
+msgid "Choose an image"
+msgstr "Escull una imatge"
+
+msgid "Convert to alias page"
+msgstr "Convertir a àlies de pàgina"
+
+msgid "Converting to alias page"
+msgstr "Convertint a pàgina àlies"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+msgid "Download PO file"
+msgstr "Baixar fitxer PO"
+
+msgid "Download PO file and input translations offline"
+msgstr "Baixar fitxer PO i introduir traduccions fora de línia"
+
+msgid "Edit"
+msgstr "Editar"
+
+msgid "Edit this %s"
+msgstr "Editar aquest %s"
+
+msgid "Edit this document"
+msgstr "Editar aquest document"
+
+msgid "Edit this image"
+msgstr "Editar aquesta imatge"
+
+msgid "Edit this page"
+msgstr "Editar aquesta plana"
+
+msgid "Fetching %s information..."
+msgstr "Recol·lectant %s informació..."
+
+msgid "Fetching document information..."
+msgstr "Recol·lectant informació del document..."
+
+msgid "Fetching image information..."
+msgstr "Recol·lectant informació de la imatge..."
+
+msgid "Fetching page information..."
+msgstr "Recol·lectant informació de la pàgina..."
+
+msgid "Lock"
+msgstr "Bloqueja"
+
+msgid "Not translated"
+msgstr "Sense traducció"
+
+msgid "Preview"
+msgstr "Previsualització"
+
+msgid "Publish in "
+msgstr "Publicar en "
+
+msgid "Publishing..."
+msgstr "Publicant..."
+
+msgid "Remove editor lock"
+msgstr "Esborrar bloqueig d'editor"
+
+msgid "Removing editor lock"
+msgstr "Eliminant bloqueig d'editor"
+
+msgid "Revert to %s version"
+msgstr "Revertir a la versió %s"
+
+msgid "Save"
+msgstr "Desar"
+
+msgid "Saving..."
+msgstr "Desant..."
+
+msgid "segments translated"
+msgstr "segments traduïts"
+
+msgid "Server error"
+msgstr "Error de servidor"
+
+msgid "Stop Synced translation"
+msgstr "Aturar Traducció sincronitzada"
+
+msgid "Stopping Synced translation"
+msgstr "Aturant Traducció sincronitzada"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr "Hi ha segments no desats. Deseu-los o cancel·leu-los abans de sortir."
+
+msgid "Translate"
+msgstr "Traduir"
+
+msgid "Translate all missing strings with "
+msgstr "Traduir totes les cadenes de caràcters que falten amb"
+
+msgid "Translate with "
+msgstr "Traduir amb"
+
+msgid "Unlock"
+msgstr "Desbloquejar"
+
+msgid "Unpublish"
+msgstr "Despublicar"
+
+msgid "Upload PO file"
+msgstr "Pujar fitxer PO"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Pujar fitxer PO traduït per enviar les traduccions"
+
+msgid "Uses %s version"
+msgstr "Utilitza la versió %s"

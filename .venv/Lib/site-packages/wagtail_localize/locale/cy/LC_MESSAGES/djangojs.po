@@ -1,0 +1,155 @@
+#
+# Translators:
+# Adam Hughes <adamhughes31@gmail.com>, 2021
+# Philip Crisp, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Philip Crisp, 2024\n"
+"Language-Team: Welsh (https://app.transifex.com/torchbox/teams/8009/cy/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: cy\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != "
+"11) ? 2 : 3;\n"
+
+msgid "[DELETED]"
+msgstr "[WEDI'I DILEU]"
+
+msgid "Actions"
+msgstr "Gweithredoedd"
+
+msgid "Apply editor lock"
+msgstr "Cymhwyso clo golygydd"
+
+msgid "Cancel"
+msgstr "Canslo"
+
+msgid "Change %s"
+msgstr "Newid %s"
+
+msgid "Change document"
+msgstr "Newid ddogfen"
+
+msgid "Change image"
+msgstr "Newid llun"
+
+msgid "Change page"
+msgstr "Newid tudalen"
+
+msgid "Changed"
+msgstr "Wedi'i newid"
+
+msgid "Choose a %s"
+msgstr "Dewisiwch %s"
+
+msgid "Choose a document"
+msgstr "Dewiswch ddogfen"
+
+msgid "Choose a page"
+msgstr "Dewisiwch tudalen"
+
+msgid "Choose an image"
+msgstr "Dewis delwedd"
+
+msgid "Convert to alias page"
+msgstr "Trosi i dudalen arallenw"
+
+msgid "Delete"
+msgstr "Dileu"
+
+msgid "Download PO file"
+msgstr "Lawrlwythwch ffeil PO"
+
+msgid "Download PO file and input translations offline"
+msgstr "Dadlwythwch ffeil PO a mewnbynnu cyfieithiadau all-lein"
+
+msgid "Edit"
+msgstr "Golygu"
+
+msgid "Edit this %s"
+msgstr "Golygu %s"
+
+msgid "Edit this document"
+msgstr "Golygu'r ddogfen hon"
+
+msgid "Edit this image"
+msgstr "Golygu'r llun hon"
+
+msgid "Edit this page"
+msgstr "Golygu tudalen hon"
+
+msgid "Fetching %s information..."
+msgstr "Wrthi'n nôl gwybodaeth %s..."
+
+msgid "Fetching document information..."
+msgstr "Wrthi'n nôl gwybodaeth dogfen..."
+
+msgid "Fetching image information..."
+msgstr "Wrthi'n nôl gwybodaeth llun..."
+
+msgid "Fetching page information..."
+msgstr "Wrthi'n nôl gwybodaeth tudalen..."
+
+msgid "Lock"
+msgstr "Clo"
+
+msgid "Not translated"
+msgstr "Heb ei gyfieithu"
+
+msgid "Preview"
+msgstr "Rhagolwg"
+
+msgid "Publish in "
+msgstr "Cyhoeddi yn "
+
+msgid "Publishing..."
+msgstr "Wrthi'n cyhoeddi..."
+
+msgid "Remove editor lock"
+msgstr "Dileu clo'r golygydd"
+
+msgid "Revert to %s version"
+msgstr "Dychwelyd i fersiwn %s"
+
+msgid "Save"
+msgstr "Cadw"
+
+msgid "Saving..."
+msgstr "Cadw..."
+
+msgid "segments translated"
+msgstr "segmentau wedi'u cyfieithu"
+
+msgid "Server error"
+msgstr "Gwall gweinydd"
+
+msgid "Stop Synced translation"
+msgstr "Stopio cyfieithiad wedi'i syncio"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr ""
+"Mae yna segmentau heb eu cadw. Cofiwch eu cadw neu eu canslo cyn gadael."
+
+msgid "Translate"
+msgstr "Cyfieithu"
+
+msgid "Translate all missing strings with "
+msgstr "Cyfieithwch bob llinyn coll gyda "
+
+msgid "Translate with "
+msgstr "Gyfieithu efo"
+
+msgid "Unlock"
+msgstr "Datgloi"
+
+msgid "Unpublish"
+msgstr "Anghyhoedd"
+
+msgid "Upload PO file"
+msgstr "Llwythwch ffeil PO"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Uwchlwythwch ffeil PO wedi'i chyfieithu i gyflwyno cyfieithiadau"
+
+msgid "Uses %s version"
+msgstr "Yn defnyddio fersiwn %s"

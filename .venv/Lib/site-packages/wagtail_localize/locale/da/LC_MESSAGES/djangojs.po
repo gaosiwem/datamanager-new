@@ -1,0 +1,50 @@
+#
+# Translators:
+# MRostgaard <Mrostgaard@gmail.com>, 2021
+# Asger Sørensen <asger.soerensen@live.com>, 2021
+# Mads Kronborg <madskronborg99@gmail.com>, 2021
+# Benjamin Bach <benjaoming@gmail.com>, 2022
+#
+msgid ""
+msgstr ""
+"Last-Translator: Benjamin Bach <benjaoming@gmail.com>, 2022\n"
+"Language-Team: Danish (https://app.transifex.com/torchbox/teams/8009/da/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: da\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Apply editor lock"
+msgstr "Aktivér redaktør-lås"
+
+msgid "Choose a document"
+msgstr "Vælg et dokument"
+
+msgid "Choose a page"
+msgstr "Vælg en side"
+
+msgid "Delete"
+msgstr "Slet"
+
+msgid "Edit"
+msgstr "Rediger"
+
+msgid "Edit this page"
+msgstr "Rediger denne side"
+
+msgid "Lock"
+msgstr "Lås"
+
+msgid "Preview"
+msgstr "Forhåndsvis"
+
+msgid "Save"
+msgstr "Gem"
+
+msgid "Saving..."
+msgstr "Gemmer..."
+
+msgid "Unlock"
+msgstr "Lås op"
+
+msgid "Unpublish"
+msgstr "Afpublicer"

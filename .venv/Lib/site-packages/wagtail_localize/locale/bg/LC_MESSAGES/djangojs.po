@@ -1,0 +1,40 @@
+#
+# Translators:
+# Lyuboslav  Petrov <petrov.lyuboslav@gmail.com>, 2021
+# Karl Hobley <karl@torchbox.com>, 2021
+#
+msgid ""
+msgstr ""
+"Last-Translator: Karl Hobley <karl@torchbox.com>, 2021\n"
+"Language-Team: Bulgarian (https://app.transifex.com/torchbox/teams/8009/"
+"bg/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: bg\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Choose a document"
+msgstr "Изберете документ"
+
+msgid "Choose a page"
+msgstr "Изберете страница"
+
+msgid "Choose an image"
+msgstr "Изберете изображение"
+
+msgid "Delete"
+msgstr "Изтрий"
+
+msgid "Edit"
+msgstr "Редакция"
+
+msgid "Edit this page"
+msgstr "Редактирайте тази страница"
+
+msgid "Preview"
+msgstr "Преглед"
+
+msgid "Save"
+msgstr "Запази"
+
+msgid "Unpublish"
+msgstr "Отмени публикуването"

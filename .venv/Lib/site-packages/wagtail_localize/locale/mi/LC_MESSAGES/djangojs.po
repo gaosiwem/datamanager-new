@@ -1,0 +1,56 @@
+#
+# Translators:
+# Awatea Randall <awatea@octave.nz>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Awatea Randall <awatea@octave.nz>, 2024\n"
+"Language-Team: Maori (https://app.transifex.com/torchbox/teams/8009/mi/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: mi\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Actions"
+msgstr "Hohenga"
+
+msgid "Apply editor lock"
+msgstr "Purua he raka ētita"
+
+msgid "Choose a document"
+msgstr "Kōhiti he pukapuka"
+
+msgid "Choose a page"
+msgstr "Kōhiti he whārangi"
+
+msgid "Choose an image"
+msgstr "Kōhiti he whakaahua"
+
+msgid "Delete"
+msgstr "Muku"
+
+msgid "Edit"
+msgstr "Whakarerekē"
+
+msgid "Edit this %s"
+msgstr "Whakarerekē i tēnei %s"
+
+msgid "Edit this document"
+msgstr "Whakarerekē i tēnei pukapuka"
+
+msgid "Edit this page"
+msgstr "Whakarerekē i tēnei whārangi"
+
+msgid "Lock"
+msgstr "Raka"
+
+msgid "Preview"
+msgstr "Titiro"
+
+msgid "Save"
+msgstr "Puritia"
+
+msgid "Unlock"
+msgstr "Iriti"
+
+msgid "Unpublish"
+msgstr "whakakore te whakaputa"

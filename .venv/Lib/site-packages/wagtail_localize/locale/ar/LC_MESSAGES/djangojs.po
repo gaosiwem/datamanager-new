@@ -1,0 +1,69 @@
+#
+# Translators:
+# ROGER MICHAEL ASHLEY ALLEN <rogermaallen@gmail.com>, 2021
+# Ahmad Kiswani <kiswani.ahmad@gmail.com>, 2021
+# abdulaziz alfuhigi <abajall@gmail.com>, 2021
+# Ahmed Miske Sidi Med <boutien321@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Ahmed Miske Sidi Med <boutien321@gmail.com>, 2024\n"
+"Language-Team: Arabic (https://app.transifex.com/torchbox/teams/8009/ar/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+msgid "Actions"
+msgstr "النشاطات"
+
+msgid "Change image"
+msgstr "تغير الصورة"
+
+msgid "Choose a document"
+msgstr "احتر وثيقة"
+
+msgid "Choose a page"
+msgstr "اختر صفحة"
+
+msgid "Choose an image"
+msgstr "اختر صورة"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "Edit"
+msgstr "تحرير"
+
+msgid "Edit this %s"
+msgstr "تحرير هذا %s"
+
+msgid "Edit this document"
+msgstr "تحرير هذه الوثيقة"
+
+msgid "Edit this image"
+msgstr "حرر هذه الصورة"
+
+msgid "Edit this page"
+msgstr "حرر هذه الصفحة"
+
+msgid "Lock"
+msgstr "قفل"
+
+msgid "Preview"
+msgstr "نظر مقدم"
+
+msgid "Publishing..."
+msgstr "يتم النشر..."
+
+msgid "Save"
+msgstr "حفظ"
+
+msgid "Saving..."
+msgstr "يتم الحفظ..."
+
+msgid "Unlock"
+msgstr "إزالة القفل"
+
+msgid "Unpublish"
+msgstr "غير منشور"

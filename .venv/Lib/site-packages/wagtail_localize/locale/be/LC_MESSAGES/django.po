@@ -1,0 +1,324 @@
+#
+# Translators:
+# Tatsiana Tsygan <art.tatsiana@gmail.com>, 2023
+# Andrei Satsevich, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Andrei Satsevich, 2023\n"
+"Language-Team: Belarusian (https://app.transifex.com/torchbox/teams/8009/"
+"be/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: be\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+msgid "Disable"
+msgstr "Адключан"
+
+msgid "Dummy translator"
+msgstr "Муляжны перакладчык"
+
+msgid "Translate"
+msgstr "Перавесці"
+
+#, python-format
+msgid "Sync translated %(model_name)s"
+msgstr "Перакладзена %(model_name)s"
+
+msgid "Start Synced translation"
+msgstr "Пачаць сінхранізаваны пераклад"
+
+#, python-brace-format
+msgid "Translate {model_name}"
+msgstr "Перакласці  {model_name}"
+
+#, python-brace-format
+msgid ""
+"The {model_name} '{object}' was successfully submitted for translation into "
+"{locales}"
+msgstr "{model_name} '{object} ' паспяхова адпраўлены на пераклад у {locales}"
+
+msgid "Up to date"
+msgstr "У цяперашні час"
+
+msgid "Waiting for translations"
+msgstr "Чаканне перакладаў"
+
+msgid "Manual"
+msgstr "Ручны"
+
+msgid "Machine"
+msgstr "Машынны"
+
+#, python-brace-format
+msgid "Translated with {tool_name} on {date}"
+msgstr "Перакладзена з дапамогай {tool_name} у {date}"
+
+#, python-brace-format
+msgid "Translated manually on {date}"
+msgstr "Перакладзена ўручную ў {date}"
+
+#, python-brace-format
+msgid "Machine translated on {date}"
+msgstr "Машынны пераклад у {date}"
+
+msgid "This locale cannot be synced into itself."
+msgstr "Гэта лакаль не можа быць сінхранізавана сама з сабой."
+
+msgid "Synchronise content from another locale"
+msgstr "Сінхранізацыя змесціва з іншай лакалі"
+
+msgid ""
+"Choose a locale to synchronise content from. Any existing and future content "
+"authored in the selected locale will be automatically copied to this one."
+msgstr ""
+"Выберыце лакаль для сінхранізацыі змесціва. Усе існуючыя і будучыя "
+"матэрыялы, створаныя ў абранай лакалі, будуць аўтаматычна скапіраваны ў "
+"гэтую лакаль."
+
+msgid ""
+"<{}> tag is not allowed. Strings can only contain standard HTML inline tags "
+"(such as <b>, <a>)"
+msgstr ""
+"< {} > тэг недапушчальны. Радкі могуць утрымліваць толькі стандартныя "
+"убудаваныя тэгі HTML (такія як <b>, <a>)"
+
+msgid ""
+"Strings cannot have any HTML tags with attributes (except for 'id' in <a> "
+"tags)"
+msgstr ""
+"Радкі не могуць мець ніякіх HTML-тэгаў з атрыбутамі (за выключэннем 'id' у "
+"<a>тэгах)"
+
+msgid "Unrecognised id found in an <a> tag: {}"
+msgstr "Нераспазнаны ідэнтыфікатар знойдзены ў <a>тэг: {}"
+
+msgid "Enable"
+msgstr "Уключан"
+
+#, python-format
+msgid "Convert to alias %(title)s"
+msgstr "Канвертаваць у псеўданім %(title)s"
+
+msgid "Convert to alias"
+msgstr "Канвертаваць у псеўданім"
+
+#, python-format
+msgid ""
+"Are you sure you want to convert this page into an alias? This will "
+"overwrite the content of the page with the content of "
+"'%(source_page_title)s' (%(source_page_locale)s)"
+msgstr ""
+"Вы ўпэўнены, што хочаце пераўтварыць гэтую старонку ў псеўданім? Гэта "
+"перазапіша змесціва старонкі змесцівам '%(source_page_title)s' "
+"(%(source_page_locale)s)"
+
+msgid "Yes, convert it"
+msgstr "Так, канвертаваць гэта"
+
+msgid "No, leave it as a page"
+msgstr "Не, пакінуць як старонку"
+
+#, python-format
+msgid ""
+"This page hasn't been translated yet. It is mirroring the <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">%(original_locale)s "
+"page</a>."
+msgstr ""
+"Гэта старонка яшчэ не перакладзена. Гэта люстраное адлюстраванне<a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">%(original_locale)s "
+"старонкі </a>."
+
+msgid "Translate this page"
+msgstr "Перакласці гэтую старонку"
+
+#, python-format
+msgid "Translation of %(instance)s into %(locale)s"
+msgstr "Пераклад %(instance)sу %(locale)s"
+
+msgid "Translations"
+msgstr "Пераклады"
+
+#, python-format
+msgid "Editing %(object_type)s %(title)s"
+msgstr "Рэдагаванне %(object_type)s %(title)s"
+
+msgid "Submit"
+msgstr "Адправіць"
+
+msgid "Go back"
+msgstr "Вярнуцца"
+
+msgid "Content type"
+msgstr "Тып кантэнту"
+
+msgid "Source"
+msgstr "Крыніца"
+
+msgid "Target"
+msgstr "Мэта"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "No translations found."
+msgstr "Пераклады не знойдзены."
+
+msgid "Why would I sync my page?"
+msgstr "Навошта мне сінхранізаваць маю старонку?"
+
+msgid ""
+"Changes are not automatically applied between translated pages. Syncing will "
+"add new content for translation and remove deleted content."
+msgstr ""
+"Змены не прымяняюцца аўтаматычна паміж перакладзенымі старонкамі. Пры "
+"сінхранізацыі дадаецца новы кантэнт для перакладу і выдаляецца аддалены."
+
+#, python-format
+msgid ""
+"The last sync date was %(last_sync_date)s. You are about to sync the "
+"following:"
+msgstr ""
+"Дата апошняй сінхранізацыі была %(last_sync_date)s. Вы збіраецеся "
+"сінхранізаваць наступныя дадзеныя:"
+
+msgid "Page '{}' has been converted into an alias."
+msgstr "Старонка '{}' была канвертавана ў псеўданім."
+
+msgid "Content"
+msgstr "Змест"
+
+#, python-brace-format
+msgid ""
+"New validation errors were found when publishing '{object}' in {locale}. "
+"Please fix them or click publish again to ignore these translations for now."
+msgstr ""
+"Пры публікацыі '{object} ' у {locale} былі выяўлены новыя памылкі праверкі. "
+"Калі ласка, выпраўце іх або націсніце апублікаваць яшчэ раз, каб пакуль "
+"ігнараваць гэтыя пераклады."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale} with missing translations - see below."
+msgstr ""
+"Апублікавана '{object} ' у {locale} з адсутнымі перакладамі - глядзіце ніжэй."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale}."
+msgstr "Апублікавана '{object}' у  {locale}."
+
+#, python-brace-format
+msgid ""
+"The data model for '{model_name}' has been changed since the last "
+"translation sync. If any new fields have been added recently, these may not "
+"be visible until the next translation sync."
+msgstr ""
+"Мадэль дадзеных для '{model_name} ' была зменена з моманту апошняй "
+"сінхранізацыі перакладу. Калі нядаўна былі дададзены новыя палі, яны могуць "
+"быць не бачныя да наступнай сінхранізацыі перакладу."
+
+msgid "Translation has been stopped."
+msgstr "Пераклад быў спынены."
+
+msgid "Translation has been restarted."
+msgstr "Пераклад быў перазапушчаны."
+
+msgid "Please upload a valid PO file."
+msgstr "Калі ласка, загрузіце карэктны PO-файл."
+
+msgid "Cannot import PO file that was created for a different translation."
+msgstr "Немагчыма імпартаваць PO-файл, створаны для іншага перакладу."
+
+msgid "Successfully imported translations from PO File."
+msgstr "Пераклады паспяхова імпартаваныя з PO-файла."
+
+msgid "Successfully translated with {}."
+msgstr "Паспяхова перакладзена з дапамогай {}."
+
+msgid "There isn't anything left to translate."
+msgstr "Перакладаць больш няма чаго."
+
+msgid "Source title"
+msgstr "Загаловак крыніцы"
+
+msgid "All"
+msgstr "Усе"
+
+msgid "Select all"
+msgstr "Выбраць усе"
+
+msgid "Locales"
+msgstr "Лакалізацыі "
+
+msgid "All child pages will be created."
+msgstr "Будуць створаны ўсе даччыныя старонкі."
+
+msgid "Include subtree ({} page)"
+msgid_plural "Include subtree ({} pages)"
+msgstr[0] "Уключаючая дрэва ({} старонку)"
+msgstr[1] "Уключаючая дрэва ({} старонкі)"
+msgstr[2] "Уключаючая дрэва ({} старонкі)"
+msgstr[3] "Уключаючая дрэва ({} старонкі)"
+
+msgid "{} locales"
+msgstr "{} лакалізацыі "
+
+msgid "Translate page"
+msgstr "Перакласці старонку"
+
+#, python-brace-format
+msgid ""
+"The page '{page_title}' was successfully submitted for translation into "
+"{locales}"
+msgstr "Старонка '{page_title} ' паспяхова адпраўлена на пераклад у {locales}"
+
+msgid "Publish immediately"
+msgstr "Апублікаваць неадкладна"
+
+msgid ""
+"This will apply the updates and publish immediately, before any new "
+"translations happen."
+msgstr ""
+"Гэта дазволіць прымяніць абнаўлення і апублікаваць іх неадкладна, да таго, "
+"як будуць зробленыя новыя пераклады."
+
+msgid "Update existing translations"
+msgstr "Абнавіць існуючыя пераклады"
+
+#, python-brace-format
+msgid "Successfully updated translations for '{object}'"
+msgstr "Паспяхова абноўлены пераклады для ' {object}'"
+
+msgid "Sync translated pages"
+msgstr "Сінхранізацыя перакладзеных старонак"
+
+#, python-format
+msgid "Translate '%(title)s'"
+msgstr "Пераклад '%(title)s'"
+
+msgid "Sync translated snippets"
+msgstr "Сінхранізацыя перакладзеных фрагментаў"
+
+#, python-format
+msgid "Sync translations of '%(title)s'"
+msgstr "Сінхранізаваць пераклады '%(title)s'"
+
+msgid "Convert to alias page"
+msgstr "Пераўтварыць у старонку псеўданіма"
+
+msgid "Convert page to alias"
+msgstr "Пераўтварэнне старонкі ў псеўданім"
+
+#, python-format
+msgid ""
+"Converted page '%(title)s' to an alias of the translation source page "
+"'%(source_title)s'"
+msgstr ""
+"Канвертавана старонка '%(title)s' у псеўданім зыходнай старонкі перакладу "
+"'%(source_title)s'"
+
+msgid "Converted page to an alias of the translation source page"
+msgstr "Пераўтварэнне старонкі ў псеўданім зыходнай старонкі перакладу"

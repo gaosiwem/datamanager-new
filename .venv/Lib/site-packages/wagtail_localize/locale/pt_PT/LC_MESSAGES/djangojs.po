@@ -1,0 +1,155 @@
+#
+# Translators:
+# Tiago Henriques <trinosauro@gmail.com>, 2022
+# Luís Tiago Favas <traducoes@favas.eu>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Luís Tiago Favas <traducoes@favas.eu>, 2024\n"
+"Language-Team: Portuguese (Portugal) (https://app.transifex.com/torchbox/"
+"teams/8009/pt_PT/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: pt_PT\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
+"1000000 == 0 ? 1 : 2;\n"
+
+msgid "[DELETED]"
+msgstr "[APAGADO]"
+
+msgid "Actions"
+msgstr "Ações"
+
+msgid "Apply editor lock"
+msgstr "Aplicar bloqueio de editor"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Change %s"
+msgstr "Mudar %s"
+
+msgid "Change document"
+msgstr "Mudar documento"
+
+msgid "Change image"
+msgstr "Mudar imagem"
+
+msgid "Change page"
+msgstr "Mudar página"
+
+msgid "Changed"
+msgstr "Mudado"
+
+msgid "Choose a %s"
+msgstr "Escolher um %s"
+
+msgid "Choose a document"
+msgstr "Escolher um documento"
+
+msgid "Choose a page"
+msgstr "Escolher uma página"
+
+msgid "Choose an image"
+msgstr "Escolher uma imagem"
+
+msgid "Convert to alias page"
+msgstr "Converter em página de atalho"
+
+msgid "Delete"
+msgstr "Apagar"
+
+msgid "Download PO file"
+msgstr "Descarregar ficheiro PO"
+
+msgid "Download PO file and input translations offline"
+msgstr "Descarregar ficheiro PO e introduzir traduções em offline"
+
+msgid "Edit"
+msgstr "Alterar"
+
+msgid "Edit this %s"
+msgstr "Alterar este %s"
+
+msgid "Edit this document"
+msgstr "Alterar este documento"
+
+msgid "Edit this image"
+msgstr "Alterar esta imagem"
+
+msgid "Edit this page"
+msgstr "Alterar esta página"
+
+msgid "Fetching %s information..."
+msgstr "A obter informação %s..."
+
+msgid "Fetching document information..."
+msgstr "A obter informação do documento..."
+
+msgid "Fetching image information..."
+msgstr "A obter informação da imagem..."
+
+msgid "Fetching page information..."
+msgstr "A obter informação da página..."
+
+msgid "Lock"
+msgstr "Bloquear"
+
+msgid "Not translated"
+msgstr "Por traduzir"
+
+msgid "Preview"
+msgstr "Visualizar"
+
+msgid "Publish in "
+msgstr "Publicar em"
+
+msgid "Publishing..."
+msgstr "A publicar..."
+
+msgid "Remove editor lock"
+msgstr "Retirar bloqueio de editor"
+
+msgid "Revert to %s version"
+msgstr "Reverter à versão %s "
+
+msgid "Save"
+msgstr "Gravar"
+
+msgid "Saving..."
+msgstr "A gravar..."
+
+msgid "segments translated"
+msgstr "segmentos traduzidos"
+
+msgid "Server error"
+msgstr "Erro de servidor"
+
+msgid "Stop Synced translation"
+msgstr "Parar tradução Sincronizada"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr "Existem segmentos por gravar. Grave ou cancele-os antes de sair."
+
+msgid "Translate"
+msgstr "Traduzir"
+
+msgid "Translate all missing strings with "
+msgstr "Traduzir todos os segmentos de texto em falta com"
+
+msgid "Translate with "
+msgstr "Traduzir com"
+
+msgid "Unlock"
+msgstr "Desbloquear"
+
+msgid "Unpublish"
+msgstr "Despublicar"
+
+msgid "Upload PO file"
+msgstr "Carregar ficheiro PO"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Carregar ficheiro PO traduzido para enviar traduções"
+
+msgid "Uses %s version"
+msgstr "Utiliza a versão %s"

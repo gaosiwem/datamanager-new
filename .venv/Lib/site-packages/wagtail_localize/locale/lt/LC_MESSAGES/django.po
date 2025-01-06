@@ -1,0 +1,217 @@
+#
+# Translators:
+# Matas Dailyda <matas@dailyda.com>, 2021
+# Naglis Jonaitis, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Naglis Jonaitis, 2023\n"
+"Language-Team: Lithuanian (https://app.transifex.com/torchbox/teams/8009/"
+"lt/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: lt\n"
+"Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
+"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? "
+"1 : n % 1 != 0 ? 2: 3);\n"
+
+msgid "Disable"
+msgstr "Išjungti"
+
+msgid "Dummy translator"
+msgstr "Pavyzdinis vertėjas"
+
+msgid "Translate"
+msgstr "Versti"
+
+#, python-brace-format
+msgid "Translate {model_name}"
+msgstr "Versti {model_name}"
+
+#, python-brace-format
+msgid ""
+"The {model_name} '{object}' was successfully submitted for translation into "
+"{locales}"
+msgstr "{model_name} '{object}' sėkmingai pateiktas išversti į {locales}"
+
+msgid "Up to date"
+msgstr "Naujausias"
+
+msgid "Waiting for translations"
+msgstr "Laukiama vertimų"
+
+msgid "Manual"
+msgstr "Rankinis"
+
+msgid "Machine"
+msgstr "Automatinis"
+
+#, python-brace-format
+msgid "Translated with {tool_name} on {date}"
+msgstr "Išversta {date} naudojant {tool_name}"
+
+#, python-brace-format
+msgid "Translated manually on {date}"
+msgstr "Rankiniu būdu išversta {date}"
+
+#, python-brace-format
+msgid "Machine translated on {date}"
+msgstr "Automatiškai išversta {date}"
+
+msgid ""
+"<{}> tag is not allowed. Strings can only contain standard HTML inline tags "
+"(such as <b>, <a>)"
+msgstr ""
+"<{}> žymė yra neleistina. Eilutėse galima naudoti tik standartines "
+"įterptąsias HTML žymes (tokias kaip <b>, <a>)"
+
+msgid ""
+"Strings cannot have any HTML tags with attributes (except for 'id' in <a> "
+"tags)"
+msgstr ""
+"Eilutėse negali būti HTML žymių su atributais (išskyrus 'id' atributą <a> "
+"žymėse)"
+
+msgid "Enable"
+msgstr "Įjungti"
+
+msgid "Translate this page"
+msgstr "Versti šį puslapį"
+
+msgid "Translations"
+msgstr "Vertimai"
+
+msgid "Submit"
+msgstr "Pateikti"
+
+msgid "Go back"
+msgstr "Grįžti atgal"
+
+msgid "Content type"
+msgstr "Turinio tipas"
+
+msgid "Status"
+msgstr "Statusas"
+
+msgid "Why would I sync my page?"
+msgstr "Kam reikalingas sinchronizavimas?"
+
+msgid ""
+"Changes are not automatically applied between translated pages. Syncing will "
+"add new content for translation and remove deleted content."
+msgstr ""
+"Pakeitimai nėra automatiškai pritaikomi tarp puslapių vertimų. "
+"Sinchronizavimo metu naujas turinys bus pridėtas vertimui, o ištrintas "
+"turinys bus panaikintas."
+
+#, python-format
+msgid ""
+"The last sync date was %(last_sync_date)s. You are about to sync the "
+"following:"
+msgstr "Paskutinį kartą sinchronizuota %(last_sync_date)s. Bus sinchronizuota:"
+
+msgid "Content"
+msgstr "Turinys"
+
+#, python-brace-format
+msgid ""
+"New validation errors were found when publishing '{object}' in {locale}. "
+"Please fix them or click publish again to ignore these translations for now."
+msgstr ""
+"Publikuojant '{object}' {locale} lokalėle aptikta validavimo klaidų. Prašome "
+"jas ištaisyti arba darkart paspauskite \"Publikuoti\", jei kol kas norite "
+"jas ignoruoti."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale} with missing translations - see below."
+msgstr ""
+"'{object}' publikuotas {locale} lokalėje su trūkstamais vertimais - žr. "
+"žemiau."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale}."
+msgstr "'{object}' publikuotas {locale} lokalėje."
+
+msgid "Translation has been stopped."
+msgstr "Vertimas sustabdytas."
+
+msgid "Translation has been restarted."
+msgstr "Vertimas paleistas iš naujo."
+
+msgid "Please upload a valid PO file."
+msgstr "Prašome įkelti taisyklingą PO failą."
+
+msgid "Cannot import PO file that was created for a different translation."
+msgstr "Negalima importuoti PO failo, kuris buvo sukurtas kitiems vertimams."
+
+msgid "Successfully imported translations from PO File."
+msgstr "Vertimai iš PO failo sėkmingai importuoti."
+
+msgid "Successfully translated with {}."
+msgstr "Sėkmingai išversta naudojant {}."
+
+msgid "There isn't anything left to translate."
+msgstr "Viskas išversta."
+
+msgid "All"
+msgstr "Visi"
+
+msgid "Select all"
+msgstr "Pažymėti visas"
+
+msgid "Locales"
+msgstr "Lokalės"
+
+msgid "All child pages will be created."
+msgstr "Bus sukurti visi vidiniai puslapiai,"
+
+msgid "Include subtree ({} page)"
+msgid_plural "Include subtree ({} pages)"
+msgstr[0] "Įtraukti pomedį ({} puslapis)"
+msgstr[1] "Įtraukti pomedį ({} puslapiai)"
+msgstr[2] "Įtraukti pomedį ({} puslapiai)"
+msgstr[3] "Įtraukti pomedį ({} puslapiai)"
+
+msgid "{} locales"
+msgstr "{} lokalės"
+
+msgid "Translate page"
+msgstr "Versti puslapį"
+
+#, python-brace-format
+msgid ""
+"The page '{page_title}' was successfully submitted for translation into "
+"{locales}"
+msgstr "'{page_title}' puslapis sėkmingai pateiktas išversti į {locales}"
+
+msgid "Publish immediately"
+msgstr "Publikuoti nedelsiant"
+
+msgid ""
+"This will apply the updates and publish immediately, before any new "
+"translations happen."
+msgstr ""
+"Pakeitimai bus pritaikyti ir publikuoti iš karto, prieš pridedant naujus "
+"vertimus."
+
+msgid "Update existing translations"
+msgstr "Atnaujinti egzistuojančius vertimus"
+
+#, python-brace-format
+msgid "Successfully updated translations for '{object}'"
+msgstr "'{object}' vertimai sėkmingai atnaujinti"
+
+msgid "Sync translated pages"
+msgstr "Sinchronizuoti išverstus puslapius"
+
+#, python-format
+msgid "Translate '%(title)s'"
+msgstr "Versti '%(title)s'"
+
+msgid "Sync translated snippets"
+msgstr "Sinchronizuoti išverstas nuokarpas"
+
+#, python-format
+msgid "Sync translations of '%(title)s'"
+msgstr "Sinchronizuoti '%(title)s' vertimus"

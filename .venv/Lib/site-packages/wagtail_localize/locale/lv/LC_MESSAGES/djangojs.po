@@ -1,0 +1,67 @@
+#
+# Translators:
+# Reinis Rozenbergs <reinisr@gmail.com>, 2021
+# Maris Serzans <maris.serzans@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Maris Serzans <maris.serzans@gmail.com>, 2024\n"
+"Language-Team: Latvian (https://app.transifex.com/torchbox/teams/8009/lv/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: lv\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
+"2);\n"
+
+msgid "Actions"
+msgstr "Darbības"
+
+msgid "Apply editor lock"
+msgstr "Pielietot redaktora slēgšanu"
+
+msgid "Choose a document"
+msgstr "Izvēlēties dokumentu"
+
+msgid "Choose a page"
+msgstr "Izvēlēties lapu"
+
+msgid "Choose an image"
+msgstr "Izvēlēties attēlu"
+
+msgid "Delete"
+msgstr "Dzēst"
+
+msgid "Edit"
+msgstr "Labot"
+
+msgid "Edit this %s"
+msgstr "Labot šo %s"
+
+msgid "Edit this document"
+msgstr "Labot šo dokumentu"
+
+msgid "Edit this image"
+msgstr "Labot šo attēlu"
+
+msgid "Edit this page"
+msgstr "Labot šo lapu"
+
+msgid "Lock"
+msgstr "Slēgt"
+
+msgid "Preview"
+msgstr "Priekšskatīt"
+
+msgid "Publishing..."
+msgstr "Publicē..."
+
+msgid "Save"
+msgstr "Saglabāt"
+
+msgid "Saving..."
+msgstr "Saglabā..."
+
+msgid "Unlock"
+msgstr "Atslēgt"
+
+msgid "Unpublish"
+msgstr "Atsaukt publicēšanu"

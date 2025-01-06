@@ -1,0 +1,65 @@
+#
+# Translators:
+# Erlend Eelmets <debcf78e@opayq.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Erlend Eelmets <debcf78e@opayq.com>, 2024\n"
+"Language-Team: Estonian (https://app.transifex.com/torchbox/teams/8009/et/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: et\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Actions"
+msgstr "Toimingud"
+
+msgid "Apply editor lock"
+msgstr "Rakenda redaktori lukustus"
+
+msgid "Cancel"
+msgstr "Tühista"
+
+msgid "Change image"
+msgstr "Muuda pilti"
+
+msgid "Choose a document"
+msgstr "Valige dokument"
+
+msgid "Choose a page"
+msgstr "Valige leht"
+
+msgid "Choose an image"
+msgstr "Valige pilt"
+
+msgid "Delete"
+msgstr "Kustuta"
+
+msgid "Edit"
+msgstr "Muuda"
+
+msgid "Edit this %s"
+msgstr "Muutke seda %s"
+
+msgid "Edit this document"
+msgstr "Muutke seda dokumenti"
+
+msgid "Edit this image"
+msgstr "Muutke seda pilti"
+
+msgid "Edit this page"
+msgstr "Muutke seda lehte"
+
+msgid "Lock"
+msgstr "Lukusta"
+
+msgid "Preview"
+msgstr "Eelvaade"
+
+msgid "Save"
+msgstr "Salvesta"
+
+msgid "Unlock"
+msgstr "Ava"
+
+msgid "Unpublish"
+msgstr "Tühista avaldamine"

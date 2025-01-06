@@ -1,0 +1,27 @@
+#
+# Translators:
+# Rodrigo Yanez, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Rodrigo Yanez, 2023\n"
+"Language-Team: Spanish (Latin America) (https://app.transifex.com/torchbox/"
+"teams/8009/es_419/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: es_419\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
+
+msgid "Go back"
+msgstr "Volver atrás"
+
+msgid "Content"
+msgstr "Contenido"
+
+msgid "All"
+msgstr "Todos"
+
+msgid "Select all"
+msgstr "Seleccionar todo"

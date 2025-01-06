@@ -1,0 +1,79 @@
+#
+# Translators:
+# Jihan Chung <jihanchung20@gmail.com>, 2021
+# Kyu Choi, 2022
+# Kyungil Choi <hanpama@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Kyungil Choi <hanpama@gmail.com>, 2024\n"
+"Language-Team: Korean (https://app.transifex.com/torchbox/teams/8009/ko/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ko\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Actions"
+msgstr "액션"
+
+msgid "Apply editor lock"
+msgstr "편집자 잠금 적용"
+
+msgid "Cancel"
+msgstr "취소"
+
+msgid "Change image"
+msgstr "이미지 변경"
+
+msgid "Choose a document"
+msgstr "문서 선택"
+
+msgid "Choose a page"
+msgstr "페이지 선택"
+
+msgid "Choose an image"
+msgstr "이미지 선택"
+
+msgid "Delete"
+msgstr "삭제"
+
+msgid "Edit"
+msgstr "수정"
+
+msgid "Edit this %s"
+msgstr "이 %s 수정하기"
+
+msgid "Edit this document"
+msgstr "이 문서 수정"
+
+msgid "Edit this image"
+msgstr "이 이미지 수정"
+
+msgid "Edit this page"
+msgstr "페이지 변경"
+
+msgid "Lock"
+msgstr "잠금"
+
+msgid "Preview"
+msgstr "미리보기"
+
+msgid "Publishing..."
+msgstr "게시 중..."
+
+msgid "Remove editor lock"
+msgstr "편집자 잠금 제거"
+
+msgid "Save"
+msgstr "저장"
+
+msgid "Saving..."
+msgstr "저장 중..."
+
+msgid "Translate"
+msgstr "번역하다"
+
+msgid "Unlock"
+msgstr "잠금 풀기"
+
+msgid "Unpublish"
+msgstr "게시 해제"

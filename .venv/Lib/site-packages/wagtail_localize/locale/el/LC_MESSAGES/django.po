@@ -1,0 +1,31 @@
+#
+# Translators:
+# Nick Mavrakis <mavrakis.n@gmail.com>, 2021
+# George Giannoulopoulos <vdotoree@yahoo.gr>, 2021
+# 79353a696ad19dc202b261b3067b7640_bec941e, 2021
+# fekioh, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: fekioh, 2023\n"
+"Language-Team: Greek (https://app.transifex.com/torchbox/teams/8009/el/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: el\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Content type"
+msgstr "Τύπος περιεχομένου"
+
+msgid "Status"
+msgstr "Κατάσταση"
+
+msgid "Content"
+msgstr "Περιεχομενο"
+
+msgid "All"
+msgstr "Όλα"
+
+msgid "Select all"
+msgstr "Επιλογή όλων"

@@ -1,0 +1,320 @@
+#
+# Translators:
+# Alex Morega, 2023
+# Dan Braghis, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Dan Braghis, 2023\n"
+"Language-Team: Romanian (https://app.transifex.com/torchbox/teams/8009/ro/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ro\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
+"2:1));\n"
+
+msgid "Disable"
+msgstr "Dezactivează"
+
+msgid "Dummy translator"
+msgstr "Traducător fals"
+
+msgid "Translate"
+msgstr "Traduceți"
+
+#, python-format
+msgid "Sync translated %(model_name)s"
+msgstr "Sincronizează %(model_name)s tradus(ă)"
+
+msgid "Start Synced translation"
+msgstr "Începe traducere sincronizată"
+
+#, python-brace-format
+msgid "Translate {model_name}"
+msgstr "Tradu {model_name}"
+
+#, python-brace-format
+msgid ""
+"The {model_name} '{object}' was successfully submitted for translation into "
+"{locales}"
+msgstr "{model_name} '{object}' a fost trimis(ă) pentru traducere în {locales}"
+
+msgid "Up to date"
+msgstr "Actualizat"
+
+msgid "Waiting for translations"
+msgstr "Aștept traduceri"
+
+msgid "Manual"
+msgstr "Manual"
+
+msgid "Machine"
+msgstr "Automat"
+
+#, python-brace-format
+msgid "Translated with {tool_name} on {date}"
+msgstr "Tradus cu {tool_name} la data de {date}"
+
+#, python-brace-format
+msgid "Translated manually on {date}"
+msgstr "Tradus manual la {date}"
+
+#, python-brace-format
+msgid "Machine translated on {date}"
+msgstr "Tradus automat la {date}"
+
+msgid "This locale cannot be synced into itself."
+msgstr "Această localizare nu poate fi sincronizată în sine."
+
+msgid "Synchronise content from another locale"
+msgstr "Sincronizează conținut din altă localizare"
+
+msgid ""
+"Choose a locale to synchronise content from. Any existing and future content "
+"authored in the selected locale will be automatically copied to this one."
+msgstr ""
+"Alege o localizare pentru a sincroniza conținut. Orice conținut curent sau "
+"conținut creat în localizarea selectată va fi copiat automat în localizarea "
+"selectată."
+
+msgid ""
+"<{}> tag is not allowed. Strings can only contain standard HTML inline tags "
+"(such as <b>, <a>)"
+msgstr ""
+"Eticheta <{}> nu este permisă. Șirurile de text pot să conțină numai "
+"etichete inline HTML (precum <b>, <a>)"
+
+msgid ""
+"Strings cannot have any HTML tags with attributes (except for 'id' in <a> "
+"tags)"
+msgstr ""
+"Șirurile de text nu pot să conțină etichete HTML cu atribute cu excepția "
+"'id' în etichetele <a>"
+
+msgid "Unrecognised id found in an <a> tag: {}"
+msgstr "Id nerecunoscut găsit întru-un tag <a>: {}"
+
+msgid "Enable"
+msgstr "Activează"
+
+#, python-format
+msgid "Convert to alias %(title)s"
+msgstr "Convertează în alias %(title)s"
+
+msgid "Convert to alias"
+msgstr "Convertează în alias"
+
+#, python-format
+msgid ""
+"Are you sure you want to convert this page into an alias? This will "
+"overwrite the content of the page with the content of "
+"'%(source_page_title)s' (%(source_page_locale)s)"
+msgstr ""
+"Sigur doriți să convertiți această pagină întru-un alias? Această acțiune va "
+"suprascrie conținutul paginii cu cel al '%(source_page_title)s' "
+"(%(source_page_locale)s)"
+
+msgid "Yes, convert it"
+msgstr "Da, convertează"
+
+msgid "No, leave it as a page"
+msgstr "Nu, păstrează ca pagină"
+
+#, python-format
+msgid ""
+"This page hasn't been translated yet. It is mirroring the <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">%(original_locale)s "
+"page</a>."
+msgstr ""
+"Aceată pagină n-a fost tradusă și reflectă <a "
+"href=\"%(edit_original_page_url)s\" target=\"_blank\">pagina "
+"%(original_locale)s</a>."
+
+msgid "Translate this page"
+msgstr "Traduceți această pagină"
+
+#, python-format
+msgid "Translation of %(instance)s into %(locale)s"
+msgstr "Traducerea %(instance)s în %(locale)s"
+
+msgid "Translations"
+msgstr "Traduceri"
+
+#, python-format
+msgid "Editing %(object_type)s %(title)s"
+msgstr "Editare %(object_type)s %(title)s"
+
+msgid "Submit"
+msgstr "Trimite"
+
+msgid "Go back"
+msgstr "Înapoi"
+
+msgid "Content type"
+msgstr "Tip de conținut"
+
+msgid "Source"
+msgstr "Sursă"
+
+msgid "Target"
+msgstr "Ţintă"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "No translations found."
+msgstr "Nu s-au găsit traduceri."
+
+msgid "Why would I sync my page?"
+msgstr "De ce să-mi sincronizez pagina?"
+
+msgid ""
+"Changes are not automatically applied between translated pages. Syncing will "
+"add new content for translation and remove deleted content."
+msgstr ""
+"Modificările nu sunt aplicate automate între pagini traduse. Sincronizarea "
+"va adăuga conținutul noi și va elimina conținutul șters."
+
+#, python-format
+msgid ""
+"The last sync date was %(last_sync_date)s. You are about to sync the "
+"following:"
+msgstr ""
+"Ultima sincronizare a fost pe %(last_sync_date)s. Sunteți pe cale să "
+"sincronizați următoarele:"
+
+msgid "Page '{}' has been converted into an alias."
+msgstr "Pagina '{}' a fost convertită în alias."
+
+msgid "Content"
+msgstr "Conținut"
+
+#, python-brace-format
+msgid ""
+"New validation errors were found when publishing '{object}' in {locale}. "
+"Please fix them or click publish again to ignore these translations for now."
+msgstr ""
+"Erori de validare noi au fost întilnite la publicarea '{object}' în "
+"{locale}. Vă rugăm să le remediați, sau apăsați publicare din nou pentru a "
+"ignore aceste traduceri pentru moment."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale} with missing translations - see below."
+msgstr "'{object}' publicat(ă) în {locale} cu traduceri lipsă - vezi mai jos."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale}."
+msgstr "A publicat '{object}' în {locale}."
+
+#, python-brace-format
+msgid ""
+"The data model for '{model_name}' has been changed since the last "
+"translation sync. If any new fields have been added recently, these may not "
+"be visible until the next translation sync."
+msgstr ""
+"Modelul de date pentru '{model_name}' a fost schimbat de la ultima "
+"sincronizare de traduceri. Dacă au fost adăgate câmpuri noi, s-ar putea să "
+"nu fie vizible până la următoarea sincronizare de traduceri."
+
+msgid "Translation has been stopped."
+msgstr "Traducerea a fost oprită."
+
+msgid "Translation has been restarted."
+msgstr "Traducerea a fost reîncepută."
+
+msgid "Please upload a valid PO file."
+msgstr "Încărcați fișier PO valid."
+
+msgid "Cannot import PO file that was created for a different translation."
+msgstr "Fișierul PO creat pentru o traducere diferita nu poate fi importat."
+
+msgid "Successfully imported translations from PO File."
+msgstr "Traducerile din fișier PO au fost importate cu succes."
+
+msgid "Successfully translated with {}."
+msgstr "Traducere de succes cu {}."
+
+msgid "There isn't anything left to translate."
+msgstr "Nu mai este nimic de tradus."
+
+msgid "Source title"
+msgstr "Titlu sursă"
+
+msgid "All"
+msgstr "Toate"
+
+msgid "Select all"
+msgstr "Selectează toate"
+
+msgid "Locales"
+msgstr "Localizări"
+
+msgid "All child pages will be created."
+msgstr "Toate paginile descendente vor fi create."
+
+msgid "Include subtree ({} page)"
+msgid_plural "Include subtree ({} pages)"
+msgstr[0] "Include pagini descendente ({} pagină)"
+msgstr[1] "Include pagini descendente ({} pagini)"
+msgstr[2] "Include pagini descendente ({} pagini)"
+
+msgid "{} locales"
+msgstr "{} localizări"
+
+msgid "Translate page"
+msgstr "Traduce pagină"
+
+#, python-brace-format
+msgid ""
+"The page '{page_title}' was successfully submitted for translation into "
+"{locales}"
+msgstr "Pagina '{page_title}' a fost trimisă pentru traducere în {locales}"
+
+msgid "Publish immediately"
+msgstr "Publichează imediat"
+
+msgid ""
+"This will apply the updates and publish immediately, before any new "
+"translations happen."
+msgstr ""
+"Aceasta va aplica modificările și va publica imediat, înainte de orice "
+"traduceri noi."
+
+msgid "Update existing translations"
+msgstr "Actualizează traduceri existente"
+
+#, python-brace-format
+msgid "Successfully updated translations for '{object}'"
+msgstr "Traducerile pentru '{object}' au fost actualizate"
+
+msgid "Sync translated pages"
+msgstr "Sincronizează pagini traduse"
+
+#, python-format
+msgid "Translate '%(title)s'"
+msgstr "Traduce '%(title)s'"
+
+msgid "Sync translated snippets"
+msgstr "Sincronizează fragmente traduse"
+
+#, python-format
+msgid "Sync translations of '%(title)s'"
+msgstr "Sincronizează traducerile pentru '%(title)s'"
+
+msgid "Convert to alias page"
+msgstr "Convertează în pagină alias"
+
+msgid "Convert page to alias"
+msgstr "Convertează pagina în pagină alias"
+
+#, python-format
+msgid ""
+"Converted page '%(title)s' to an alias of the translation source page "
+"'%(source_title)s'"
+msgstr ""
+"A convertit pagina '%(title)s' într-un alias al paginii sursă "
+"'%(source_title)s' a traducerii"
+
+msgid "Converted page to an alias of the translation source page"
+msgstr "A convertit pagina într-un alias al paginii sursă a traducerii"

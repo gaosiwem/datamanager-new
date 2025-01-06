@@ -1,0 +1,153 @@
+{
+  "private": true,
+  "engines": {
+    "node": "==14",
+    "npm": ">=6.13.x <7",
+    "yarn": ">=1.21.x <=1.22.x"
+  },
+  "workspaces": [
+    "packages/webapp"
+  ],
+  "nohoist": [
+    "packages/webapp"
+  ],
+  "name": "static-budget-portal",
+  "version": "1.0.0",
+  "scripts": {
+    "build:webapp": "cd ./packages/webapp && node ./scripts/build",
+    "build:root": "webpack --display errors-only --progress -p",
+    " :dev": "webpack --progress --watch --mode=development",
+    "build": "yarn build:webapp && yarn build:root",
+    "dev": "webpack --mode development --watch",
+    "start-test": "react-app-rewired --progress --watch --mode=development"
+  },
+  "devDependencies": {
+    "app-root-dir": "^1.0.2",
+    "autoprefixer": "^7.1.6",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "browserslist": "^2.4.0",
+    "classlist-polyfill": "^1.2.0",
+    "clean-webpack-plugin": "^0.1.17",
+    "colour": "^0.7.1",
+    "connect": "^3.6.6",
+    "css-loader": "^0.28.7",
+    "escape-html": "^1.0.3",
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^4.2.0",
+    "eslint-plugin-compat": "^3.1.1",
+    "eslint-plugin-extra-rules": "^0.0.0-development",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^22.5.1",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.11.0",
+    "eslint-plugin-react-app": "^5.0.1",
+    "front-matter": "^2.3.0",
+    "frontmatter": "0.0.3",
+    "fs-extra": "^7.0.1",
+    "highlightjs": "^9.12.0",
+    "html": "^1.0.0",
+    "html-entities": "^1.2.1",
+    "html-loader": "^0.5.5",
+    "import-webflow-export": "^0.0.3",
+    "jest": "^24.8.0",
+    "markdown-it": "^8.4.2",
+    "markdown-it-highlightjs": "^3.0.0",
+    "marked": "^0.3.16",
+    "marked-extras": "^0.2.4",
+    "mkdirp": "^0.5.1",
+    "node-sass": "^4.14.1",
+    "opn": "^5.4.0",
+    "postcss-loader": "^2.1.6",
+    "postcss-normalize": "^4.0.0",
+    "prettier": "^1.17.1",
+    "prop-types": "^15.6.1",
+    "sass-loader": "^6.0.6",
+    "serve-static": "^1.13.2",
+    "style-loader": "^0.18.2",
+    "stylelint": "^10.0.1",
+    "stylelint-config-css-modules": "^1.1.0",
+    "stylelint-config-recommended": "^2.2.0",
+    "stylelint-config-standard": "^17.0.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-no-unsupported-browser-features": "^3.0.2",
+    "stylelint-processor-styled-components": "^1.7.0",
+    "stylelint-scss": "^2.1.0",
+    "typescript": "^3.4.5",
+    "webpack": "4.41.x",
+    "webpack-clean-plugin": "^0.2.3",
+    "webpack-cli": "^3.2.3",
+    "webpack-md5-hash": "0.0.5"
+  },
+  "browserslist": [
+    "last 12 chrome versions",
+    "last 12 firefox versions",
+    "last 6 safari versions",
+    "explorer >= 10",
+    "edge > 0"
+  ],
+  "babel": {
+    "presets": [
+      "env",
+      "stage-0"
+    ]
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
+    "array.from": "^1.0.3",
+    "array.prototype.every": "^1.0.0",
+    "array.prototype.findindex": "^2.0.2",
+    "bootstrap": "^4.1.3",
+    "camelcase": "^4.1.0",
+    "canvg-browser": "^1.0.0",
+    "chart.js": "^2.7.3",
+    "color-string": "^1.5.3",
+    "d3-scale": "^2.2.2",
+    "d3-selection": "^1.3.0",
+    "jquery": "^3.3.1",
+    "js-yaml": "^3.11.0",
+    "lodash": "^4.17.11",
+    "lodash.debounce": "^4.0.8",
+    "lunr": "^2.3.5",
+    "mini-css-extract-plugin": "^0.9.0",
+    "object.assign": "^4.1.0",
+    "promise-polyfill": "^6.0.2",
+    "pym.js": "^1.3.2",
+    "query-string": "^5.1.1",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
+    "react-ga": "^2.5.3",
+    "react-html-connector": "^0.2.6",
+    "react-lines-ellipsis": "^0.15.3",
+    "redux": "^4.0.1",
+    "save-svg-as-png": "^1.4.6",
+    "url-search-params-polyfill": "^8.1.0",
+    "uuid": "^3.3.2",
+    "vulekamali-visualisations": "https://github.com/vulekamali/data-visualisations.git#2e861cce3a27bd1b6791bdd9f4fd1c4497bed1b7",
+    "whatwg-fetch": "^2.0.3"
+  },
+  "importWebflowExport": {
+    "copyTrees": {
+      "css": "budgetportal/webflow/static/css",
+      "js": "budgetportal/webflow/static/js",
+      "images": "budgetportal/webflow/static/images",
+      "fonts": "budgetportal/webflow/static/fonts"
+    },
+    "importHtml": [
+      {
+        "glob": "*.html",
+        "destDir": "budgetportal/webflow/templates/webflow",
+        "transforms": "./assets/js/webflow/import.js"
+      }
+    ]
+  }
+}

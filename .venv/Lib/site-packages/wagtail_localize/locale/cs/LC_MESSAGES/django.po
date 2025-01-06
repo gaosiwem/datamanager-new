@@ -1,0 +1,210 @@
+#
+# Translators:
+# Mirek Zvolský <zvolsky@seznam.cz>, 2023
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-03 08:26+0000\n"
+"Last-Translator: Mirek Zvolský <zvolsky@seznam.cz>, 2023\n"
+"Language-Team: Czech (https://app.transifex.com/torchbox/teams/8009/cs/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: cs\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
+"<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+
+msgid "Disable"
+msgstr "Zakázat"
+
+msgid "Dummy translator"
+msgstr "Fiktivní překladač"
+
+msgid "Translate"
+msgstr "Přeložit"
+
+#, python-brace-format
+msgid "Translate {model_name}"
+msgstr "Přeložit {model_name}"
+
+#, python-brace-format
+msgid ""
+"The {model_name} '{object}' was successfully submitted for translation into "
+"{locales}"
+msgstr "{model_name} '{object}' byl úspěšně uložen pro překlad do {locales}"
+
+msgid "Up to date"
+msgstr "Aktuální"
+
+msgid "Waiting for translations"
+msgstr "Čeká se na překlad"
+
+msgid "Manual"
+msgstr "Manuální"
+
+msgid "Machine"
+msgstr "Strojový"
+
+#, python-brace-format
+msgid "Translated with {tool_name} on {date}"
+msgstr "Přeloženo pomocí {tool_name} dne {date}"
+
+#, python-brace-format
+msgid "Translated manually on {date}"
+msgstr "Přeloženo ručně dne {date}"
+
+#, python-brace-format
+msgid "Machine translated on {date}"
+msgstr "Strojově přeloženo dne {date}"
+
+msgid ""
+"<{}> tag is not allowed. Strings can only contain standard HTML inline tags "
+"(such as <b>, <a>)"
+msgstr ""
+"<{}> značka není povolena. Řetězec smí obsahovat jen standardní HTML inline "
+"značky (jako např. <b>, <a>)"
+
+msgid ""
+"Strings cannot have any HTML tags with attributes (except for 'id' in <a> "
+"tags)"
+msgstr ""
+"Řetězec nemůže mít žádné HTML značky s atributy (s výjimkou 'id' ve <a> "
+"značkách)"
+
+msgid "Enable"
+msgstr "Povolit"
+
+msgid "Yes, convert it"
+msgstr "Ano, provést změnu"
+
+msgid "Translate this page"
+msgstr "Přeložit tuto stránku"
+
+msgid "Submit"
+msgstr "Uložit"
+
+msgid "Go back"
+msgstr "Zpět"
+
+msgid "Status"
+msgstr "Stav"
+
+msgid "Why would I sync my page?"
+msgstr "Proč mám synchronizovat stránku?"
+
+msgid ""
+"Changes are not automatically applied between translated pages. Syncing will "
+"add new content for translation and remove deleted content."
+msgstr ""
+"Změny nejsou automaticky propagovány mezi přeloženými stránkami. "
+"Syncchronizace přidá nový obsah k překladu a odstraní zrušený obsah."
+
+#, python-format
+msgid ""
+"The last sync date was %(last_sync_date)s. You are about to sync the "
+"following:"
+msgstr ""
+"Poslední synchronizace proběhla %(last_sync_date)s. K synchronizaci je "
+"následující:"
+
+msgid "Content"
+msgstr "Obsah"
+
+#, python-brace-format
+msgid ""
+"New validation errors were found when publishing '{object}' in {locale}. "
+"Please fix them or click publish again to ignore these translations for now."
+msgstr ""
+"Byly nalezeny chyby během validace při zveřejnění '{object}' v {locale}. "
+"Prosím, opravte je nebo stiskněte Publikovat znovu, čímž problematické "
+"překlady zatím ignorujete."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale} with missing translations - see below."
+msgstr "Zveřejněné '{object}' v {locale} s chybějícím překladem - viz níže."
+
+#, python-brace-format
+msgid "Published '{object}' in {locale}."
+msgstr "Zveřejněné '{object}' v {locale}."
+
+msgid "Translation has been stopped."
+msgstr "Překlad byl pozastaven."
+
+msgid "Translation has been restarted."
+msgstr "Překlad byl znova zahájen."
+
+msgid "Please upload a valid PO file."
+msgstr "Prosím, nahrajte platný PO soubor."
+
+msgid "Cannot import PO file that was created for a different translation."
+msgstr "Nelze nahrát PO soubor, který byl vytvořen pro jiný překlad."
+
+msgid "Successfully imported translations from PO File."
+msgstr "Úspěšně byly nahrány překlady z PO souboru."
+
+msgid "Successfully translated with {}."
+msgstr "Úspěšně přeloženo {}."
+
+msgid "There isn't anything left to translate."
+msgstr "Nezůstává nic dalšího k překladu."
+
+msgid "All"
+msgstr "Všechna"
+
+msgid "Select all"
+msgstr "Vybrat vše"
+
+msgid "Locales"
+msgstr "Místní nastavení"
+
+msgid "All child pages will be created."
+msgstr "Všechny závislé stránky budou vytvořeny."
+
+msgid "Include subtree ({} page)"
+msgid_plural "Include subtree ({} pages)"
+msgstr[0] "Včetně podřízeného stromu ({} stránka)"
+msgstr[1] "Včetně podřízeného stromu ({} stránky)"
+msgstr[2] "Včetně podřízeného stromu ({} stránek)"
+msgstr[3] "Včetně podřízeného stromu ({} stránek)"
+
+msgid "{} locales"
+msgstr "{} místní nastavení"
+
+msgid "Translate page"
+msgstr "Přeložit stránku"
+
+#, python-brace-format
+msgid ""
+"The page '{page_title}' was successfully submitted for translation into "
+"{locales}"
+msgstr "Stránka '{page_title}' byla úspěšně uložena pro překlad do {locales}"
+
+msgid "Publish immediately"
+msgstr "Ihned zveřejnit"
+
+msgid ""
+"This will apply the updates and publish immediately, before any new "
+"translations happen."
+msgstr ""
+"Budou zohledněny aktualizace a bude ihned zveřejněno - dříve než proběhnou "
+"další překlady."
+
+msgid "Update existing translations"
+msgstr "Aktualizovat existující překlady"
+
+#, python-brace-format
+msgid "Successfully updated translations for '{object}'"
+msgstr "Úspěšně byly aktualizovány překlady pro '{object}'"
+
+msgid "Sync translated pages"
+msgstr "Synchronizovat přeložené stránky"
+
+#, python-format
+msgid "Translate '%(title)s'"
+msgstr "Přeložit '%(title)s'"
+
+msgid "Sync translated snippets"
+msgstr "Synchronizovat přeložené citace"
+
+#, python-format
+msgid "Sync translations of '%(title)s'"
+msgstr "Synchronizovat překlady '%(title)s'"

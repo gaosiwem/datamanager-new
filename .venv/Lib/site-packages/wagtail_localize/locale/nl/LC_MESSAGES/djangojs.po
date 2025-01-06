@@ -1,0 +1,170 @@
+#
+# Translators:
+# benny_AT_it_digin.com <benny@it-digin.com>, 2021
+# mahulst, 2021
+# Rob Moorman <rob@moori.nl>, 2021
+# Loic Teixeira, 2021
+# Thijs Kramer <thijskramer@gmail.com>, 2024
+# Storm Heg <storm@stormbase.digital>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Storm Heg <storm@stormbase.digital>, 2024\n"
+"Language-Team: Dutch (https://app.transifex.com/torchbox/teams/8009/nl/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: nl\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "[DELETED]"
+msgstr "[VERWIJDERD]"
+
+msgid "Actions"
+msgstr "Acties"
+
+msgid "Apply editor lock"
+msgstr "Bewerkingsvergrendeling inschakelen"
+
+msgid "Applying editor lock"
+msgstr "Bewerkingsvergrendeling aan het inschakelen"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "Change %s"
+msgstr "Wijzig %s"
+
+msgid "Change document"
+msgstr "Wijzig document"
+
+msgid "Change image"
+msgstr "Wijzig afbeelding"
+
+msgid "Change page"
+msgstr "Wijzig pagina"
+
+msgid "Changed"
+msgstr "Gewijzigd"
+
+msgid "Choose a %s"
+msgstr "Kies %s"
+
+msgid "Choose a document"
+msgstr "Kies een document"
+
+msgid "Choose a page"
+msgstr "Kies een pagina"
+
+msgid "Choose an image"
+msgstr "Kies een afbeelding"
+
+msgid "Convert to alias page"
+msgstr "Naar alias-pagina omzetten"
+
+msgid "Converting to alias page"
+msgstr "Aan het omzetten naar alias-pagina"
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "Download PO file"
+msgstr "Download PO-bestand"
+
+msgid "Download PO file and input translations offline"
+msgstr "Download PO-bestand en voer offline vertalingen in"
+
+msgid "Edit"
+msgstr "Bewerk"
+
+msgid "Edit this %s"
+msgstr "Wijzig %s"
+
+msgid "Edit this document"
+msgstr "Bewerk dit document"
+
+msgid "Edit this image"
+msgstr "Bewerk deze afbeelding"
+
+msgid "Edit this page"
+msgstr "Bewerk deze pagina"
+
+msgid "Fetching %s information..."
+msgstr "Bezig met ophalen van %s informatie..."
+
+msgid "Fetching document information..."
+msgstr "Bezig met ophalen van documentgegevens..."
+
+msgid "Fetching image information..."
+msgstr "Bezig met ophalen van afbeeldingsgegevens..."
+
+msgid "Fetching page information..."
+msgstr "Bezig met ophalen van paginagegevens..."
+
+msgid "Lock"
+msgstr "Vergrendel"
+
+msgid "Not translated"
+msgstr "Niet vertaald"
+
+msgid "Preview"
+msgstr "Voorvertoning"
+
+msgid "Publish in "
+msgstr "Publiceer in"
+
+msgid "Publishing..."
+msgstr "Bezig met publiceren..."
+
+msgid "Remove editor lock"
+msgstr "Verwijder bewerkingsblokkade"
+
+msgid "Removing editor lock"
+msgstr "Bewerkingsvergrendeling aan het uitschakelen"
+
+msgid "Revert to %s version"
+msgstr "Ga terug naar %sversie"
+
+msgid "Save"
+msgstr "Opslaan"
+
+msgid "Saving..."
+msgstr "Bezig met opslaan..."
+
+msgid "segments translated"
+msgstr "vertaalde segmenten"
+
+msgid "Server error"
+msgstr "Server error"
+
+msgid "Stop Synced translation"
+msgstr "Stop synchrone vertaling"
+
+msgid "Stopping Synced translation"
+msgstr "Synchrone vertaling aan het stoppen"
+
+msgid "There are unsaved segments. Please save or cancel them before leaving."
+msgstr ""
+"Er zijn niet opgeslagen segmenten. Bewaar deze of annuleer voor weggaan."
+
+msgid "Translate"
+msgstr "Vertaal"
+
+msgid "Translate all missing strings with "
+msgstr "Vertaal alle ontbrekende teksten met"
+
+msgid "Translate with "
+msgstr "Vertaal met"
+
+msgid "Unlock"
+msgstr "Ontgrendelen"
+
+msgid "Unpublish"
+msgstr "Publicatie intrekken"
+
+msgid "Upload PO file"
+msgstr "Upload PO-bestand"
+
+msgid "Upload translated PO file to submit translations"
+msgstr "Upload vertaald PO-bestand om vertalingen te verzenden"
+
+msgid "Uses %s version"
+msgstr "Gebruikt %s versie"

@@ -1,0 +1,79 @@
+#
+# Translators:
+# Eirik Krogstad <eirikkr@gmail.com>, 2021
+# Robin Skahjem-Eriksen <robinds@student.matnat.uio.no>, 2021
+# Ole Kristian Losvik <ole@losol.no>, 2021
+# Jonathan D, 2023
+# Stein Strindhaug <stein.strindhaug@gmail.com>, 2024
+#
+msgid ""
+msgstr ""
+"Last-Translator: Stein Strindhaug <stein.strindhaug@gmail.com>, 2024\n"
+"Language-Team: Norwegian Bokmål (https://app.transifex.com/torchbox/"
+"teams/8009/nb/)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: nb\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Actions"
+msgstr "Handlinger"
+
+msgid "Apply editor lock"
+msgstr "Slå på redigeringslås"
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Change image"
+msgstr "Velg et annet bilde"
+
+msgid "Choose a document"
+msgstr "Velg et dokument"
+
+msgid "Choose a page"
+msgstr "Velg en side"
+
+msgid "Choose an image"
+msgstr "Velg et bilde"
+
+msgid "Delete"
+msgstr "Slett"
+
+msgid "Edit"
+msgstr "Rediger"
+
+msgid "Edit this %s"
+msgstr "Endre %s"
+
+msgid "Edit this document"
+msgstr "Endre dette dokumentet"
+
+msgid "Edit this image"
+msgstr "Rediger dette bildet"
+
+msgid "Edit this page"
+msgstr "Redigér denne siden"
+
+msgid "Lock"
+msgstr "Lås"
+
+msgid "Preview"
+msgstr "Forhåndsvis"
+
+msgid "Publishing..."
+msgstr "Publiserer..."
+
+msgid "Remove editor lock"
+msgstr "Fjern redigeringslås"
+
+msgid "Save"
+msgstr "Lagre"
+
+msgid "Saving..."
+msgstr "Lagrer..."
+
+msgid "Unlock"
+msgstr "Lås opp"
+
+msgid "Unpublish"
+msgstr "Avpublisér"
