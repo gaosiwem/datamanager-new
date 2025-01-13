@@ -352,14 +352,6 @@ class DatasetUploadAdmin(admin.ModelAdmin):
     processing_completed.boolean = True
     processing_completed.short_description = "Processing completed"
 
-
-def register_site_model():
-    from wagtail.core.models import Page  # Local import avoids circular dependency
-    admin.site.register(Page)
-
-register_site_model()
-
-
 admin.site.register(models.FinancialYear, FinancialYearAdmin)
 admin.site.register(models.Sphere, SphereAdmin)
 admin.site.register(models.Government, GovernmentAdmin)

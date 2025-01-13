@@ -2,16 +2,6 @@ import environ
 from pathlib import Path
 import os
 
-import dill
-
-def dill_dumps(obj):
-    return dill.dumps(obj)
-
-
-def dill_loads(obj):
-    return dill.loads(obj)
-
-
 env = environ.Env()
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -104,13 +94,13 @@ CONSTANCE_CONFIG = {
 }
 
 # SOLR_URL = os.environ["SOLR_URL"]
-SOLR_URL = "http://localhost:8983/solr/budgetportal_sandbox"
+SOLR_URL = "http://localhost:8983/solr/budgetportal"
 
 
 HAYSTACK_CONNECTIONS = {
     "default": {
         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-        'URL': 'http://localhost:8983/solr/budgetportal_sandbox/',
+        'URL': 'http://localhost:8983/solr/budgetportal/',
     }
 }
 
@@ -204,8 +194,8 @@ DATABASES = {
         'NAME': 'budgetportal',
         'USER': 'budgetportaluser',
         'PASSWORD': 'devpassword',
-        'HOST': '5CG2126BY0',
-        'PORT': '',
+        'HOST': '192.168.56.1',
+        'PORT': '1433',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',  # Ensure the driver is installed
         },
