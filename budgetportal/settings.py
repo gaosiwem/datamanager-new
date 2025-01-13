@@ -93,14 +93,14 @@ CONSTANCE_CONFIG = {
     ),
 }
 
-# SOLR_URL = os.environ["SOLR_URL"]
-SOLR_URL = "http://localhost:8983/solr/budgetportal"
+SOLR_URL = os.environ["SOLR_URL"]
+# SOLR_URL = "http://localhost:8983/solr/budgetportal"
 
 
 HAYSTACK_CONNECTIONS = {
     "default": {
         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-        'URL': 'http://localhost:8983/solr/budgetportal/',
+        'URL': os.environ["SOLR_URL"],
     }
 }
 
@@ -187,6 +187,7 @@ WSGI_APPLICATION = 'budgetportal.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# '192.168.56.1'
 
 DATABASES = {
     'default': {
@@ -194,7 +195,7 @@ DATABASES = {
         'NAME': 'budgetportal',
         'USER': 'budgetportaluser',
         'PASSWORD': 'devpassword',
-        'HOST': '192.168.56.1',
+        'HOST': os.environ["DB_HOST"],
         'PORT': '1433',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',  # Ensure the driver is installed

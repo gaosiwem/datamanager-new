@@ -27,6 +27,7 @@ services:
       - DEBUG_CACHE
       - DJANGO_WHITENOISE_AUTOREFRESH=TRUE
       - PORT=8000
+      - DB_HOST
       #- GUNICORN_WORKERS_ARG=1 # Useful for testing start.sh
     volumes:
       - .:/app    
@@ -63,7 +64,7 @@ services:
       - "80:80"
     depends_on:
       - app
-      
+
   solr:
     build: "https://github.com/vulekamali/solr-dokku.git"
     image: budgetportal-solr
