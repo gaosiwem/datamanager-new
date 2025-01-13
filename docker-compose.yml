@@ -18,6 +18,7 @@ services:
       args:
         USER_ID: ${USER_ID:-1001}
         GROUP_ID: ${GROUP_ID:-1001}
+      dockerfile: Dockerfile
     command: python manage.py runserver 0.0.0.0:8000
     environment:
       - TAG_MANAGER_ID
@@ -28,7 +29,7 @@ services:
       - PORT=8000
       #- GUNICORN_WORKERS_ARG=1 # Useful for testing start.sh
     volumes:
-      - .:/app
+      - .:/app    
     ports:
       - "8000:8000"
     depends_on:
@@ -54,6 +55,15 @@ services:
     depends_on:
       - solr
 
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+      
   solr:
     build: "https://github.com/vulekamali/solr-dokku.git"
     image: budgetportal-solr
