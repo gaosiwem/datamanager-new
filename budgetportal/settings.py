@@ -195,7 +195,7 @@ DATABASES = {
         'NAME': 'budgetportal',
         'USER': 'budgetportaluser',
         'PASSWORD': 'devpassword',
-        'HOST': 'EC2AMAZ-072ABKV',
+        'HOST': '172.21.176.1',
         'PORT': '1433',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',  # Ensure the driver is installed
