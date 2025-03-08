@@ -153,10 +153,17 @@
 @import 'components/Preview/components/Marker/styles';
 @import 'components/ChartSourceController/styles';
 @import 'components/ChartSourceController/components/BarChart/styles';
-@import 'components/PowerBI/styles';
+@import 'components/graphs/styles';
 
 @import 'connections/homepage-hero/styles';
 @import 'connections/infrastructure-projects/styles';
 @import 'connections/national-treemap/styles';
 
 @import 'embeds/equitable-share.scss';
+
+@import 'components/Charts/BarChart/styles';
+@import 'components/Charts/BubbleChart/styles';
+@import 'components/Charts/Treemap/styles';
+@import 'components/Charts/HorizontalBarGraph/styles';
+@import 'components/Charts/MultiBarChart/styles';
+

@@ -1,6 +1,5 @@
 {% load define_action %}
 
-
 <div class="ProgramEconSmallMultiplesSection" id="econ-classification">
     <h3 class="Title Title--section">Programme spending under economic classifications</h3>
 
@@ -37,15 +36,249 @@
             </ul>
         </div>
         <div class="ProgramEconSmallMultiplesSection-item ProgramEconSmallMultiplesSection-item--right">
-            <div class="Page-content">
-                <main>
-                    <div class="powerbi-container">
-                        <iframe class="w-full h-[75vh]"
-                            src="http://5cg2126by0/Vulekamali-Report/powerbi/Programme%20Spending%20Econ%20Classification?rs:embed=true&chromeless=true&filter=budgetportal_enedata/financialYear eq {{ selected_financial_year|slice:':4' }} and budgetportal_enedata/department eq '{{ name }}'"
-                            frameborder="0" allowFullScreen="true"></iframe>
+            <div class="Page-content">   
+                <div class="Card">
+                    <div className="DeptControls">
+                        <div class="dropdown-container">
+                            <div class="dropdown-item">
+                                <label for="economic-classification-dropdown">Economic Classification</label>
+                                <div class="DeptControls-itemWrap">
+                                    <div class="DeptControls-dropdown">
+                                        <div class="PseudoSelect">
+                                            <select id="economic-classification-dropdown" class="PseudoSelect PseudoSelect-list">
+                                                <option value="">Select an option</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="dropdown-item">
+                                <label for="programme-dropdown">Programme</label>
+                                <div class="DeptControls-itemWrap">
+                                    <div class="DeptControls-dropdown">
+                                        <div class="PseudoSelect">
+                                            <select id="programme-dropdown" class="PseudoSelect PseudoSelect-list">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                
                     </div>
-                </main>
-            </div>
+                
+                    <!-- SVG for D3 Chart -->
+                    <div class="horizontalBarGraph">
+                        <label><b>SubProgramme</b></label>
+                        <svg id="horizontalBarChart"></svg>
+                        <div class="tooltip"></div>
+                    </div>
+                </div>             
+            </div>   
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const dropdown = document.getElementById("economic-classification-dropdown");
+        const progDropdown = document.getElementById("programme-dropdown");
+
+        // Function to fetch data and update the chart
+        function fetchData() {
+
+            d3.select("#horizontalBarChart").selectAll("*").remove();
+
+            const currentUrl = window.location.href;
+            const parts = currentUrl.replace("http://localhost:8000/", "").split("/").filter(Boolean);
+            const financialYear = parts[0];
+            const department = parts[3];
+
+            // Fetch data based on selected values
+            d3.json(`/get_horizontal_bar_data?econ=${encodeURIComponent(dropdown.value == "" || dropdown.value == "All"
+                     ? "" : dropdown.value)}&prog=${encodeURIComponent(progDropdown.value == "" || progDropdown.value == "All" 
+                     ? "" : progDropdown.value)}
+                     &financialYear=${encodeURIComponent(financialYear)}
+                     &department=${encodeURIComponent(department)}`)
+                .then(dataset => {
+                    if (dataset && dataset.children.length > 0) {                        
+
+                        const numBars = dataset.children.length;
+
+                        // Set dimensions for the chart
+                        const margin = { top: 30, right: 20, bottom: 30, left: 250 }; // Increased left margin for long text
+                        const barHeight = 30;  // Set bar height dynamically
+                        const height = Math.max(numBars * barHeight, 200);
+                        const width = 600;
+                        const maxBarWidth = width * 0.6;
+
+                        const svg = d3.select("#horizontalBarChart")
+                            .attr("width", width)
+                            .attr("height", height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+                        // Extract programme names and values
+                        const subprogrammes = dataset.children.map(d => d.name);
+                        const values = dataset.children.map(d => {
+                            d.formatted_value = formatValue(d.value); // Add formatted value
+                            return d.formatted_value;  // Return the formatted value
+                        });
+
+                        // Create scales
+                        const xScale = d3.scaleLinear()
+                            .domain([0, d3.max(dataset.children, d => d.value)]) // Use original values for scale
+                            .range([0, maxBarWidth- 20]);
+
+                        const yScale = d3.scaleBand()
+                            .domain(subprogrammes)
+                            .range([0, height])
+                            .padding(0.1);
+
+                        // Tooltip
+                        const tooltip = d3.select(".tooltip");
+                        
+                        // Add Y axis
+                        svg.append("g")
+                        .call(d3.axisLeft(yScale))
+                        .attr("class", "axis-label")                        
+                        .selectAll("text")
+                        .call(wrapText, 200); // Wrap text function
+
+                        // Add bars
+                        svg.selectAll(".horizontalBarChart")
+                            .data(dataset.children)
+                            .enter()
+                            .append("rect")
+                            .attr("class", "horizontalBarChart")
+                            .attr("y", d => yScale(d.name))
+                            .attr("width", d => Math.min(xScale(d.value), maxBarWidth))  // Limit bar width
+                            .attr("height", yScale.bandwidth())
+                            .on("mouseover", function (d) {
+                                const [x, y] = d3.pointer(event, this);
+                                tooltip.style("display", "block")
+                                .html(`<strong>${d.name}</strong><br>Budget: ${d.value.toLocaleString()}`)
+                                    .style("left", `${x + 10}px`)
+                                    .style("top", `${y}px`);
+                            })
+                            // .on("mouseout", () => tooltip.style("display", "none"));
+
+                        // Add labels
+                        svg.selectAll(".label")
+                            .data(dataset.children)
+                            .enter()
+                            .append("text")
+                            .attr("x", d => { 
+                                let barWidth = Math.min(xScale(d.value), maxBarWidth);
+                                return barWidth < 50 ? barWidth + 10 : barWidth - 60; 
+                            })
+                            .attr("y", d => yScale(d.name) + yScale.bandwidth() / 2)
+                            .attr("dy", ".35em")
+                            .attr("text-anchor", d => {
+                                let barWidth = Math.min(xScale(d.value), maxBarWidth);
+                                return barWidth < 50 ? "start" : "end"; // Align text to the right for long bars
+                            })
+                            .text(d => d.formatted_value)
+                            .style("fill", d => {
+                                let barWidth = Math.min(xScale(d.value), maxBarWidth);
+                                return barWidth < 50 ? "black" : "white"; // Change color for visibility
+                            })
+                            .style("font-size", "12px");
+                    }
+                });
+        }
+
+        // Set event listeners for the dropdowns
+        dropdown.addEventListener('change', fetchData);
+        progDropdown.addEventListener('change', fetchData);
+
+        // Initial data fetch to populate the dropdowns and chart
+        fetchData();
+
+        const currentUrl = window.location.href;
+        const parts = currentUrl.replace("http://localhost:8000/", "").split("/").filter(Boolean);
+        const financialYear = parts[0];
+        const department = parts[3];
+
+        // Fetch and populate the economic classification dropdown
+        d3.json(`/get_economicClassification/?financialYear=${encodeURIComponent(financialYear)}
+                    &department=${encodeURIComponent(department)}`).then(data => {
+            const econ = typeof data === "string" ? JSON.parse(data) : data;
+
+            if (!econ || econ.length === 0) {
+                console.error("No data received");
+                return;
+            }
+
+            dropdown.innerHTML = '<option value="">All</option>';
+            econ.forEach((item, index) => {
+                const option = document.createElement("option");
+                option.value = item;
+                option.textContent = item;
+                dropdown.appendChild(option);
+            });
+        }).catch(error => console.error("Error fetching economic classification data:", error));
+       
+        d3.json(`/get_programmes?financialYear=${encodeURIComponent(financialYear)}
+                    &department=${encodeURIComponent(department)}
+                    &econ=${encodeURIComponent('')}`)
+                    .then(data => {
+            const prog = typeof data === "string" ? JSON.parse(data) : data;
+
+            if (!prog || prog.length === 0) {
+                console.error("No data received");
+                return;
+            }
+
+            progDropdown.innerHTML = '<option value="">All</option>';
+            prog.forEach((item, index) => {
+                const option = document.createElement("option");
+                option.value = item;
+                option.textContent = item;
+                progDropdown.appendChild(option);
+            });
+        }).catch(error => console.error("Error fetching programmes data:", error));
+
+        // Text wrapping function        
+        function wrapText(text, width) {
+            text.each(function () {
+                let words = d3.select(this).text().split(/\s+/).reverse(),
+                    word,
+                    line = [],
+                    lineNumber = 0,
+                    lineHeight = 1.1,
+                    y = d3.select(this).attr("y"),
+                    dy = parseFloat(d3.select(this).attr("dy")) || 0,
+                    tspan = d3.select(this).text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+
+                while (word = words.pop()) {
+                    line.push(word);
+                    tspan.text(line.join(" "));
+                    if (tspan.node().getComputedTextLength() > width) {
+                        line.pop();
+                        tspan.text(line.join(" "));
+                        line = [word];
+                        tspan = d3.select(this).append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+                    }
+                }
+            });
+        }
+
+        // Value formatting function
+        function formatValue(value) {
+            if (value >= 1e12) {
+                return `R ${(value / 1e12).toFixed(1).toLocaleString()} trillion`; // Trillions
+            } else if (value >= 1e9) {
+                return `R ${(value / 1e9).toFixed(1).toLocaleString()} billion`; // Billions
+            } else if (value >= 1e6) {
+                return `R ${(value / 1e6).toFixed(1).toLocaleString()} millions`; // Millions
+            } else if (value >= 1e3) {
+                return `R ${(value / 1e3).toFixed(1).toLocaleString()} thousands`; // Thousands
+            } else {
+                return 'R ' + value.toLocaleString(); // Default formatting
+            }
+        }
+   });
+</script>

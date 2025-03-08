@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Chart</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .bubble { fill-opacity: 0.6; }
+        text { font-size: 12px; text-anchor: middle; }
+    </style>
+</head>
+<body>
+
+    <h2>Budget Bubble Chart</h2>
+    <svg width="800" height="600"></svg>
+
+    <!-- Pass JSON safely using Django's json_script -->
+    <script id="dataset" type="application/json">{{ dataset_json|safe }}</script>
+
+    <script>
+        var rawData = document.getElementById("dataset").textContent;
+    
+        try {
+            var dataset = JSON.parse(rawData);
+        } catch (error) {
+            console.error("JSON Parse Error:", error);
+            var dataset = { "children": [{"Name": "No Data", "Count": 0}] };
+        }
+    
+        console.log("Dataset:", dataset); // Debugging
+    
+        var width = 800, height = 600;
+        var svg = d3.select("svg")
+            .attr("width", width)
+            .attr("height", height);
+    
+        var pack = d3.pack()
+            .size([width, height])
+            .padding(5);
+    
+        var root = d3.hierarchy(dataset).sum(d => d.Count);
+        var nodes = pack(root).leaves();
+        
+        var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+    
+        var bubbles = svg.selectAll("circle")
+            .data(nodes)
+            .enter()
+            .append("circle")
+            .attr("class", "bubble")
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y)
+            .attr("r", d => d.r)
+            .style("fill", (d, i) => colorScale(i))
+            .style("cursor", "pointer")
+            .on("click", function(event, d) {
+                console.log("clicked")
+                console.log("clicked item " + d.data.Name)
+                showSelectedInfo(d);
+            });
+    
+        function truncateText(text, maxWidth) {
+            if (!text) return "";
+            let truncated = text;
+            const avgCharWidth = 6;
+            const maxChars = Math.floor(maxWidth / avgCharWidth);
+    
+            if (text.length > maxChars) {
+                truncated = text.substring(0, maxChars - 2) + "...";
+            }
+            return truncated;
+        }
+    
+        var labels = svg.selectAll("text")
+            .data(nodes)
+            .enter()
+            .append("text")
+            .attr("x", d => d.x)
+            .attr("y", d => d.y)
+            .text(d => truncateText(d.data.Name, d.r * 2))
+            .attr("dy", ".3em")
+            .attr("text-anchor", "middle")
+            .style("font-size", d => Math.max(d.r * 0.2, 10) + "px")
+            .style("fill", "white")
+            .style("pointer-events", "none");
+    
+        function showSelectedInfo(d) {
+            console.log(`Programme: ${d.data.Name}, Value: ${d.data.Count}`)
+            
+            var selected = document.getElementById("selected-info");
+            selected.textContent = `Programme: ${d.data.Name}, Value: ${d.data.Count}`;
+            
+        }
+    </script>
+    
+    
+    
+    <div id="selected-info" style="font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 10px;">
+        Click a bubble to see details
+    </div>
+    <svg></svg>   
+    
+    
+
+</body>
+</html>

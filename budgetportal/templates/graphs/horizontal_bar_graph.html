@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizontal Bar Chart</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-bold text-center mb-4">Filtered Horizontal Bar Chart</h1>
+    
+        <!-- Dropdown Filters -->
+        <div class="flex flex-wrap gap-4 justify-center mb-6">
+            <div class="w-64">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Economic Classification</label>
+                <select id="economicClassificationSelect" multiple 
+                    class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300">
+                </select>
+            </div>
+    
+            <div class="w-64">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Programme</label>
+                <select id="programmeSelect" multiple 
+                    class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300">
+                </select>
+            </div>
+        </div>
+    
+        <!-- SVG for D3 Chart -->
+        <div class="w-full overflow-x-auto">
+            <svg id="barChartTest" class="w-full h-auto"></svg>
+            <div class="tooltip"></div>
+        </div>
+    </div>
+            
+
+            <script id="dataset" type="application/json">{{ dataset_json|safe }}</script>
+
+            <script>
+                // Sample dataset (Replace this with your JSON data)
+                
+                var rawData = document.getElementById("dataset").textContent;
+            
+                try {
+                    var dataset = JSON.parse(rawData);
+                } catch (error) {
+                    console.error("JSON Parse Error:", error);
+                    var dataset = { "children": [{"Name": "No Data", "Count": 0}] };
+                }
+                const econFilter = d3.select("#economicFilter");
+
+                const programme = ["All", ...new Set(dataset.children.map(d => d.name))];
+                console.log(programme)
+
+                //pupulate programmes
+                const programmeFilter = d3.select("#programmeFilter");
+                programmeFilter.selectAll("option")
+                    .data(programme)
+                    .enter()
+                    .append("option")
+                    .text(d => d)
+                    .attr("value", d => d);
+
+                let econ = []
+                d3.json('/get_economicClassification/').then(data => {
+                    econ = JSON.parse(data)
+
+                    econFilter.selectAll("option")
+                    .data(econ)
+                    .enter()
+                    .append("option")
+                    .text(d => d)
+                    .attr("value", d => d);
+                })
+                // const econList = economicClassifications.flat(Infinity);               
+               
+
+                // Set dimensions
+                const margin = {top: 30, right: 20, bottom: 30, left: 200},
+                    width = 800 - margin.left - margin.right,
+                    height = 500 - margin.top - margin.bottom;
+
+                const svg = d3.select("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+                // Extract programme names and values
+                const programmes = dataset.children.map(d => d.name);
+                const values = dataset.children.map(d => d.value);
+
+                // Create scales
+                const xScale = d3.scaleLinear()
+                                .domain([0, d3.max(values)])
+                                .range([0, width/1.5]);
+
+                const yScale = d3.scaleBand()
+                                .domain(programmes)
+                                .range([0, height])
+                                .padding(0.2);
+
+                // Add X axis
+                //svg.append("g")
+                //    .attr("transform", `translate(0, ${height})`)
+                //    .call(d3.axisBottom(xScale).ticks(5))
+                //    .attr("class", "axis-label");
+
+                // Add Y axis
+                svg.append("g")
+                .call(d3.axisLeft(yScale))
+                .attr("class", "axis-label");
+
+                // Tooltip
+                const tooltip = d3.select(".tooltip");
+
+                // Add bars
+                svg.selectAll(".bar")
+                .data(dataset.children)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("y", d => yScale(d.name))
+                .attr("width", d => xScale(d.value))
+                .attr("height", yScale.bandwidth())
+                .on("mouseover", (event, d) => {
+                    tooltip.style("display", "block")
+                            .html(`<strong>${event.name}</strong><br>Budget: ${event.value.toLocaleString()}`)
+                            .style("left", `${event.pageX + 10}px`)
+                            .style("top", `${event.pageY}px`);
+                })
+                .on("mouseout", () => tooltip.style("display", "none"));
+
+                // Add labels
+                svg.selectAll(".label")
+                .data(dataset.children)
+                .enter()
+                .append("text")
+                .attr("x", d => xScale(d.value) + 5)
+                .attr("y", d => yScale(d.name) + yScale.bandwidth() / 2)
+                .attr("dy", ".35em")
+                .text(d => d.value.toLocaleString())
+                .style("font-size", "12px");
+            </script>
+    </div>
+</body>
+</html>

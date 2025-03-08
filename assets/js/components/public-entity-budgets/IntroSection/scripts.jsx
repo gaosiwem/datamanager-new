@@ -55,7 +55,7 @@ function scripts() {
 
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    const innerHtml = node.getElementsByClassName('js-content')[0].innerHTML;
+    const innerHtml = node.getElementsByClassName('IntroSection-text')[0].innerHTML;
 
     ReactDOM.render(
       <IntroSectionContainer {...{ innerHtml }} />,

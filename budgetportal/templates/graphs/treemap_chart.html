@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Treemap</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .node { stroke: white; stroke-width: 2px; cursor: pointer; }
+        .selected-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Budget Allocation Treemap</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div class="chart-container" style="width: 48%; height: 80vh;" id="heatmap1"></div>
+        <div class="chart-container" style="width: 48%; height: 80vh;" id="heatmap2"></div>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+    <div class="selected-treemap-info" id="selected-info">Click a box to see details</div>
+
+    <script id="dataset" type="application/json">{{ dataset_json|safe }}</script>
+
+    <script>
+        const margin = { top: 20, right: 10, bottom: 30, left: 10 },
+              width = window.innerWidth * 0.45, // Adjusted for two charts
+              height = window.innerHeight * 0.8;
+
+        function createTreemap(containerId, data, onClickCallback = null) {
+            const svg = d3.select(`#${containerId}`)
+                          .append("svg")
+                          .attr("width", width)
+                          .attr("height", height);
+
+            const tooltip = d3.select("#tooltip");
+
+            const root = d3.hierarchy(data)
+                           .sum(d => Math.log1p(d.value*0.2 || 1)) 
+                           .sort((a, b) => b.value - a.value);
+
+            const treemap = d3.treemap()
+                              .size([width, height])
+                              .padding(3);
+            treemap(root);
+
+            const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+            const nodes = svg.selectAll("g")
+                             .data(root.leaves())
+                             .enter().append("g")
+                             .attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+            nodes.append("rect")
+                 .attr("class", "node")
+                 .attr("width", d => d.x1 - d.x0)
+                 .attr("height", d => d.y1 - d.y0)
+                 .attr("fill", d => color(d.data.name))
+                 .on("mouseover", function (event, d) {
+                     tooltip.style("display", "block")
+                            .html(`<strong>${d.data.name}</strong><br>Value: ${d.data.value}`)
+                            .style("left", `${event.pageX + 10}px`)
+                            .style("top", `${event.pageY + 10}px`);
+                 })
+                 .on("mouseout", () => tooltip.style("display", "none"))
+                 .on("click", function (event, d) {
+                     if (onClickCallback) {
+                         onClickCallback(d.data.name);
+                     }
+                 });
+
+            nodes.append("text")
+                 .attr("x", 5)
+                 .attr("y", 20)
+                 .attr("fill", "white")
+                 .style("font-size", "14px")
+                 .text(d => d.data.name);
+
+            nodes.append("text")
+                 .attr("x", d => (d.x1 - d.x0) / 3)
+                 .attr("y", d => (d.y1 - d.y0) / 2)
+                 .attr("fill", "white")
+                 .style("font-size", "16px")
+                 .text(d => d.data.value);
+        }
+
+        let rawData = document.getElementById("dataset").textContent;
+        let dataset;
+
+        try {
+            dataset = JSON.parse(rawData);
+            
+        } catch (error) {
+            console.error("JSON Parse Error:", error);
+            dataset = { "name": "root", "children": [{"name": "No Data", "value": 0}] };
+        }
+
+        dataset.children = dataset.children.map(d => ({
+            name: d.Name || d.name, 
+            value: d.Count || d.value,
+            subprogrammes: d.children || []
+        }));
+
+        function updateSubProgrammeTreemap(programmeName) {
+            console.log("progname")
+            console.log(programmeName)
+            const selectedProgramme = dataset.children.find(d => d.name === programmeName);
+            console.log(selectedProgramme)
+
+            const subProgrammeData = {
+                name: "root",
+                children: selectedProgramme ? selectedProgramme.subprogrammes.map(sub => ({
+                    name: sub.name,
+                    value: sub.value
+                })) : []  // Ensure subprogrammes are extracted properly
+            };
+
+            d3.select("#heatmap2 svg").remove();
+            createTreemap("heatmap2", subProgrammeData);
+        }
+
+        createTreemap("heatmap1", dataset, updateSubProgrammeTreemap);
+        createTreemap("heatmap2", dataset, updateSubProgrammeTreemap);
+    </script>
+
+</body>
+</html>

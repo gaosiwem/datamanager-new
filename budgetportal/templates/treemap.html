@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Treemap</title>
+    <!-- Optionally include your own styles here -->
+    <style>
+        /* Set the chart container to be responsive */
+        .plotly-graph-div {
+            margin: 0 auto;
+            width: 100%;  /* Take up 100% width of the parent container */
+            height: 500px;  /* Fixed height initially, but you can adjust as needed */
+        }
+
+        /* Adjust the height for smaller screens */
+        @media (max-width: 768px) {
+            .plotly-graph-div {
+                height: 300px;  /* Smaller height on mobile */
+            }
+        }
+
+        /* Further adjustments for larger screens */
+        @media (min-width: 1024px) {
+            .plotly-graph-div {
+                height: 600px;  /* Larger height for desktop */
+            }
+        }
+    </style>
+</head>
+<body>
+        <!-- Embed Plotly chart here -->
+        {{ graph_html|safe }}
+</body>
+</html>

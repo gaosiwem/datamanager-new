@@ -1,6 +1,6 @@
 // Get JSON data from data-public-entities-bubbles attribute
 const data = JSON.parse(
-  document.getElementById("vis").attributes["data-public-entities-bubbles"]
+  document.getElementById("#vis").attributes["data-public-entities-bubbles"]
     .value
 );
 

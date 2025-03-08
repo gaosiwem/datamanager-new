@@ -322,13 +322,13 @@ def validate_report_type(full_text, obj_id):
 
 def save_imported_dataset(obj_id):
 
-    import_dataset(obj_id)
+    # import_dataset(obj_id)
 
-    # async_task(
-    #     import_dataset(obj_id),
-    #     id=obj_id,
-    #     task_name="Import dataset",
-    # )   
+    async_task(
+        import_dataset(obj_id),
+        id=obj_id,
+        task_name="Import dataset",
+    )   
 
 
 class DatasetUploadAdmin(admin.ModelAdmin):
@@ -340,9 +340,9 @@ class DatasetUploadAdmin(admin.ModelAdmin):
         # It looks like the task isn't saved synchronously, so we can't set the
         # task as a related object synchronously. We have to fetch it by its ID
         # when we want to see if it's available yet.
-        save_imported_dataset(obj.id)
-        # obj.task_id = async_task(func=save_imported_dataset, obj_id=obj.id)
-        # obj.save()
+        # save_imported_dataset(obj.id)
+        obj.task_id = async_task(func=save_imported_dataset, obj_id=obj.id)
+        obj.save()
 
     def processing_completed(self, obj):
         task = fetch(obj.task_id)

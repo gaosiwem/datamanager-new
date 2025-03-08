@@ -165,7 +165,6 @@ const CallToActionButton = styled(Button)`
     &:hover {
       background: ${darken(0.1, '#79B443')};
     }
-
     @media screen and (min-width: 650px) {
       position: absolute;
       top: 50%;

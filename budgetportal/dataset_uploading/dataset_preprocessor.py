@@ -110,10 +110,8 @@ def import_dataset(obj_id):
                 financialYear=item["FinancialYear"],
                 budgetPhase=item["BudgetPhase"],
                 value=item["Value"],
-            )
-
-        resource = ENEResource()
-        return resource.import_data(preprocessed_dataset)
+            )      
+        
 
     elif obj.type == "Consolidation":
         preprocessed_dataset = preprocess(dataset, CONSOLIDATED_HEADERS)
@@ -128,9 +126,6 @@ def import_dataset(obj_id):
                 financialYear=item["FinancialYear"],
                 value=item["Value"],
             )
-
-        resource = ConsolidationResource()
-        return resource.import_data(preprocessed_dataset)
     
     elif obj.type == "EPRE":
         preprocessed_dataset = preprocess(dataset, EPRE_HEADERS)
@@ -162,9 +157,6 @@ def import_dataset(obj_id):
                 value=item["Value"],
             )
 
-        resource = EPREResource()
-        return resource.import_data(preprocessed_dataset)
-
     elif obj.type == "Budget-vs-Actual-National":
         preprocessed_dataset = preprocess(dataset, BUDGET_ACTUAL_HEADERS)
 
@@ -195,8 +187,6 @@ def import_dataset(obj_id):
                 value=item["Value"],                
             )
 
-        resource = BudgetVSActualResource()
-        return resource.import_data(preprocessed_dataset)
     elif obj.type == "Budget-vs-Actual-Provincial":
         preprocessed_dataset = preprocess(dataset, BUDGET_ACTUAL_HEADERS)
 
@@ -227,9 +217,22 @@ def import_dataset(obj_id):
                 value=item["Value"],                
             )
 
-        resource = BudgetVSActualResource()
-        return resource.import_data(preprocessed_dataset)
+    dataset = Dataset()
 
+    if preprocessed_dataset:
+        dataset.headers = preprocessed_dataset[0].keys()  # Set headers
+
+        # Append rows
+        for row in preprocessed_dataset:
+            dataset.append(row.values())  # Add dat
+
+    resource = ENEResource()
+    result = resource.import_data(dataset, dry_run=True)  # Test first
+
+    print(result.has_errors())  # Check if any errors occur
+
+    if not result.has_errors():
+        return resource.import_data(dataset, dry_run=False)
 
 class ENEResource(resources.ModelResource):
     voteNumber = Field(

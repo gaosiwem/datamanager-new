@@ -54,14 +54,183 @@
         {% endif %} -->
         <div class="EconClassPackedCirclesSection-item EconClassPackedCirclesSection-item--right">
             <div class="Page-content">
-                <main>
-                    <div class="powerbi-container">
-                        <iframe class="w-full h-[75vh]"
-                            src="http://5cg2126by0/Vulekamali-Report/powerbi/Classification%20of%20Spending?rs:embed=true&chromeless=true&filter=budgetportal_enedata/financialYear eq {{ selected_financial_year|slice:':4' }} and budgetportal_enedata/department eq '{{ name }}'"
-                            frameborder="0" allowFullScreen="true"></iframe>
-                    </div>
-                </main>
+                <div class="Card">
+                    <!-- Get programes -->
+                     <div class="bubbleChartMainContainer">
+                        <div class="bubbleChartLegendContainer">
+                            <label>PROGRAMME</label>
+                            <div class="bubbleChartLegend" id="programme-legend"></div>
+                        </div>
+
+                        <div class="bubbleChartContainer">
+                            <label>ECONOMIC CLASSIFICATION</label>
+                            <p id="selected-econ-programme"></p>
+                            <p id="selected-econ"></p>
+                            <p id="selected-econ-value"></p>
+                            <svg id="bubble_graph_svg" width="600" height="500"></svg>                            
+                        </div>
+
+                    <script id="bubble_graph" type="application/json">{{ bubble_graph|safe }}</script>
+                    <!-- <div class="legend"> Budget (Main appropriation) {{ selected_financial_year }}</div> -->
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+        var rawData = document.getElementById("bubble_graph");
+        let dataset;
+    
+        if (rawData) {
+            try {
+            dataset = JSON.parse(rawData.textContent);
+            console.log(dataset)
+
+            var width = 400, height = 400;
+            var svg = d3.select("#bubble_graph_svg")
+            .attr("width", width)
+            .attr("height", height);
+        
+            var pack = d3.pack()
+                .size([width, height])
+                .padding(12);
+        
+            var root = d3.hierarchy(dataset).sum(d => d.Count);
+            var nodes = pack(root).leaves();
+            
+            const color = d3.scaleOrdinal()
+                            .domain(["Category1", "Category2", "Category3", "Category4", , "Category5", , "Category6", , "Category7"])
+                            .range(["#2B3BB0", "#85294E", "#1A4641", "#27605C", "#F08B32", "#4C362C", "#6A4D42"]);
+        
+            var bubbles = svg.selectAll("circle")
+                .data(nodes)
+                .enter()
+                .append("circle")                       
+                .attr("class", "bubble")
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y)
+                .attr("r", d => Math.max(d.r, 20)) 
+                .attr("fill", d => color(d.data.Name))
+                .style("cursor", "pointer")
+                .on("click", function(event, d) {
+                    console.log("clicked")
+                    console.log(event)
+                    showSelectedInfo(event.data.Name, event.data.Count, event.data.Programme);
+                });
+        
+            function truncateText(text, maxWidth) {
+                if (!text) return "";
+                let truncated = text;
+                const avgCharWidth = 6;
+                const maxChars = Math.floor(maxWidth / avgCharWidth);
+        
+                if (text.length > maxChars) {
+                    truncated = text.substring(0, maxChars - 2) + "...";
+                }
+                return truncated;
+            }
+        
+            var labels = svg.selectAll("text")
+                .data(nodes)
+                .enter()
+                .append("text")
+                .attr("x", d => d.x)
+                .attr("y", d => d.y)
+                .text(d => truncateText(d.data.Name, d.r * 2.5))
+                .attr("dy", ".3em")
+                .attr("text-anchor", "middle")
+                .style("font-size", d => Math.max(d.r * 0.3, 8) + "px")
+                .style("fill", "white")
+                .style("pointer-events", "none")
+                .style("cursor", "pointer");
+        
+            function showSelectedInfo(name, value, programme) {
+                // console.log(`Programme: ${name}, Value: ${d.data.Count}`)
+                
+                var selected = document.getElementById("selected-econ");
+                var selectedValue = document.getElementById("selected-econ-value");
+                var selectedProgramme = document.getElementById("selected-econ-programme");
+                selected.innerHTML = name
+                selectedValue.innerHTML = "R " + value.toLocaleString()
+                selectedProgramme.innerHTML = programme               
+                              
+            }
+
+            // d3.json(`/get_programmes?&financialYear=${encodeURIComponent(financialYear)}
+            //         &department=${encodeURIComponent(department)}
+            //         &econ=${encodeURIComponent('')}`).then(data => {
+
+            // const prog = typeof data === "string" ? JSON.parse(data) : data;
+
+            // if (!prog || prog.length === 0) {
+            //     console.error("No data received");
+            //     return;
+            // }
+            // });
+
+            // showSelectedInfo(dataset.children[dataset.children.length - 1].Name, dataset.children[dataset.children.length - 1].Count);
+
+        } catch (error) {
+            console.error("JSON Parse Error:", error);
+            dataset = { name: "root", children: [{ name: "No Data", value: 0 }] };
+        }
+
+        const currentUrl = window.location.href;
+        const parts = currentUrl.replace("http://localhost:8000/", "").split("/").filter(Boolean);
+        const financialYear = parts[0];
+        const department = parts[3];
+
+        //Get programmes for legend
+        d3.json(`/get_programmes?financialYear=${encodeURIComponent(financialYear)}
+                    &department=${encodeURIComponent(department)}
+                    &econ=${encodeURIComponent('')}`).then(data => {
+
+            const prog = typeof data === "string" ? JSON.parse(data) : data;
+
+            if (!prog || prog.length === 0) {
+                console.error("No data received");
+                return;
+            } 
+            else {
+                const color = d3.scaleOrdinal()
+                            .domain(["Category1", "Category2", "Category3", "Category4", , "Category5", , "Category6", , "Category7"])
+                            .range(["#2B3BB0", "#85294E", "#1A4641", "#27605C", "#F08B32", "#4C362C", "#6A4D42"]);
+                            
+                var legendContainer = document.getElementById("programme-legend");
+                prog.forEach((program, index) => {
+                var legendItem = document.createElement("div");
+                legendItem.style.display = "flex";
+                legendItem.style.alignItems = "center";
+                legendItem.style.marginBottom = "5px";              
+                
+
+                var colorBox = document.createElement("div");
+                colorBox.style.width = "10px";
+                colorBox.style.height = "10px";
+                colorBox.style.backgroundColor = color(program);
+                colorBox.style.marginRight = "10px";
+                colorBox.style.borderRadius = "50%"; 
+
+                var label = document.createElement("span");
+                label.textContent = truncateText(program, 180);
+
+                legendItem.appendChild(colorBox);
+                legendItem.appendChild(label);
+                legendContainer.appendChild(legendItem);
+            });
+
+            }
+        });
+
+        } else {
+            console.error("bubble graph data not found!");
+            dataset = { name: "root", children: [{ name: "No Data", value: 0 }] };
+        }  
+        
+});
+
+</script>

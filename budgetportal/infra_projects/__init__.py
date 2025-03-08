@@ -6,6 +6,7 @@ from import_export.fields import Field
 from import_export.instance_loaders import ModelInstanceLoader
 from import_export.widgets import ForeignKeyWidget
 from tablib import Databook
+from tablib import Dataset
 
 from budgetportal.models import InfraProjectSnapshot
 
@@ -259,9 +260,22 @@ def import_snapshot(snapshot):
             IRM_project_id["irm_snapshot"] = snapshot.id
             IRM_project_id["sphere_slug"] = snapshot.sphere.slug
             
+    dataset = Dataset()
+
+    if preprocessed_dataset:
+        dataset.headers = preprocessed_dataset[0].keys()  # Set headers
+
+        # Append rows
+        for row in preprocessed_dataset:
+            dataset.append(row.values())  # Add dat
+
     resource = InfraProjectSnapshotResource()
-    result = resource.import_data(preprocessed_dataset)
-    return result
+    result = resource.import_data(dataset, dry_run=True)  # Test first
+
+    print(result.has_errors())  # Check if any errors occur
+
+    if not result.has_errors():
+        return resource.import_data(dataset, dry_run=False)
 
 # def import_snapshot(snapshot):
 #     file = snapshot.file.read()

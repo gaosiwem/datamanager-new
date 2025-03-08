@@ -1,0 +1,48 @@
+.horizontalBarChart {
+    fill: gray;
+}
+/* Ensure the container takes full width and adjusts based on content */
+.dropdown-container {
+    display: flex;
+    flex-direction: row;
+    gap: 15px; /* Space between dropdown items */
+    width: 100%;
+}
+
+/* Align label and select element properly */
+.dropdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the start of the container */
+}
+
+/* Ensure select boxes fill available space */
+.PseudoSelect select {
+    width: 100%; /* Make sure select fills the container */
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Optional: Adding some styles for the wrapper elements for better UI */
+.DeptControls-itemWrap {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* For dropdown elements, make sure select boxes have a consistent width */
+.PseudoSelect {
+    width: 100%;
+}
+
+.horizontalBarGraph {
+    width: auto;
+    padding-top: 20px;
+}
+
+.horizontalBarGraph svg {
+    width: auto;
+    height: auto;
+}

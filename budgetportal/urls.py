@@ -11,10 +11,12 @@ from django.views.decorators.cache import cache_page
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
+from django.conf.urls.static import static
 
 from . import views
 
 CACHE_MINUTES_SECS = 60 * 5  # minutes
+
 
 department_urlpatterns = [
     url(
@@ -30,6 +32,14 @@ urlpatterns = [
         cache_page(CACHE_MINUTES_SECS)(views.glossary),
         name="glossary",
     ),
+
+    url(r'^bubble_chart/', views.bubble_graph, name='bubble_chart'),
+    url(r'^treemap_graph/', views.treemap_chart, name='treemap'),
+    url(r'^get_economicClassification/', views.get_economicClassification, name='econ'),
+    url(r'^get_horizontal_bar_data/', views.get_horizontal_bar_data, name='getGraphData'),
+    url(r'^get_programmes/', views.get_programmes, name='getProg'),
+    url(r'^budget-summary/', cache_page(CACHE_MINUTES_SECS)(views.budget_summary), name='budget_summary'),    
+    
     url(
         r"^learning-resources/?$",
         lambda request: redirect(
@@ -142,4 +152,11 @@ urlpatterns = [
     url(r"^cms/", include(wagtailadmin_urls)),
     url(r"^documents/", include(wagtaildocs_urls)),
     url(r"^", include(wagtail_urls)),
+    
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

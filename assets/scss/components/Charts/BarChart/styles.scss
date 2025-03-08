@@ -1,0 +1,26 @@
+.barChart {
+    fill: #ad3c64;
+}
+
+.axis-label {
+    font-size: 12px;
+}
+
+.axis path,
+
+.axis line {
+    fill: none;
+    shape-rendering: crispEdges;
+}
+
+.chart-container {
+    width: 48%;
+    height: 60vh;
+  }
+
+  @media (max-width: 768px) {
+    .chart-container {
+      width: 100%;
+      height: 50vh;
+    }
+  }

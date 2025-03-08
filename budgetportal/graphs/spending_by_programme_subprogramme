@@ -1,0 +1,31 @@
+import plotly.express as px
+import pandas as pd
+import json
+from django.shortcuts import render
+from django.db.models import Sum
+from .models import ENEData
+
+
+def treemap_view(request, financial_year, department):
+    # Fetch and filter data from the database
+    queryset = ENEData.objects.filter(financialYear=financial_year, department=department) \
+                              .values("programme") \
+                              .annotate(total_value=Sum("value"))
+
+    df = pd.DataFrame(list(queryset))
+
+    if df.empty:
+        return render(request, "treemap.html", {"plot_json": None, "error": "No data found for the given filters."})
+
+    # Create the Plotly Treemap
+    fig = px.treemap(df, 
+                     path=["programme"], 
+                     values="total_value",
+                     color="total_value",
+                     color_continuous_scale="blues",
+                     title=f"Budget Allocation by Programme ({financial_year}, {department})")
+
+    # Convert Plotly figure to JSON
+    plot_json = json.dumps(fig, cls=px.utils.PlotlyJSONEncoder)
+
+    return render(request, "treemap.html", {"plot_json": plot_json, "error": None})

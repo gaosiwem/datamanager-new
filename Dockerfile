@@ -44,6 +44,12 @@ RUN poetry config installer.max-workers 1
 RUN pip install django-allauth==0.41.0 --no-use-pep517
 RUN pip install mssql-django==1.1.3
 RUN pip install pyodbc
+# RUN pip install plotly
+# RUN pip install pandas
+# RUN pip install numpy
+# RUN pip install pyexcel
+# RUN pip install pyexcel-xls
+# RUN pip install pyexcel-xlsx
 
 
 # Copy, then install requirements before copying rest for a requirements cache layer.
@@ -64,6 +70,11 @@ RUN set -ex; \
 
 USER containeruser
 
+RUN mkdir -p /app/budgetportal/static
+
+EXPOSE 8000
+
 WORKDIR /app
 
-CMD /app/bin/start.sh
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app.wsgi:application"]
+# CMD /app/bin/start.sh

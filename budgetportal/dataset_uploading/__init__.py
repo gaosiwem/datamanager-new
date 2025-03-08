@@ -18,15 +18,18 @@ def preprocess(input_dataset, base_headers):
     for row in input_dataset:
         try:
             if not row_is_empty(row):
-                processed_row = preprocess_row(row, base_headers)                
+                processed_row = preprocess_row(row, base_headers)
                 # Convert row to dictionary with base_headers as keys
-                processed_dict = {
-                    base_headers[i]: processed_row[i] for i in range(len(base_headers))}
-                
+                processed_dict = {base_headers[i]: processed_row[i] for i in range(len(base_headers))}
+                # if filter_column and filter_value:
+                #     column_index = base_headers.index(filter_column)
+                #     if row[column_index] == filter_value:
+                #         output_dataset.append(processed_dict)
+                # else:
                 output_dataset.append(processed_dict)
-        except Exception:
-            print("Error occured while processing")
-            print(row)
+        except Exception as e:
+            print(f"Error occurred while processing row: {row}")
+            print(f"Error: {e}")
     
     return output_dataset
 
@@ -35,5 +38,5 @@ def row_is_empty(row):
 
 
 def preprocess_row(row, base_headers):
-    base_columns = list(row[: len(base_headers)])
+    base_columns = row[: len(base_headers)]
     return base_columns

@@ -11,6 +11,24 @@ from django.db.models import Count
 from django.urls import reverse
 from django.db.models import F
 import os
+from decimal import Decimal
+from django.http import JsonResponse
+from operator import itemgetter
+
+
+
+# import numpy as np
+
+# import plotly.express as px
+# import plotly.graph_objects as go
+# import plotly.io as pio
+# from plotly.subplots import make_subplots
+
+# import pandas as pd
+import json
+from django.shortcuts import render
+from django.db.models import Sum
+from .models import ENEData
 
 from public_entities.models import PublicEntity
 
@@ -29,7 +47,9 @@ from .models import (
     DatasetCategory,
     Dataset,
     DatasetResource,
-    BudgetVSActualNationalData
+    BudgetVSActualNationalData,
+    ConsolidationData,
+    BudgetVSActualProvincialData
 )
 
 COMMON_DESCRIPTION = "South Africa's National and Provincial budget data "
@@ -212,6 +232,7 @@ def department_list_data(financial_year_id):
 
     for sphere_name in ("national", "provincial"):
         page_data[sphere_name] = []
+        print(selected_year.spheres)
         for government in (
             selected_year.spheres.filter(
                 slug=sphere_name).first().governments.all()
@@ -540,7 +561,7 @@ def department_page(
         # "budget_actual": department.get_expenditure_time_series_summary(),
         "budget_actual_programmes": (
             BudgetVSActualNationalData.objects.filter(
-                department='National Treasury', financialYear=2024
+                department=department.name, financialYear=selected_year.slug[:4]
             )
             .values_list('programme', flat=True)
             .distinct()
@@ -597,6 +618,18 @@ def department_page(
         #     )
         # ),
         "vote_number": department.vote_number,
+        "treemap_chart" : treemap_chart(selected_year.slug[:4], department.name),
+        "bubble_graph" : bubble_graph(selected_year.slug[:4], department.name),
+        "historical_expenditure" : historical_expenditure(department.name),
+        "budget_actual_programme" : budget_actual_programme(department.name, selected_year.slug[:4]),
+        "budget_actual_spending" : budget_actual_spending(department.name),        
+        
+        # "horizontal_bar_graph": horizontal_bar_graph(selected_year.slug[:4], department.name),
+        # "histogram_graph": histogram_graph(department.name),
+        # "spend_programme_graph": spend_programme_graph(department.name),
+        
+        
+        
         # "vote_primary": {
         #     "url_path": primary_department.get_url_path(),
         #     "name": primary_department.name,
@@ -743,7 +776,6 @@ def dataset_page(request, category_slug, dataset_slug):
     # context["comments_enabled"] = settings.COMMENTS_ENABLED
     return render(request, "government_dataset.html", context)
 
-
 def dataset_category_page(request, category_slug):
     context = dataset_category_context(category_slug)
     context["navbar"] = MainMenuItem.objects.prefetch_related("children").all()
@@ -772,3 +804,348 @@ def download_resource(request, category_slug, datasetresource_file):
     except FileNotFoundError:
         raise Http404("File not found.")
     
+def bubble_graph(financialYear, department):
+    queryset = ENEData.objects.filter(financialYear=financialYear, department=department) \
+        .values("economicClassification4","programme") \
+        .annotate(total_value=Sum("value"))
+
+    # Convert queryset to list of dictionaries
+    data_list = list(queryset)
+
+    # Sort by total_value (ascending order)
+    sorted_data = sorted(data_list, key=itemgetter("total_value"))
+
+    # Prepare data for the bubble chart
+    data = {
+        "children": [
+            {
+                "Name": item["economicClassification4"],
+                "Programme" : item["programme"],
+                "Count": float(item["total_value"]),
+            }
+            for item in sorted_data
+        ],
+        "links": []  # If you need links
+    }
+
+    return json.dumps(data).replace("'","")
+
+def treemap_chart(financialYear, department):
+
+    queryset = ENEData.objects.filter(financialYear=financialYear, department=department) \
+        .values("programme") \
+        .annotate(total_value=Sum("value"))
+
+        # Fetch subprogrammes and their total values
+    subprogrammes = ENEData.objects.filter(financialYear=financialYear, department=department) \
+        .values("programme", "subprogramme") \
+        .annotate(total_value=Sum("value"))
+
+    programme_list = list(queryset)
+    subprogramme_list = list(subprogrammes)
+
+    # Sort by total_value (ascending order)
+    sorted_programmes = sorted(programme_list, key=itemgetter("total_value"))
+
+    programme_dict = {}
+    for item in sorted_programmes:
+        programme_dict[item["programme"]] = {
+            "name": item["programme"],
+            "value": float(item["total_value"]),
+            "children": []  # Placeholder for subprogrammes
+        }
+
+    # Add subprogrammes to their respective programmes
+    for sub in subprogramme_list:
+        programme_name = sub["programme"]
+        if programme_name in programme_dict:
+            programme_dict[programme_name]["children"].append({
+                "name": sub["subprogramme"],
+                "value": float(sub["total_value"])
+            })
+
+    # Prepare data for the bubble chart
+    data = {
+        "name": "root",
+        "children": list(programme_dict.values()),
+    }
+    
+    return json.dumps(data)
+
+def get_horizontal_bar_data(request):
+    subprogramme_list = []
+
+    # Get 'econ' and 'prog' from GET parameters, defaulting to 'All' if not provided
+    department = get_department_name(request)
+    econ = request.GET.get('econ', '').strip() 
+    prog = request.GET.get('prog', '').strip() 
+    financialYear = request.GET.get('financialYear', '').split("-")[0]; 
+    
+    # Check the conditions based on 'econ' and 'prog'
+    if econ == '' and prog == '':
+        print("Inside the first if")
+        queryset = ENEData.objects.filter(financialYear=financialYear, department=department) \
+            .values("subprogramme", "value") \
+            .annotate(total_value=Sum("value"))
+        subprogramme_list = list(queryset)
+    
+    elif econ != '' and prog == '':
+        queryset = ENEData.objects.filter(financialYear=financialYear, department=department, economicClassification4=econ) \
+            .values("subprogramme", "value") \
+            .annotate(total_value=Sum("value"))
+        subprogramme_list = list(queryset)
+
+    elif econ == '' and prog != '':
+        queryset = ENEData.objects.filter(financialYear=financialYear, department=department, programme=prog) \
+            .values("subprogramme", "value") \
+            .annotate(total_value=Sum("value"))
+        subprogramme_list = list(queryset)
+
+    elif econ != '' and prog != '':
+        queryset = ENEData.objects.filter(financialYear=financialYear, department=department, economicClassification4=econ, programme=prog) \
+            .values("subprogramme", "value") \
+            .annotate(total_value=Sum("value"))
+        subprogramme_list = list(queryset)
+
+    # Sort the results by total_value in ascending order
+    sorted_subprogrammes = sorted(subprogramme_list, key=itemgetter("total_value"))
+
+    # Create the dictionary to send as response
+    subprogramme_dict = {}
+    for item in sorted_subprogrammes:
+        total_value = float(item["total_value"])
+        if total_value != 0:  # Only include the item if the total_value is not 0
+            subprogramme_dict[item["subprogramme"]] = {
+                "name": item["subprogramme"],
+                "value": total_value,
+            }
+
+    # Prepare the response data for the bubble chart
+    data = {
+        "name": "root",
+        "children": list(subprogramme_dict.values()),
+    }
+
+    # Return the data as JSON response
+    return JsonResponse(data, safe=False)
+
+def get_economicClassification(request):
+    
+    financial_year = request.GET.get('financialYear', '').split("-")[0]; 
+    department = get_department_name(request)
+
+    econ_classifications = (
+        ENEData.objects.filter(financialYear=financial_year, department=department)
+        .values_list("economicClassification4", flat=True)
+        .distinct()
+    )
+
+    econList = list(econ_classifications)
+    data = json.dumps(econList)
+
+    return JsonResponse(data, safe=False)
+
+def get_programmes(request):
+    
+    department = get_department_name(request)
+    econ = request.GET.get('econ', '').strip() 
+    financialYear = request.GET.get('financialYear', '').split("-")[0]; 
+
+    if(econ == ''):
+        prog = (
+            ENEData.objects.filter(financialYear=financialYear, department=department)
+            .values_list("programme", flat=True)
+            .distinct()
+        )
+    else:
+         prog = (
+            ENEData.objects.filter(financialYear=financialYear, department=department, economicClassification4 = econ)
+            .values_list("programme", flat=True)
+            .distinct()
+        )
+
+    progList = list(prog)
+    data = json.dumps(progList)
+
+    return JsonResponse(data, safe=False)
+
+def historical_expenditure(department):
+    
+    queryset = BudgetVSActualNationalData.objects.filter(department=department) \
+        .values("financialYear", "budgetPhase") \
+        .annotate(total_value=Sum("value"))
+
+    history_list = list(queryset)
+
+    sorted_history = sorted(history_list, key=itemgetter("financialYear"))
+
+    data = {
+        "children": [
+            {
+                "Name": item["financialYear"],
+                "Count": float(item["total_value"]),
+                "BudgetPhase": item["budgetPhase"]
+            }
+            for item in sorted_history
+        ],
+        "links": []  # If you need links
+    }
+    return json.dumps(data).replace("'","")
+
+def budget_actual_spending(department):  
+
+    queryset = BudgetVSActualNationalData.objects.filter(department=department) \
+        .values("financialYear","budgetPhase") \
+        .annotate(total_value=Sum("value"))
+
+    budget_actual_list = list(queryset)
+
+    budget_actual_data = sorted(budget_actual_list, key=itemgetter("financialYear"))
+
+    data = {
+        "children": [           
+            {
+                "name": item["financialYear"],
+                "value": float(item["total_value"]),
+                "budgetPhase": item["budgetPhase"],
+            }
+            for item in budget_actual_data
+        ],        
+    } 
+
+    return json.dumps(data).replace("'","").strip()
+
+def budget_actual_programme(department, financialYear):  
+    
+    progQueryset =  BudgetVSActualNationalData.objects.filter(department=department, financialYear=financialYear) \
+            .values_list('programme', flat=True) \
+            .distinct()
+    print(progQueryset)
+    prog_list = list(progQueryset)
+
+    data_list = []
+
+    for prog in prog_list:
+
+        queryset = BudgetVSActualNationalData.objects.filter(department=department, programme=prog) \
+            .values("financialYear","budgetPhase") \
+            .annotate(total_value=Sum("value"))
+
+        budget_actual_list = list(queryset)
+
+        budget_actual_data = sorted(budget_actual_list, key=itemgetter("financialYear"))
+
+        data = {
+            "children": [           
+                {
+                    "programme": prog,
+                    "name": item["financialYear"],
+                    "value": float(item["total_value"]),
+                    "budgetPhase": item["budgetPhase"],
+                }
+                for item in budget_actual_data
+            ],        
+        }
+
+        data_list.append(data)    
+
+    return json.dumps(data_list).replace("'","").strip()
+
+def consolidated_spending():
+
+    print("method called")
+    financialYear = FinancialYear.get_latest_year().slug
+    print(financialYear)
+    queryset = ConsolidationData.objects.filter(financialYear=financialYear.split("-")[0]) \
+        .values("functionGroup") \
+        .annotate(total_value=Sum("value"))
+
+    data_list = list(queryset)
+
+    # Sort by total_value (ascending order)
+    sorted_data = sorted(data_list, key=itemgetter("total_value"))
+
+    # Prepare data for the bubble chart
+    data = {
+        "children": [
+            {
+                "name": item["functionGroup"],
+                "value": float(item["total_value"]),
+            }
+            for item in sorted_data
+        ],
+        "links": []  # If you need links
+    }
+
+    print(data)
+    
+    return json.dumps(data)
+
+def national_budget_spending():
+    
+    financialYear = FinancialYear.get_latest_year().slug
+    queryset = BudgetVSActualNationalData.objects.filter(financialYear=financialYear.split("-")[0]) \
+        .values("department") \
+        .annotate(total_value=Sum("value"))
+
+    data_list = list(queryset)
+
+    # Sort by total_value (ascending order)
+    sorted_data = sorted(data_list, key=itemgetter("total_value"))
+
+    # Prepare data for the bubble chart
+    data = {
+        "children": [
+            {
+                "name": item["department"],
+                "value": float(item["total_value"]),
+            }
+            for item in sorted_data
+        ],
+        "links": []  # If you need links
+    }
+    
+    return json.dumps(data)
+
+def provincial_budget_spending():
+    
+    financialYear = FinancialYear.get_latest_year().slug
+    queryset = BudgetVSActualProvincialData.objects.filter(financialYear=financialYear.split("-")[0]) \
+        .values("government") \
+        .annotate(total_value=Sum("value"))
+
+    data_list = list(queryset)
+
+    # Sort by total_value (ascending order)
+    sorted_data = sorted(data_list, key=itemgetter("total_value"))
+
+    # Prepare data for the bubble chart
+    data = {
+        "children": [
+            {
+                "name": item["government"],
+                "value": float(item["total_value"]),
+            }
+            for item in sorted_data
+        ],
+        "links": []  # If you need links
+    }
+    
+    return json.dumps(data)
+
+def budget_summary(request):
+    
+    context = {
+        "consolidated_spending": consolidated_spending(),
+        "national_budget_spending" : national_budget_spending(),
+        "provincial_budget_spending" : provincial_budget_spending()
+    }
+    return render(request, "budget-summary.html", context)
+
+def get_department_name(request): 
+
+    dep = request.GET.get('department', '') 
+    
+    department_query= Department.objects.filter(slug=dep).values("name")
+    department_name =list(department_query)[0].get('name')
+    return department_name

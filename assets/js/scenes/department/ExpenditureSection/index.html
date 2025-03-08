@@ -6,7 +6,6 @@
 {% assign "Dataset Guide for "|add:source_type as guide_text %}
 {% assign "Learn more about the MTEF in the "|add:source_type|add:" as PDF" as excel_text %}
 
-
 <div class="ExpenditureSection" id="expenditure">
     <h3 class="Title Title--section">Planned compared to historical expenditure</h3>
 
@@ -34,17 +33,13 @@
                 Previous financial years indicate actual expenditure while upcoming financial years indicate estimated
                 expenditure:
 
-            <table border="1" cellspacing="0" cellpadding="0">
-                <tr>
-                    <th class="ExpenditureSection-cell">Year</th>
-                    <th class="ExpenditureSection-cell">Phase</th>
-                </tr>
-                {% for item in items.real %}
+            <table border="1" cellspacing="0" cellpadding="0" id="expenditureTable">
+                <tbody>
                     <tr>
-                        <td class="ExpenditureSection-cell">{{ item.financial_year }}</td>
-                        <td class="ExpenditureSection-cell">{{ item.phase }}</td>
+                        <th class="ExpenditureSection-cell">Year</th>
+                        <th class="ExpenditureSection-cell">Phase</th>
                     </tr>
-                {% endfor %}
+                </tbody>
             </table>
             </p>
 
@@ -63,13 +58,169 @@
 
         <div class="ExpenditureSection-item ExpenditureSection-item--right">
 
-                    <div class="Page-content">
-                        <main>
-                            <div class="powerbi-container">
-                                <iframe class="w-full h-[75vh]"
-                                    src="http://5cg2126by0/Vulekamali-Report/powerbi/Planned%20Compared%20Historic%20Expenditure?rs:embed=true&navContentPaneEnabled=false&filter=BudgetVsActual/Department eq 'Basic Education'"
-                                    frameborder="0" allowFullScreen="true"></iframe>
-                            </div>
-                        </main>
-                    </div>           
+            <div class="Page-content">
+                <div class="Card">
+                    <svg id="historyBarGraph"></svg>
+                    <div class="tooltip"></div>
+
+                    <script id="historyBar" type="application/json">{{ historical_expenditure|safe }}</script>
+                </div>
+            </div>           
     </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let historyData = document.getElementById("historyBar");
+        let dataset;
+    
+        if (historyData) {
+            try {
+                dataset = JSON.parse(historyData.textContent);               
+    
+                dataset.children = dataset.children.map(d => {
+                    let year = parseInt(d.Name || d.name); // Convert year to an integer
+                    return {
+                        year: formatFinancialYear(year), // Convert year to "YYYY-YY" format
+                        value: d.Count || d.value,
+                        budgetPhase: d.BudgetPhase
+                    };
+                });                
+    
+                dataset.children.forEach(d => {
+                    d.formatted_value = formatValue(d.value); // Format values
+                });                
+
+                populateBudgetPhase(dataset.children)
+    
+                // Set dimensions
+                const margin = { top: 30, right: 50, bottom: 50, left: 80 },
+                    width = 700 - margin.left - margin.right,
+                    height = 400 - margin.top - margin.bottom;
+    
+                // Create the SVG container
+                const svg = d3.select("#historyBarGraph")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+    
+                // Create scales
+                const xScale = d3.scaleBand()
+                    .domain(dataset.children.map(d => d.year))
+                    .range([0, width])
+                    .padding(0.5); 
+    
+                const yScale = d3.scaleLinear()
+                    .domain([0, d3.max(dataset.children, d => d.value) * 1.1])
+                    .nice()
+                    .range([height, 0]);
+    
+                // Add X axis
+                svg.append("g")
+                    .attr("class", "axis x-axis")
+                    .attr("transform", `translate(0, ${height})`)
+                    .call(d3.axisBottom(xScale));
+    
+                // Add Y axis with correct "B" for billions
+                svg.append("g")
+                    .attr("class", "axis y-axis")
+                    .call(d3.axisLeft(yScale).tickFormat(d => formatYAxis(d)));
+    
+                // Tooltip
+                const tooltip = d3.select("body").append("div")
+                    .attr("class", "tooltip")
+                    .style("position", "absolute")
+                    .style("display", "none")
+                    .style("background", "rgba(0, 0, 0, 0.7)")
+                    .style("color", "#fff")
+                    .style("padding", "5px")
+                    .style("border-radius", "5px");
+    
+                // Create bars
+                svg.selectAll(".barChart")
+                    .data(dataset.children)
+                    .enter()
+                    .append("rect")
+                    .attr("class", "barChart")
+                    .attr("x", d => xScale(d.year))
+                    .attr("y", d => yScale(d.value))
+                    .attr("width", xScale.bandwidth())
+                    .attr("height", d => height - yScale(d.value))
+                    .attr("fill", "steelblue")
+                    .on("mouseover", (event, d) => {
+                        tooltip.style("display", "block")
+                            .html(`<strong>${d.name}</strong><br>Value: ${d.formatted_value}`)
+                            .style("left", `${event.clientX + 15}px`)
+                            .style("top", `${event.clientY - 20}px`);
+                    })
+                    .on("mousemove", (event) => {
+                        tooltip.style("left", `${event.clientX + 15}px`)
+                            .style("top", `${event.clientY - 20}px`);
+                    })
+                    .on("mouseout", () => tooltip.style("display", "none"));
+    
+            } catch (error) {
+                console.error("JSON Parse Error:", error);
+                dataset = { name: "root", children: [{ name: "No Data", value: 0 }] };
+            }
+        } else {
+            console.error("Treemap data not found!");
+            dataset = { name: "root", children: [{ name: "No Data", value: 0 }] };
+        }
+    });
+    
+    // ✅ Custom Y-axis Formatter (Shows "B" for Billions)
+    function formatYAxis(value) {
+            if (value >= 1e12) {
+                return `R ${(value / 1e12).toFixed(1).toLocaleString()} trillion`; // Trillions
+            } else if (value >= 1e9) {
+                return `R ${(value / 1e9).toFixed(1).toLocaleString()} billion`; // Billions
+            } else if (value >= 1e6) {
+                return `R ${(value / 1e6).toFixed(1).toLocaleString()} millions`; // Millions
+            } else if (value >= 1e3) {
+                return `R ${(value / 1e3).toFixed(1).toLocaleString()} thousands`; // Thousands
+            } else {
+                return "R" + value.toLocaleString(); // Default formatting
+            }
+        }
+    
+    // ✅ Tooltip Formatter
+    function formatValue(value) {
+        return formatYAxis(value);
+    }
+
+    //Function to Format Year as "YYYY-YY"
+    function formatFinancialYear(year) {
+        if(!year || isNaN(year)) return year;
+        return `${year}-${(year + 1).toString().slice(-2)}`;
+    }
+
+    function populateBudgetPhase(dataset) {
+        console.log(dataset)
+        const tableBody = document.querySelector("#expenditureTable tbody");
+
+        // Loop through items.real and create table rows
+        dataset.forEach(item => {
+            const row = document.createElement("tr");
+            console.log(item)
+
+            // Create financial year cell
+            const yearCell = document.createElement("td");
+            yearCell.classList.add("ExpenditureSection-cell");
+            yearCell.textContent = item.year;
+            row.appendChild(yearCell);
+
+            // Create phase cell
+            const phaseCell = document.createElement("td");
+            phaseCell.classList.add("ExpenditureSection-cell");
+            phaseCell.textContent = item.budgetPhase;
+            row.appendChild(phaseCell);
+
+            // Append row to table body
+            tableBody.appendChild(row);
+        });
+    }
+    </script>
+    
+
+    

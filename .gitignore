@@ -5,6 +5,7 @@ staticfiles/
 docs/_build
 *.sqlite3
 *.sql
+/init/budgetportal.bak
 .tox
 .coverage
 /.vscode/

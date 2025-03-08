@@ -49,6 +49,7 @@ def save_imported_indicators(obj_id):
     
 
     full_text = file_content.decode(detected_encoding)
+    print(full_text)
     
     # validate report type
     report_type_validated = validate_report_type(full_text, obj_id)
@@ -74,7 +75,8 @@ def save_imported_indicators(obj_id):
     total_record_count = len(parsed_data)
     not_matching_departments = set()
 
-    
+    print("Institution0")
+    print(department_government_pairs)
 
     for department, government_name in department_government_pairs:
         if government_name == "National":

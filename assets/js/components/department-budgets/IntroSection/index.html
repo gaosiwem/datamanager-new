@@ -12,7 +12,7 @@
   <div class="IntroSection-textWrap">
     <div class="js-initIntroSection">
       <div class="IntroSection-text js-content">
-        {{ description | markdownify }}
+        {{ description | linebreaksbr | markdownify | safe }}
       </div>
     </div>
   </div>

@@ -37,17 +37,17 @@
 
           {% if key_points %}
             <div class="BasicContent-title u-marginTop20">Key points</div>
-            {{ key_points | markdownify }}
+            {{ key_points | linebreaksbr | markdownify | safe }}
           {% endif %}
 
           {% if importance %}
             <div class="BasicContent-title u-marginTop20">Why is it important?</div>
-            {{ importance | markdownify }}
+            {{ importance | linebreaksbr | markdownify | safe }}
           {% endif %}
 
           {% if use_for %}
             <div class="BasicContent-title u-marginTop20">What can it be used for?</div>
-            {{ use_for | markdownify }}
+            {{ use_for | linebreaksbr | markdownify | safe }}
           {% endif %}
 
           {% if external_resource_page %}
@@ -74,7 +74,7 @@
       {% if usage %}
         <div class="BasicContent u-marginTop20">
           <div class="BasicContent-title">How can it be accessed and used?</div>
-          {{ usage | markdownify }}
+          {{ usage | linebreaksbr | markdownify | safe }}
         </div>
       {% endif %}
 

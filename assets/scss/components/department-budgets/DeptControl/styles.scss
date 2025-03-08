@@ -1,4 +1,5 @@
 .DeptControls {
+  display: flex;
   @include clearfix;
 }
 
@@ -20,7 +21,7 @@
 
 .DeptControls-dropdown {
   float: left;
-  width: 230px;
+  width: 100%;
 }
 
 .DeptControls-itemWrap {

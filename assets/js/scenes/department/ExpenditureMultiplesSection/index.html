@@ -56,43 +56,159 @@
 
     <div class="ExpenditureMultiplesSectionContent">
         {% for chart in items %}
-        <main>
+        <div class="Card">
+            <div class="chart-title"><b>{{chart}}</b></div>
+            <div style="display: flex; padding: 20px;" id="legend_{{ forloop.counter }}"></div>
             <div class="chart-container">
-                <div class="powerbi-container">
-                    <iframe class="w-full h-[75vh]"
-                        src="http://5cg2126by0/Vulekamali-Report/powerbi/Budget%20and%20Actual%20Expenditure%20by%20Programmes?rs:embed=true&chromeless=true&filter=budgetportal_budgetvsactualnationaldata/department eq '{{ name }}' and budgetportal_budgetvsactualnationaldata/programme eq '{{ chart }}'"
-                        frameborder="0" allowFullScreen="true"></iframe>
-                </div>
-            </div>
-        </main>
-        {% endfor %}
+                <svg id="budgetActualChart_{{ forloop.counter }}"></svg>
+                <div class="tooltip"></div>                                
+            </div>      
+        </div>
+        {% endfor %}  
     </div>
+    <script id="chartData" type="application/json">
+        {{ budget_actual_programme|safe }}
+    </script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // ✅ Find all script tags with chart data
 
+                let chartData = document.getElementById("chartData");
+                let dataset;
+                try {
 
+                    dataset = JSON.parse(chartData.textContent);
+                    if (!dataset) {
+                        throw new Error("Invalid data structure");
+                    }
 
+                    for(let data of dataset) {
+                        
+                        // Extract unique ID from script tag
+                        const cnt = dataset.indexOf(data) + 1;
+                        const svgId = `budgetActualChart_${cnt}`;
+                        const legendId = `legend_${cnt}`;
+        
+                        // Extract categories (Years) and subcategories (Budget Phases)
+                        const categories = [...new Set(data.children.map(d => d.name))];
+                        const subcategories = [...new Set(data.children.map(d => d.budgetPhase.trim()))];
+        
+                        // ✅ Fix: Ensure color scale applies unique colors per `budgetPhase`
+                        const colorScale = d3.scaleOrdinal()
+                            .domain(subcategories)
+                            .range(["#F2DAE0","#E4B5C0", "#D392A1","#C46D83"]);
+        
+                        function createChart() {
+                            const containerWidth = document.getElementById(svgId).parentElement.clientWidth;
+                            const width = 400
+                            const height = 400;
+                            const margin = { top: 50, right: 50, bottom: 60, left: 100 };
+        
+                            // ✅ Remove existing elements before redrawing
+                            d3.select(`#${svgId}`).selectAll("*").remove();
+        
+                            const svg = d3.select(`#${svgId}`)
+                                .attr("width", width)
+                                .attr("height", height);
+        
+                            const x0 = d3.scaleBand()
+                                .domain(categories)
+                                .range([margin.left, width - margin.right])
+                                .padding(0.15);
+        
+                            const x1 = d3.scaleBand()
+                                .domain(subcategories)
+                                .range([0, x0.bandwidth()])
+                                .padding(0.1);
+        
+                            const y = d3.scaleLinear()
+                                .domain([0, d3.max(data.children, d => d.value)])
+                                .nice()
+                                .range([height - margin.bottom, margin.top]);
+        
+                            const chartGroup = svg.append("g");
+        
+                            // Add X axis
+                            chartGroup.append("g")
+                                .attr("transform", `translate(0, ${height - margin.bottom})`)
+                                .call(d3.axisBottom(x0))
+                                .attr("class", "axis-label");
+        
+                            // Add Y axis
+                            chartGroup.append("g")
+                                    .attr("transform", `translate(0, ${height - margin.bottom})`)
+                                    .call(d3.axisBottom(x0))
+                                    .attr("class", "axis-label");
 
+                            // ✅ Y Axis with "B" for billions
+                            chartGroup.append("g")
+                                .attr("transform", `translate(${margin.left}, 0)`)
+                                .call(d3.axisLeft(y).tickFormat(d => formatValue(d)))
+                                .attr("class", "axis-label");
+        
+                            const tooltip = d3.select(".tooltip");
+        
+                            // ✅ Create grouped bars per category (Year)
+                            const categoryGroups = chartGroup.selectAll(".category-group")
+                                .data(categories)
+                                .enter().append("g")
+                                .attr("transform", d => `translate(${x0(d)},0)`);
+        
+                            // ✅ Ensure bars get correct color from `budgetPhase`
+                            categoryGroups.selectAll(".bar")
+                                .data(d => data.children.filter(item => item.name === d))
+                                .enter()
+                                .append("rect")
+                                .attr("class", "bar")
+                                .attr("x", d => x1(d.budgetPhase.trim()))
+                                .attr("y", d => y(d.value))
+                                .attr("width", x1.bandwidth())
+                                .attr("height", d => height - margin.bottom - y(d.value))
+                                .attr("fill", d => colorScale(d.budgetPhase.trim()))
+                                .on("mouseover", (event, d) => {
+                                    tooltip.style("display", "block")
+                                        .html(`<strong>${d.name} - ${d.budgetPhase}</strong><br>Value: ${(d.value / 1e9).toFixed(1)}B`)
+                                        .style("left", `${event.pageX + 10}px`)
+                                        .style("top", `${event.pageY}px`);
+                                })
+                                .on("mouseout", () => tooltip.style("display", "none"));
+                                           
+                            // ✅ Fix: Ensure the legend properly matches bar colors
+                            const legendContainer = d3.select(`#${legendId}`).html("");
+        
+                            subcategories.forEach(sub => {
+                                const legendItem = legendContainer.append("div").attr("class", "legend");
+        
+                                legendItem.append("div")
+                                    .attr("class", "legend-box")
+                                    .style("background-color", colorScale(sub)); // ✅ Matching color
+        
+                                legendItem.append("span").text(sub);
+                            });
+                        }
+        
+                        createChart();
+                        window.onresize = createChart;
+                    }
+                }
+                catch (error) {
+                    console.error("JSON Parse Error:", error);
+                }
+                
+        });
 
-    <!-- <div class="ExpenditureMultiplesSection-container u-marginTop30">
-        {% for chart in items %}
-            <div class="ExpenditureMultiplesSection-item">
-                <div class="Card Card--fullHeight">
-                    <div class="Title Title--interSection">{{ chart.name }}</div>
-                    <div
-                            data-component="ChartAdaptor"
-                            data-items="{{ chart.items | jsonify | escape }}"
-                            data-type="expenditureMultiples"
-                            data-scale="1"
-                            data-color="{{ color }}"
-                            data-title="{{ chart.name | truncatechars:45 }}"
-                            data-subtitle="{{ subtitle }}"
-                            data-description="{{ description }}"
-                            data-barTypes="[&quot;Main Appropriation&quot;, &quot;Adjusted Appropriation&quot;, &quot;Final Appropriation&quot;, &quot;Audited Outcome&quot;]"
-                            data-rotated
-                    >
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div> -->
-</div>
+        function formatValue(value) {
+            if (value >= 1e12) {
+                return `R ${(value / 1e12).toFixed(1).toLocaleString()} trillion`; // Trillions
+            } else if (value >= 1e9) {
+                return `R ${(value / 1e9).toFixed(1).toLocaleString()} billion`; // Billions
+            } else if (value >= 1e6) {
+                return `R ${(value / 1e6).toFixed(1).toLocaleString()} millions`; // Millions
+            } else if (value >= 1e3) {
+                return `R ${(value / 1e3).toFixed(1).toLocaleString()} thousands`; // Thousands
+            } else {
+                return "R " + value.toLocaleString(); // Default formatting
+            }
+        }
+    </script>

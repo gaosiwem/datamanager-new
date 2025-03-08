@@ -1,0 +1,39 @@
+.bubbleChartMainContainer {
+  display: flex;
+  gap: 40px;
+}
+
+.bubbleChartMainContainer label {
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    background: #000; 
+    color:#fff; 
+    width: 75%; 
+    padding: 3px;
+  }
+
+  .bubbleChartLegend {
+    font-size: 10px;
+    padding-top:10px; 
+    margin-left:30px;
+    width: 100%;
+  }
+
+  .bubbleChartContainer p:nth-child(2) {
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+  }
+  
+  .bubbleChartContainer p:nth-child(4) {
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .bubbleChartLegendContainer {
+    border-right: 1px solid lightgrey;
+    padding-right: 50px;
+    height: 100px;
+  }

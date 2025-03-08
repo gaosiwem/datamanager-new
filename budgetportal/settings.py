@@ -22,10 +22,9 @@ SECRET_KEY = 'django-insecure-ebua)1agh3++5!02kr9#josqi-5-#=n1u!)beoqp=h)d=ji_ce
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 SITE_ID = 1
-
 
 # Application definition
 
@@ -78,6 +77,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'wagtail.core.middleware.SiteMiddleware',
 ]
 
 CONSTANCE_CONFIG = {
@@ -184,7 +184,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'budgetportal.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 # '192.168.56.1'
@@ -193,16 +192,18 @@ DATABASES = {
     'default': {
         'ENGINE': 'mssql',
         'NAME': 'budgetportal',
-        'USER': 'budgetportaluser',
-        'PASSWORD': 'devpassword',
-        'HOST': '172.21.176.1',
+        'USER': 'sa',
+        'PASSWORD': '1StrongPwd!!',
+        'HOST': 'datamanager-new-sqlserver-1',
         'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',  # Ensure the driver is installed
+            'driver': 'ODBC Driver 17 for SQL Server',
+            'Encrypt': 'yes',  # Enable encryption
+            'TrustServerCertificate': 'no',  # Require valid certificate
+            'ssl_ca': '/var/opt/mssql/mssql.pem',  # Path to the certificate
         },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

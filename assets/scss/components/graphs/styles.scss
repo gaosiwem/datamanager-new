@@ -1,0 +1,23 @@
+.node { stroke: white; stroke-width: 2px; cursor: pointer; }
+.selected-info {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    display: none;
+}
+
+.treemap {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    width: 100%;
+}
+.container {
+    width: 48%; 
+    height: 80vh;
+}
