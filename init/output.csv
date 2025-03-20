@@ -1,0 +1,177 @@
+government,department_name,vote_number,is_vote_primary,intro,website_url
+----------,---------------,-----------,---------------,-----,-----------
+South Africa,The Presidency,1,True,## Vote purpose 
+Facilitate a common programme towards the achievement of the electoral mandate and the enhanced integrity of the state through considered planning, coordination, oversight, mobilisation and support.
+
+## Vote mandate
+
+The Presidency ,http://www.thepresidency.gov.za
+South Africa,Parliament,2,True,## Vote purpose 
+
+Provide the support services required by Parliament to fulfil its constitutional functions, assist political parties represented in Parliament to secure administrative support and service constituents, and provide members of Parliament ,http://www.parliament.gov.za
+South Africa,Cooperative Governance,3,True,## Vote purpose 
+
+Improve cooperative governance across the three spheres of government, in partnership with provinces, municipalities, civil society and communities, to enable accelerated service delivery. 
+
+## Vote mandate
+
+The Department of Cooper,http://www.cogta.gov.za
+South Africa,Government Communication and Information System,4,True,## Vote purpose 
+
+Provide a comprehensive communication service on behalf of government to facilitate the involvement of the majority of South Africans in governance, reconstruction and development, nation building, and reconciliation.
+
+## Vote mandate,www.gcis.gov.za
+South Africa,Home Affairs,5,True,## Vote purpose 
+
+Efficiently determine and safeguard the identity and status of citizens. Regulate immigration to ensure security, promote development and fulfil South Africa’s international obligations.
+
+## Vote mandate
+
+The Department of Home Affa,http://www.dha.gov.za
+South Africa,International Relations and Cooperation,6,True,## Vote purpose 
+
+Formulate, coordinate, implement and manage South Africa’s foreign policy and international relations programmes.
+
+## Vote mandate
+
+According to the Constitution, the president is ultimately responsible for the foreign policy and in,http://www.dirco.gov.za
+South Africa,National School of Government,7,True,## Vote purpose 
+
+Provide or coordinate the provision of learning, training and development interventions that lead to improved
+performance and service delivery in the public sector. 
+
+## Vote mandate
+
+The National School of Government is mandated t,https://www.thensg.gov.za/
+South Africa,National Treasury,8,True,## Vote purpose 
+
+Support economic growth and development, good governance, social progress and rising living standards through the accountable, economical, efficient, equitable and sustainable management of public finances, the
+maintenance of macroecon,http://www.treasury.gov.za
+South Africa,Planning, Monitoring and Evaluation,9,True,## Vote purpose 
+
+Improve government service delivery through integrated planning, monitoring and evaluation.
+
+## Vote mandate
+
+The Department of Planning, Monitoring and Evaluation is mandated to:
+- support the National Planning Commission
+- facil,http://www.dpme.gov.za
+South Africa,Public Enterprises,10,True,## Vote purpose 
+
+Drive investment, productivity and transformation in the department’s portfolio of state-owned companies to unlock growth, drive industrialisation, create jobs and develop skills. 
+
+## Vote mandate
+
+As the shareholder, the Departmen,http://www.dpe.gov.za
+South Africa,Public Service and Administration,11,True,## Vote purpose 
+
+Lead the modernisation of the public service, through a generally applicable framework of norms and standards, to improve service delivery.
+
+## Vote mandate
+
+The Department of Public Service and Administration draws its mandate from,http://www.dpsa.gov.za
+South Africa,Public Service Commission,12,True,## Vote purpose 
+
+Promote constitutional values and the principles of public administration in the public service.
+
+## Vote mandate
+
+The Public Service Commission is an independent institution established in terms of chapter 10 of the Constitution. I,http://www.psc.gov.za
+South Africa,Public Works and Infrastructure,13,True,## Vote purpose 
+
+Provide policy formulation for, and coordination, regulation and oversight of, the public works sector in relation to the accommodation, housing, land and infrastructure needs of national departments. Enhance intergovernmental relations,http://www.publicworks.gov.za
+South Africa,Statistics South Africa,14,True,## Vote purpose 
+
+Lead and partner in the production of statistics, in line with internationally recognised principles and standards, to inform users about socioeconomic dynamics for evidence-based decisions.
+
+## Vote mandate
+
+Statistics South Africa,http://www.statssa.gov.za
+South Africa,Traditional Affairs,15,True,## Vote purpose 
+
+Coordinate traditional affairs across government through the development of appropriate policies, norms, standards, systems and regulatory frameworks, and promote culture, heritage and social cohesion.
+
+## Vote mandate
+
+The Departme,http://www.dta.gov.za
+South Africa,Basic Education,16,True,## Vote purpose 
+
+Provide quality basic education for all, and lead the establishment and development of a South African schooling system for the 21st century.
+
+## Vote mandate
+
+The mandate of the Department of Basic Education is to monitor the stand,http://www.education.gov.za
+South Africa,Higher Education and Training,17,True,## Vote purpose 
+
+Develop and support a quality higher and vocational education sector. Promote access to higher education, vocational education and skills development training opportunities
+
+## Vote mandate
+
+The mandate of the Department of Higher E,http://dhet.gov.za
+South Africa,Health,18,True,## Vote purpose 
+
+Lead and coordinate health services to promote the health of all people in South Africa through an accessible,
+caring and high-quality health system based on the primary health care approach. 
+
+## Vote mandate
+
+The Department of He,http://www.health.gov.za
+South Africa,Social Development,19,True,## Vote purpose 
+
+Ensure protection against vulnerability by creating an enabling environment for the provision of a comprehensive, integrated and sustainable social development service. 
+
+## Vote mandate
+
+The social development sector provides socia,http://www.dsd.gov.za
+South Africa,Women, Youth and Persons with Disabilities,20,True,## Vote purpose 
+
+Lead, coordinate and oversee the transformation agenda for the socioeconomic empowerment, rights and equal
+treatment of women, youth and persons with disabilities.
+
+## Vote mandate
+The mandate of the Department of Women, Youth and P,http://www.dwypd.gov.za
+South Africa,Civilian Secretariat for the Police Service,21,True,## Vote purpose 
+
+Provide strategic advice and support to the Minister of Police. Exercise civilian oversight of the South African
+Police Service to ensure a transformed and accountable police service that reflects the democratic values and
+principles ,www.policesecretariat.gov.za
+South Africa,Correctional Services,22,True,## Vote purpose 
+
+Contribute to a just, peaceful and safer South Africa through the effective and humane incarceration of inmates and the rehabilitation and social reintegration of offenders. 
+
+## Vote mandate
+
+The Department of Correctional Services,http://www.dcs.gov.za
+South Africa,Defence,23,True,## Vote purpose 
+
+Defend and protect the Republic of South Africa, its territorial integrity and its people, in accordance with the Constitution and the principles of international law regulating the use of force. 
+
+## Vote mandate
+
+The Department of,www.dod.mil.za
+South Africa,Independent Police Investigative Directorate,24,True,## Vote purpose\nEnsure independent oversight of the South African Police Service and the Municipal Police Services. Conduct independent and impartial investigations of identified criminal offences allegedly committed by members of the South African Police,http://www.ipid.gov.za
+South Africa,Justice and Constitutional Development,25,True,## Vote purpose\nUphold and protect the Constitution and the rule of law, and render accessible, fair, speedy and cost-effective administration of justice in the interests of a safer and more secure South Africa.\n\n## Vote mandate\nThe Department of Justi,http://www.justice.gov.za
+South Africa,Military Veterans,26,True,## Vote purpose\nFormulate policies and standards aimed at providing a comprehensive delivery system to military veterans and their dependants in recognition of their role in the democratisation of South Africa.\n\n## Vote mandate\nThe Department of Milita,http://www.dmv.gov.za/
+South Africa,Office of the Chief Justice,27,True,## Vote purpose\nUphold and protect the Constitution and the rule of law, and render accessible, fair, speedy and cost-effective administration of justice in the interests of a safer and more secure South Africa.\n\n## Vote mandate\nThe Department of Justi,http://www.judiciary.org.za
+South Africa,Police,28,True,## Vote purpose\nPrevent, combat and investigate crime, maintain public order, protect and secure the inhabitants of South Africa and their property, and uphold and enforce the law.\n\n## Vote mandate\nThe South African Police Service derives its powers an,http://www.saps.gov.za
+South Africa,Agriculture, Land Reform and Rural Development,29,True,## Vote purpose\nProvide equitable access to land, integrated rural development, sustainable agriculture and food security for all.\n\n## Vote mandate\nThe Department of Agriculture, Land Reform and Rural Development is mandated to regulate agricultural pr,www.dalrrd.gov.za
+South Africa,Communications and Digital Technologies,30,True,## Vote purpose\nCreate an enabling environment for inclusive growth in the ICT sector by developing policies and legislation that promote infrastructure investment and socioeconomic development.\n\n## Vote mandate\nThe Department of Communications and Dig,http://www.dcdt.gov.za
+South Africa,Employment and Labour,31,True,## Vote purpose\nPlay a significant role in reducing unemployment, poverty and inequality by pursuing the objectives of decent work for all through: employment creation and enterprise development, the setting of standards and the protection of rights at wo,www.labour.gov.za
+South Africa,Environment, Forestry and Fisheries,32,True,## Vote purpose\nLead South Africa\'s environmental, forestry and fisheries sectors to achieve sustainable development towards a better quality of life for all.
+    \n\n## Vote mandate\nThe Department of Forestry, Fisheries and the Environment is mandated,www.environment.gov.za
+South Africa,Human Settlements,33,True,## Vote purpose\nFacilitate the creation of sustainable human settlements and the improvement to household quality of life.
+    \n\n## Vote mandate\nThe Department of Human Settlements is mandated, in terms section 3 of the Housing Act (1997), to establis,http://www.dhs.gov.za
+South Africa,Mineral Resources and Energy,34,True,## Vote purpose\nRegulate the minerals and mining sector for transformation, growth and development. Formulate energy policies, regulatory frameworks and legislation to ensure energy security, environmentally friendly carriers, and access to affordable and,www.energy.gov.za
+South Africa,Science and Innovation,35,True,## Vote purpose\nRealise the full potential of science and technology in social and economic development by developing human resources, research and innovation.
+    \n\n## Vote mandate\nThe Department of Science and Innovation derives its mandate from the,www.dst.gov.za
+South Africa,Small Business Development,36,True,## Vote purpose\nLead and coordinate an integrated approach to the promotion and development of entrepreneurship among small, medium and micro enterprises and cooperatives, and ensure an enabling legislative and policy environment to support their growth a,http://www.dsbd.gov.za
+South Africa,Sports, Arts and Culture,37,True,## Vote purpose\nProvide an enabling environment for the sport, arts and culture sector by developing, transforming, preserving, protecting and promoting sport, arts and culture at all levels of participation to foster an active, winning, creative and soci,www.dsac.gov.za
+South Africa,Tourism,38,True,## Vote purpose\nPromote and support the growth and development of an equitable, competitive and sustainable tourism sector, enhancing its contribution to national priorities.
+    \n\n## Vote mandate\nThe mandate of the Department of Tourism, as outlined ,http://www.tourism.gov.za
+South Africa,Trade, Industry and Competition,39,True,## Vote purpose\nLead economic development policy formulation and planning. Facilitate access to sustainable economic activity and employment for all South Africans through an understanding of the economy, knowledge of economic opportunities and potential,,www.thedti.gov.za
+South Africa,Transport,40,True,## Vote purpose\nLead the provision of an integrated, sustainable, reliable and safe transport system through planning, developing, coordinating, promoting and implementing transport policies, regulations and strategies.
+    \n\n## Vote mandate\nThe Const,http://www.transport.gov.za
+South Africa,Water and Sanitation,41,True,## Vote purpose\nEnsure the availability of water resources to facilitate equitable and sustainable socioeconomic development, and ensure universal access to water and sanitation services.
+    \n\n## Vote mandate\nThe mandate of the Department of Water an,http://www.dws.gov.za
+
+(41 rows affected)

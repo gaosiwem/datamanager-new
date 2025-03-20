@@ -196,13 +196,11 @@
     }
 
     function populateBudgetPhase(dataset) {
-        console.log(dataset)
         const tableBody = document.querySelector("#expenditureTable tbody");
 
         // Loop through items.real and create table rows
         dataset.forEach(item => {
             const row = document.createElement("tr");
-            console.log(item)
 
             // Create financial year cell
             const yearCell = document.createElement("td");

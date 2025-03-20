@@ -1105,6 +1105,32 @@ class BudgetVSActualProvincialData(models.Model):
     value = models.DecimalField(
         max_digits=15, decimal_places=0, default=0)
 
+class VoteDocumentUpload(models.Model):    
+    file = models.FileField(upload_to=datasets_file_path)
+
+class VoteDocument(models.Model):
+    dataset_name = models.CharField(max_length=1024, blank=False, null=False)
+    dataset_title = models.CharField(max_length=1024, blank=False, null=False)
+    document_type = models.CharField(max_length=50, blank=False, null=False)
+    document_url = models.CharField(max_length=1024, blank=True, null=True)
+    slug = AutoSlugField(populate_from="dataset_name",
+                        max_length=200, always_update=True)
+
+    government = models.ForeignKey(
+        Government, on_delete=models.CASCADE, related_name="voteDocument", default=1
+    )
+
+    department = models.ForeignKey(
+        Department, on_delete=models.CASCADE, related_name="voteDocument"
+    )
+
+    financialYear = models.ForeignKey(
+        FinancialYear, on_delete=models.CASCADE, related_name="voteDocument", default=1
+    ) 
+
+    class Meta:
+        ordering = ["slug"]
+
 # @register_snippet
 # class ProcurementResourceLink(ResourceLink):
 #     class Meta:

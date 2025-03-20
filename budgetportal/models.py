@@ -2100,7 +2100,5 @@ class InfraProjectSnapshot(models.Model):
     def __str__(self):
         return self.name
 
-
-
 prov_keys = prov_abbrev.keys()
 prov_choices = tuple([(prov_key, prov_key) for prov_key in prov_keys])

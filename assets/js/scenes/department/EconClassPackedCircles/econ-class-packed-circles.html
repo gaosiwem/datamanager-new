@@ -88,7 +88,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (rawData) {
             try {
             dataset = JSON.parse(rawData.textContent);
-            console.log(dataset)
 
             var width = 400, height = 400;
             var svg = d3.select("#bubble_graph_svg")
@@ -117,8 +116,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 .attr("fill", d => color(d.data.Name))
                 .style("cursor", "pointer")
                 .on("click", function(event, d) {
-                    console.log("clicked")
-                    console.log(event)
                     showSelectedInfo(event.data.Name, event.data.Count, event.data.Programme);
                 });
         
@@ -149,7 +146,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 .style("cursor", "pointer");
         
             function showSelectedInfo(name, value, programme) {
-                // console.log(`Programme: ${name}, Value: ${d.data.Count}`)
                 
                 var selected = document.getElementById("selected-econ");
                 var selectedValue = document.getElementById("selected-econ-value");
@@ -180,7 +176,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const currentUrl = window.location.href;
-        const parts = currentUrl.replace("http://localhost:8000/", "").split("/").filter(Boolean);
+        const parts = currentUrl.replace("https://vulekamali.gov.za/", "").split("/").filter(Boolean);
+        
         const financialYear = parts[0];
         const department = parts[3];
 

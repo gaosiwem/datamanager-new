@@ -49,7 +49,8 @@ from .models import (
     DatasetResource,
     BudgetVSActualNationalData,
     ConsolidationData,
-    BudgetVSActualProvincialData
+    BudgetVSActualProvincialData,
+    VoteDocument
 )
 
 COMMON_DESCRIPTION = "South Africa's National and Provincial budget data "
@@ -107,7 +108,7 @@ def homepage(request):
         "latest_year": year.slug,
         "latest_provincial_year": latest_provincial_year
         and latest_provincial_year.slug,
-        "main_heading": 'main page',
+        "main_heading": page_data.main_heading,
         "sub_heading": page_data.sub_heading,
         "primary_button_label": page_data.primary_button_label,
         "primary_button_url": page_data.primary_button_url,
@@ -497,6 +498,25 @@ def department_page(
     #     )
 
     # ======= main budget docs =========================
+    voteDocuments = VoteDocument.objects.filter(
+        department__name=department.name, financialYear=selected_year
+    )
+    pdf_link = ""
+    excel_link = ""
+    for doc in voteDocuments:
+        print("Docs'")
+        print(doc.document_type)
+        if doc.document_type == "PDF":
+            pdf_link = doc.document_url
+        else:
+            excel_link = doc.document_url
+
+    department_budget = {
+        "name": department.name,
+        "pdf_link": pdf_link,
+        "excel_link": excel_link,
+    }
+
     # budget_dataset = department.get_dataset(group_name="budget-vote-documents")
     # if budget_dataset:
     #     document_resource = budget_dataset.get_resource(format="PDF")
@@ -597,7 +617,7 @@ def department_page(
             selected_year.slug,
             COMMON_DESCRIPTION_ENDING,
         ),
-        # "department_budget": department_budget,
+        "department_budget": department_budget,
         # "department_adjusted_budget": department_adjusted_budget,
         # "procurement_resource_links": ProcurementResourceLink.objects.filter(
         #     sphere_slug__in=(
@@ -788,8 +808,8 @@ def download_resource(request, category_slug, datasetresource_file):
         resource = DatasetResource.objects.get(file='resources/' + datasetresource_file)
         # file = str(resource.file).replace('resources/', '')
         # Construct the full file path
-        file_path = os.path.join(settings.MEDIA_ROOT, str(resource.file).replace('/', '\\'))
-
+        file_path = os.path.join(settings.MEDIA_ROOT, str(resource.file))
+        print(file_path)
         # Open and serve the file using FileResponse
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File '{file_path}' does not exist.")
@@ -1017,6 +1037,9 @@ def budget_actual_spending(department):
 
 def budget_actual_programme(department, financialYear):  
     
+    print("Finacial")
+    print(financialYear)
+    print(department)
     progQueryset =  BudgetVSActualNationalData.objects.filter(department=department, financialYear=financialYear) \
             .values_list('programme', flat=True) \
             .distinct()

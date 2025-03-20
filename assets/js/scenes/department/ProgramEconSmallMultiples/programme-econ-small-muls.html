@@ -46,7 +46,7 @@
                                     <div class="DeptControls-dropdown">
                                         <div class="PseudoSelect">
                                             <select id="economic-classification-dropdown" class="PseudoSelect PseudoSelect-list">
-                                                <option value="">Select an option</option>
+                                               
                                             </select>
                                         </div>
                                     </div>
@@ -92,7 +92,7 @@
             d3.select("#horizontalBarChart").selectAll("*").remove();
 
             const currentUrl = window.location.href;
-            const parts = currentUrl.replace("http://localhost:8000/", "").split("/").filter(Boolean);
+            const parts = currentUrl.replace("https://vulekamali.gov.za/", "").split("/").filter(Boolean);
             const financialYear = parts[0];
             const department = parts[3];
 
@@ -198,7 +198,7 @@
         fetchData();
 
         const currentUrl = window.location.href;
-        const parts = currentUrl.replace("http://localhost:8000/", "").split("/").filter(Boolean);
+        const parts = currentUrl.replace("https://vulekamali.gov.za/", "").split("/").filter(Boolean);
         const financialYear = parts[0];
         const department = parts[3];
 

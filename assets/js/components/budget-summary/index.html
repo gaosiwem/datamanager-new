@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
                          .attr("y", d => (d.y1 - d.y0) / 1.5)
                          .attr("fill", "white")
                          .style("font-size", "12px")
-                         .text(d => d.data.value);
+                         .text(d => formatValues(d.data.value));
                 }
 
                 createTreemap(containerId, dataset);
@@ -142,6 +142,21 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+function formatValues(value) {
+            if (value >= 1e12) {
+                return `R ${(value / 1e12).toFixed(1).toLocaleString()} trillion`; // Trillions
+            } else if (value >= 1e9) {
+                return `R ${(value / 1e9).toFixed(1).toLocaleString()} billion`; // Billions
+            } else if (value >= 1e6) {
+                return `R ${(value / 1e6).toFixed(1).toLocaleString()} millions`; // Millions
+            } else if (value >= 1e3) {
+                return `R ${(value / 1e3).toFixed(1).toLocaleString()} thousands`; // Thousands
+            } else {
+                return 'R ' + value.toLocaleString(); // Default formatting
+            }
+        }
+
 </script>
 
 <style>

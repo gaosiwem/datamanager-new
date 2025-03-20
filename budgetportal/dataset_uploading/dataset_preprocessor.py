@@ -5,7 +5,7 @@ from import_export.widgets import ForeignKeyWidget
 from tablib import Databook
 from tablib import Dataset
 
-from budgetportal.models import DatasetUpload, ENEData, ConsolidationData, EPREData, BudgetVSActualNationalData, BudgetVSActualProvincialData
+from budgetportal.models import DatasetUpload, ENEData, ConsolidationData, EPREData, BudgetVSActualNationalData, BudgetVSActualProvincialData,VoteDocumentUpload, Department, VoteDocument, FinancialYear, Sphere, Government
 from budgetportal.dataset_uploading import preprocess													
 
 ENE_HEADERS = [
@@ -72,6 +72,16 @@ CONSOLIDATED_HEADERS = [
     "EconomicClassification3",
     "FinancialYear",
     "Value"
+]
+
+VOTEDOCUMENTSDATA_HEADERS = [   
+    "government" ,
+    "department_name",
+    "dataset_name",
+    "dataset_title",
+    "document_type",
+    "document_url",
+    "financial_year"
 ]
 
 
@@ -234,6 +244,84 @@ def import_dataset(obj_id):
     if not result.has_errors():
         return resource.import_data(dataset, dry_run=False)
 
+
+def save_vote_documents_data(obj_id):
+    
+    obj = VoteDocumentUpload.objects.get(id=obj_id)
+    
+    file = obj.file.read()
+    data_book = Databook().load(file, "xlsx")
+    financialYear =  data_book.sheets()[0]["financial_year"][0]
+    VoteDocument.objects.filter(slug=financialYear).delete()
+    sheets = data_book.sheets()
+
+    for sheet in sheets:
+        
+        preprocessed_dataset = None
+
+        preprocessed_dataset = preprocess(sheet, VOTEDOCUMENTSDATA_HEADERS)
+        print(preprocessed_dataset)
+
+        for item in preprocessed_dataset:
+
+            financialYears = FinancialYear.objects.filter(slug=item["financial_year"])
+
+            if financialYears:
+                selectedFinancialYear = financialYears.first()
+
+                sphere = ""
+
+                if item["government"] == "South Africa":
+                    sphere = "national"
+                else:
+                    sphere = "provincial"
+
+                spheres = Sphere.objects.filter(
+                    slug=sphere, financial_year=selectedFinancialYear
+                )
+
+                if spheres:
+                    selectedSphere = spheres.first()
+                    governments = Government.objects.filter(sphere=selectedSphere)
+
+                    if governments:
+                        selectedGovernment = governments.first()
+
+                        department_name = item["department_name"]
+
+                        departments = Department.objects.filter(
+                            name=department_name, government=selectedGovernment
+                        )
+                        selectedDepartment = None
+
+                        if departments:
+                            selectedDepartment = departments.first()
+
+                            VoteDocument.objects.create(
+                                department=selectedDepartment,
+                                financialYear=selectedFinancialYear,
+                                government=selectedGovernment,
+                                dataset_name=item["dataset_name"],
+                                dataset_title=item["dataset_title"],
+                                document_type=item["document_type"],
+                                document_url=item["document_url"]
+                            )
+
+                            dataset = Dataset()
+
+                            if preprocessed_dataset:
+                                dataset.headers = preprocessed_dataset[0].keys()  # Set headers
+
+                                # Append rows
+                                for row in preprocessed_dataset:
+                                    dataset.append(row.values())  # Add dat
+
+                            resource = VoteDocumentResource()
+                            result = resource.import_data(dataset, dry_run=True)  # Test first
+
+                            if not result.has_errors():
+                                resource.import_data(dataset, dry_run=False)          
+
 class ENEResource(resources.ModelResource):
     voteNumber = Field(
         column_name="VoteNumber",
@@ -342,5 +430,19 @@ class BudgetVSActualResource(resources.ModelResource):
 
     class Meta:
         model = EPREData
+        skip_unchanged = True
+        report_skipped = False
+
+class VoteDocumentResource(resources.ModelResource):
+    dataset_name = Field(column_name="dataset_name")
+    financialYear = Field(column_name="financialYear")
+    government = Field(column_name="government")
+    dataset_title = Field(column_name="dataset_title")
+    document_type = Field(column_name="document_type")
+    document_url = Field(column_name="document_url")
+    department = Field(column_name="department")
+
+    class Meta:
+        model = ConsolidationData
         skip_unchanged = True
         report_skipped = False

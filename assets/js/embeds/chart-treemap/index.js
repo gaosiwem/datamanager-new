@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", function() {
     let treeMapData = document.getElementById("treemap");
     if (treeMapData) {
         let data = JSON.parse(treeMapData.textContent);
-        console.log(data); // Check if data is loaded correctly
     } else {
         console.error("Treemap data not found!");
     }
@@ -75,8 +74,6 @@ let dataset;
 
 try {
     dataset = JSON.parse(rawData);
-    console.log('testing')
-    console.log(dataset)
     
 } catch (error) {
     console.error("JSON Parse Error:", error);
@@ -90,11 +87,7 @@ dataset.children = dataset.children.map(d => ({
 }));
 
 function updateSubProgrammeTreemap(programmeName) {
-    console.log("progname")
-    console.log(programmeName)
     const selectedProgramme = dataset.children.find(d => d.name === programmeName);
-    console.log(selectedProgramme)
-
     const subProgrammeData = {
         name: "root",
         children: selectedProgramme ? selectedProgramme.subprogrammes.map(sub => ({

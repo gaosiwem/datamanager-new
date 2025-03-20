@@ -29,8 +29,6 @@
             var dataset = { "children": [{"Name": "No Data", "Count": 0}] };
         }
     
-        console.log("Dataset:", dataset); // Debugging
-    
         var width = 800, height = 600;
         var svg = d3.select("svg")
             .attr("width", width)
@@ -56,8 +54,6 @@
             .style("fill", (d, i) => colorScale(i))
             .style("cursor", "pointer")
             .on("click", function(event, d) {
-                console.log("clicked")
-                console.log("clicked item " + d.data.Name)
                 showSelectedInfo(d);
             });
     
@@ -86,9 +82,7 @@
             .style("fill", "white")
             .style("pointer-events", "none");
     
-        function showSelectedInfo(d) {
-            console.log(`Programme: ${d.data.Name}, Value: ${d.data.Count}`)
-            
+        function showSelectedInfo(d) {            
             var selected = document.getElementById("selected-info");
             selected.textContent = `Programme: ${d.data.Name}, Value: ${d.data.Count}`;
             

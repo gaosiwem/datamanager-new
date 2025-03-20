@@ -22,7 +22,19 @@ SECRET_KEY = 'django-insecure-ebua)1agh3++5!02kr9#josqi-5-#=n1u!)beoqp=h)d=ji_ce
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Ensure Django does not force an additional HTTPS redirect
+# SECURE_SSL_REDIRECT = True
+
+# If using a reverse proxy like IIS, set the use_x_forwarded options
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+DJANGO_CSRF_TRUSTED_ORIGINS = "http://localhost:8000"
+
+ALLOWED_HOSTS = ["vulekamali.gov.za", "127.0.0.1","10.131.171.115","localhost"]
+# ALLOWED_HOSTS = ["*"]
+
 
 SITE_ID = 1
 
@@ -234,6 +246,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/

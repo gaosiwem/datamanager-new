@@ -51,10 +51,12 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - app
     volumes:
-      - static_volume:/app/static
+      - ./static:/static:ro
+      - ./nginx/certificates:/etc/nginx/ssl
 
   solr:
     build: "https://github.com/vulekamali/solr-dokku.git"

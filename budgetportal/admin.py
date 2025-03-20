@@ -4,7 +4,7 @@ from io import StringIO
 
 from adminsortable.admin import SortableAdmin, SortableTabularInline
 from budgetportal import models
-# from budgetportal.bulk_upload import bulk_upload_view
+from budgetportal.bulk_upload import bulk_upload_view
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -25,7 +25,7 @@ from django_q.tasks import async_task
 
 from budgetportal import tasks
 from budgetportal.tasks import import_irm_snapshot
-from budgetportal.dataset_uploading.dataset_preprocessor import import_dataset
+from budgetportal.dataset_uploading.dataset_preprocessor import import_dataset,save_vote_documents_data
 
 from .import_export_admin import (
     DepartmentImportForm,
@@ -177,6 +177,10 @@ class VideoLanguageInline(SortableTabularInline):
 class FAQAdmin(admin.ModelAdmin):
     model = models.FAQ
 
+class VoteDocumentAdmin(admin.ModelAdmin):
+    readonly_fields = ("slug",)
+    list_display = ("slug", "document_type","document_url")
+
 
 class VideoAdmin(SortableAdmin):
     inlines = [VideoLanguageInline]
@@ -250,6 +254,17 @@ class InfraProjectSnapshotAdmin(admin.ModelAdmin):
                 + [field.name for field in self.opts.local_many_to_many]
             )
         )
+
+class CustomAdminSite(admin.AdminSite):
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('bulk_upload/', self.admin_view(bulk_upload_view), name="bulk_upload"),
+        ]
+        return custom_urls + urls
+
+admin_site = CustomAdminSite(name='myadmin')
+
 
 
 # admin.site.register_view("bulk_upload", "Bulk Upload", view=bulk_upload_view)
@@ -330,6 +345,15 @@ def save_imported_dataset(obj_id):
         task_name="Import dataset",
     )   
 
+def save_vote_documents(obj_id):
+
+    async_task(
+        save_vote_documents_data(obj_id),
+        id=obj_id,
+        task_name="Uploading the vote data",
+    )   
+
+
 
 class DatasetUploadAdmin(admin.ModelAdmin):
     
@@ -352,6 +376,28 @@ class DatasetUploadAdmin(admin.ModelAdmin):
     processing_completed.boolean = True
     processing_completed.short_description = "Processing completed"
 
+class VoteDocumentUploadAdmin(admin.ModelAdmin):
+    
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.user = request.user
+        super().save_model(request, obj, form, change)
+        # It looks like the task isn't saved synchronously, so we can't set the
+        # task as a related object synchronously. We have to fetch it by its ID
+        # when we want to see if it's available yet.
+        save_vote_documents(obj.id)
+        # obj.task_id = async_task(func=save_vote_documents, obj_id=obj.id)
+        obj.save()
+
+    # def processing_completed(self, obj):
+    #     task = fetch(obj.task_id)
+    #     if task:
+    #         return task.success
+
+    # processing_completed.boolean = True
+    # processing_completed.short_description = "Processing completed"
+
+
 admin.site.register(models.FinancialYear, FinancialYearAdmin)
 admin.site.register(models.Sphere, SphereAdmin)
 admin.site.register(models.Government, GovernmentAdmin)
@@ -371,6 +417,8 @@ admin.site.register(models.GovernmentFunction, GovernmentFunctionAdmin)
 admin.site.register(models.Video, VideoAdmin)
 admin.site.register(models.Event)
 admin.site.register(models.FAQ, FAQAdmin)
+admin.site.register(models.VoteDocument, VoteDocumentAdmin)
+
 admin.site.register(models.InfraProject, InfraProjectAdmin)
 admin.site.register(models.InfraProjectSnapshot, InfraProjectSnapshotAdmin)
 admin.site.register(models.IRMSnapshot, IRMSnapshotAdmin)
@@ -381,3 +429,5 @@ admin.site.register(models.Notice, SortableAdmin)
 admin.site.register(models.ShowcaseItem, ShowcaseItemAdmin)
 admin.site.register(models.ENEData, ENEDataAdmin)
 admin.site.register(models.DatasetUpload, DatasetUploadAdmin)
+admin.site.register(models.VoteDocumentUpload, VoteDocumentUploadAdmin)
+

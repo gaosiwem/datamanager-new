@@ -29,8 +29,8 @@
 
 {% if department_budget %}
 {% assign department_budget.name as chapter_name %}
-{% assign department_budget.document.url as pdf_link %}
-{% assign department_budget.tables.url as excel_link %}
+{% assign department_budget.pdf_link as pdf_link %}
+{% assign department_budget.excel_link as excel_link %}
 {% else %}
 {% assign "" as chapter_name %}
 {% assign "" as pdf_link %}
@@ -130,17 +130,16 @@
                 tabling of the budget for the new financial year.
             </p>
 
-            <!-- {% assign "View the "|add:source_type_revenue_short|add:" chapter for "|add:chapter_name|add:" (PDF)" as
-            text1 %}
-            {% assign "View tables in the "|add:source_type_revenue_short|add:" chapter (Excel)" as text2 %} -->
+            {% assign "View the "|add:source_type_revenue_short|add:" chapter for "|add:chapter_name|add:" (PDF)" as text1 %}
+            {% assign "View tables in the "|add:source_type_revenue_short|add:" chapter (Excel)" as text2 %}
 
-            <!-- {% if pdf_link or excel_link %}
-            <ul class="LinksList">
-                {% include 'components/LinksList/item.html' with text=text1 url=pdf_link type="download" %}
+            {% if pdf_link or excel_link %}
+                <ul class="LinksList">
+                    {% include 'components/LinksList/item.html' with text=text1 url=pdf_link type="download" %}
 
-                {% include 'components/LinksList/item.html' with text=text2 url=excel_link type="download" %}
-            </ul>
-            {% endif %} -->
+                    {% include 'components/LinksList/item.html' with text=text2 url=excel_link type="download" %}
+                </ul>
+            {% endif %}
         </div>
 
         <div class="u-marginBottom60">

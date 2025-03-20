@@ -20,25 +20,11 @@ from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 from openpyxl.writer.excel import save_virtual_workbook
 
-from .datasets import (
-    Category,
-    Dataset,
-    PackageDeletedException,
-    PackageWithoutGroupException,
-)
 from .tasks import *
 
 logger = logging.getLogger(__name__)
 
 HEADINGS = [
-    {
-        "label": "government",
-        "comment": None,
-    },
-    {
-        "label": "group_id",
-        "comment": None,
-    },
     {
         "label": "department_name",
         "comment": None,
@@ -49,10 +35,6 @@ HEADINGS = [
     },
     {
         "label": "dataset_title",
-        "comment": None,
-    },
-    {
-        "label": "resource_name",
         "comment": None,
     },
     {
@@ -170,16 +152,13 @@ class Preview:
                         if cell.value:
                             heading_index[cell.value] = i
                 else:
-                    government_name = ws_row[heading_index["government"]].value
+                    # government_name = ws_row[heading_index["government"]].value
                     department_name = ws_row[heading_index["department_name"]].value
-                    group_name = max_length_slugify(
-                        ws_row[heading_index["group_id"]].value
-                    )
+                    
                     dataset_name = max_length_slugify(
                         ws_row[heading_index["dataset_name"]].value
                     )
                     dataset_title = ws_row[heading_index["dataset_title"]].value
-                    resource_name = ws_row[heading_index["resource_name"]].value
                     resource_format = ws_row[heading_index["resource_format"]].value
                     resource_url = ws_row[heading_index["resource_url"]].value
 
@@ -282,7 +261,7 @@ class Preview:
                     try:
                         # Dataset by dataset name
                         dataset = Dataset.fetch(dataset_name)
-                    except PackageDeletedException:
+                    except Exception as e:
                         return (
                             None,
                             {
@@ -329,7 +308,7 @@ class Preview:
                     ),
                 }
             return dataset, dataset_preview
-        except PackageWithoutGroupException:
+        except Exception as e:
             return (
                 None,
                 {
