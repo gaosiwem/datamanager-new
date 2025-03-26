@@ -120,6 +120,7 @@ def homepage(request):
         "call_to_action_link_url": page_data.call_to_action_link_url,
         "showcase_items_json": serialize_showcase(showcase_items),
     }
+    
 
     return render(request, "homepage.html", context)
 
