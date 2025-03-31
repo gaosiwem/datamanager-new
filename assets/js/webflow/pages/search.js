@@ -167,8 +167,12 @@ function updateMapPoints(url) {
   pageState.mapPointsRequest = $.get(url)
     .done(function(response) {
       addMapPoints(response);
-      if (response.next) {
-        updateMapPoints(response.next);
+      var responseUrl = response.next 
+      ? response.next.replace('http://localhost:8000', 'https://vulekamali.gov.za') 
+      : null;
+
+      if (responseUrl) {
+        updateMapPoints(responseUrl);
       } else {
         getLoadingSpinner().hide();
       }
@@ -182,9 +186,14 @@ function updateMapPoints(url) {
 }
 
 function updateResultList(url) {
+
+  var responseUrl = url 
+    ? url.replace('http://localhost:8000', 'https://vulekamali.gov.za') 
+    : null;
+
   if (pageState.listRequest !== null)
     pageState.listRequest.abort();
-  pageState.listRequest = $.get(url)
+  pageState.listRequest = $.get(responseUrl)
     .done(function(response) {
       populateDownloadCSVButton(response);
       addListResults(response);
