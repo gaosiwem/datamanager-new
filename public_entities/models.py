@@ -12,17 +12,17 @@ PFMA_CHOICES = [
     ("2", "2"),
     ("3A", "3A"),
     ("3B", "3B"),
-    ("NL", "Not listed"),
+    ("Not listed", "Not listed"),
 ]
 
 FUNCTIONGROUP1_CHOICES = (
-    ("GPS", "General public services"),
-    ("ED", "Economic development"),
-    ("LAC", "Learning and culture"),
-    ("SD", "Social development"),
-    ("PAS", "Peace and security"),
-    ("CD", "Community development"),
-    ("H", "Health"),
+    ("General public services", "General public services"),
+    ("Economic development", "Economic development"),
+    ("Learning and culture", "Learning and culture"),
+    ("Social development", "Social development"),
+    ("Peace and security", "Peace and security"),
+    ("Community development", "Community development"),
+    ("Health", "Health"),
 )
 
 # https://stackoverflow.com/questions/35633037/search-for-document-in-solr-where-a-multivalue-field-is-either-empty

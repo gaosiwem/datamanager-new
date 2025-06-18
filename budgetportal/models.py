@@ -10,6 +10,7 @@ from django.db.models import FieldDoesNotExist
 # from partial_index import PartialIndex
 
 
+
 DIRECT_CHARGE_NRF = "Direct charge against the National Revenue Fund"
 
 prov_abbrev = {
@@ -463,25 +464,25 @@ class Department(models.Model):
         else:
             return none_selected_query("vocab_provinces")
 
-    # def get_primary_department(self):
-    #     """
-    #     Check if department is primary
-    #     """
-    #     if not self.is_vote_primary:
-    #         try:
-    #             dept = Department.objects.get(
-    #                 vote_number=self.vote_number,
-    #                 is_vote_primary=True,
-    #                 government=self.government,
-    #             )
-    #         except MultipleObjectsReturned:
-    #             logger.exception(
-    #                 "Department %s has multiple primary " "departments" % self.slug
-    #             )
-    #             raise
-    #         else:
-    #             return dept
-    #     return self
+    def get_primary_department(self):
+        """
+        Check if department is primary
+        """
+        if not self.is_vote_primary:
+            try:
+                dept = Department.objects.get(
+                    vote_number=self.vote_number,
+                    is_vote_primary=True,
+                    government=self.government,
+                )
+            except MultipleObjectsReturned:
+                logger.exception(
+                    "Department %s has multiple primary " "departments" % self.slug
+                )
+                raise
+            else:
+                return dept
+        return self
 
     # def get_dataset(self, group_name, name=None):
     #     """
@@ -1769,34 +1770,36 @@ class InfrastructureProjectPart(models.Model):
             projected_expenditure += float(project.amount_rands or 0.0)
         return projected_expenditure
 
-    @staticmethod
-    def _parse_coordinate(coordinate):
-        """ Expects a single set of coordinates (lat, long) split by a comma """
-        if not isinstance(coordinate, str):
-            raise TypeError("Invalid type for coordinate parsing")
-        lat_long = [float(x) for x in coordinate.split(",")]
-        cleaned_coordinate = {"latitude": lat_long[0], "longitude": lat_long[1]}
-        return cleaned_coordinate
+    
+    # def _parse_coordinate(coordinate):
+    #     """ Expects a single set of coordinates (lat, long) split by a comma """
+    #     if not isinstance(coordinate, str):
+    #         raise TypeError("Invalid type for coordinate parsing")
+    #     lat_long = [float(x) for x in coordinate.replace('S', '').replace('E', '').split(",")]
+    #     cleaned_coordinate = {"latitude": lat_long[0], "longitude": lat_long[1]}
+    #     return cleaned_coordinate
 
-    @classmethod
-    def clean_coordinates(cls, raw_coordinate_string):
-        cleaned_coordinates = []
-        try:
-            if "and" in raw_coordinate_string:
-                list_of_coordinates = raw_coordinate_string.split("and")
-                for coordinate in list_of_coordinates:
-                    cleaned_coordinates.append(cls._parse_coordinate(coordinate))
-            elif "," in raw_coordinate_string:
-                cleaned_coordinates.append(cls._parse_coordinate(raw_coordinate_string))
-            else:
-                logger.warning("Invalid co-ordinates: {}".format(raw_coordinate_string))
-        except Exception as e:
-            logger.warning(
-                "Caught Exception '{}' for co-ordinates {}".format(
-                    e, raw_coordinate_string
-                )
-            )
-        return cleaned_coordinates
+    @staticmethod
+    def clean_coordinates(raw_coordinate_string):
+        # cleaned_coordinates = []
+        # try:
+        #     if "and" in raw_coordinate_string:
+        #         list_of_coordinates = raw_coordinate_string.split("and")
+        #         for coordinate in list_of_coordinates:
+        #             cleaned_coordinates.append(cls._parse_coordinate(coordinate))
+        #     elif "," in raw_coordinate_string:
+        #         cleaned_coordinates.append(cls._parse_coordinate(raw_coordinate_string))
+        #     else:
+        #         logger.warning("Invalid co-ordinates: {}".format(raw_coordinate_string))
+        # except Exception as e:
+        #     logger.warning(
+        #         "Caught Exception '{}' for co-ordinates {}".format(
+        #             e, raw_coordinate_string
+        #         )
+        #     )
+
+        print('cleaning coordinates')
+        return CoordinateUtils.clean_coordinates(raw_coordinate_string)
 
     @staticmethod
     def _get_province_from_coord(coordinate):

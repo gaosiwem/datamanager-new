@@ -6,12 +6,21 @@ Tasks MUST be idempotent.
 import logging
 import traceback
 
+import tablib
+from tablib import Databook
+from tablib import Dataset
+
 # from budgetportal.dataset_uploading.dataset_preprocessor import import_ene
 from budgetportal import infra_projects
-from budgetportal.models import Department, ENEData, DatasetUpload, IRMSnapshot
+from budgetportal.models import Department, ENEData, DatasetUpload, IRMSnapshot, InfrastructureProjectImportFile
 from django.conf import settings
 from django.core.management import call_command
 from django_q.tasks import async_task
+from .import_export_admin import (
+    DepartmentImportForm,
+    DepartmentResource,
+    InfrastructureProjectResource,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +99,43 @@ def import_irm_snapshot(snapshot_id):
         )
     except Exception as e:
         raise Exception("Error: %s\n\n%s" % (e, traceback.format_exc()))
+
+def preprocess(dataset):
+    # Example: strip all column names and convert to lowercase
+    dataset.headers = [h.strip().lower() for h in dataset.headers]
+    return dataset
+
+def import_infrastructure_data(file_id):
+    file_obj = InfrastructureProjectImportFile.objects.get(id=file_id)
+    
+    # Read the file
+    file_content = file_obj.file.read()
+
+    # Load workbook and get first sheet
+    data_book = Databook().load(file_content, "xlsx")
+    dataset = data_book.sheets()[0]
+
+    # Preprocess dataset if needed
+    preprocessed_dataset = preprocess(dataset)
+
+    # Use your resource class to import
+    resource = InfrastructureProjectResource()
+    print('printing resources')
+    print(resource)
+    result = resource.import_data(preprocessed_dataset, dry_run=False, raise_errors=True)
+
+    # Mark as processed
+    file_obj.processed = True
+    file_obj.save()
+
+    return {
+        "imported_rows": len([r for r in result.rows if r.import_type != r.IMPORT_TYPE_SKIP]),
+        "errors": [str(r.error) for r in result.invalid_rows]
+    }
+
+
+
+
 
 
 # def import_ene_data(doc_id):

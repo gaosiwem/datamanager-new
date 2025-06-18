@@ -11,8 +11,8 @@ import csv
 import budgetportal
 
 VALID_REPORT_TYPES = [
-    "Provincial Institutions Oversight Performance  Report",
-    "National Institutions Oversight Performance  Report",
+    ("Provincial", "Provincial Institutions Oversight Performance Report"),
+    ("National", "National Institutions Oversight Performance Report"),
 ]
 
 
@@ -42,41 +42,41 @@ def save_imported_indicators(obj_id):
     # read file
     obj_to_update = models.EQPRSFileUpload.objects.get(id=obj_id)
     file_content = obj_to_update.file.read()
+    reportType = obj_to_update.report_type
+    financial_year = obj_to_update.financial_year.slug
 
     detected_encoding = chardet.detect(file_content)['encoding']
 
-    print(f"Detected encoding: {detected_encoding}")
-    
+    print(f"Detected encoding: {detected_encoding}")    
+    print(f"Detected financial_year: {financial_year}")    
 
     full_text = file_content.decode(detected_encoding)
-    print(full_text)
     
     # validate report type
-    report_type_validated = validate_report_type(full_text, obj_id)
-    if not report_type_validated:
-        return
+    # report_type_validated = validate_report_type(full_text, obj_id)
+    # if not report_type_validated:
+    #     return
 
     # clean the csv & extract data
-    financial_year = get_financial_year(full_text)
+    # financial_year = get_financial_year(full_text)
 
-    print(f"Financial Year: {financial_year}")
+    # print(f"Financial Year: {financial_year}")
     
-    sphere = get_sphere(full_text)
-    clean_text = full_text.split("\n", 3)[3]
-    f = StringIO(clean_text)
+    sphere = reportType
+    # clean_text = full_text.split("\n", 3)[3]
+    f = StringIO(full_text)
     reader = csv.DictReader(f)
     parsed_data = list(reader)
+    
 
     # find the objects
     department_government_pairs = set(
-        [(x["Institution"], x["Programme"]) for x in parsed_data]
+        [(x["Institution"], x["Programme"]) for x in parsed_data if x["Institution"]]
     )  # Programme column in CSV is mislabeled
     num_imported = 0
     total_record_count = len(parsed_data)
     not_matching_departments = set()
 
-    print("Institution0")
-    print(department_government_pairs)
 
     for department, government_name in department_government_pairs:
         if government_name == "National":
@@ -122,7 +122,7 @@ def save_imported_indicators(obj_id):
             government__sphere__financial_year__slug=financial_year,
         )
 
-        assert department_matches.count() <= 1
+        # assert department_matches.count() <= 1
         department_obj = department_matches.first()
 
         if not department_obj:
@@ -132,11 +132,14 @@ def save_imported_indicators(obj_id):
                 department__government__sphere__name=sphere,
                 department__government__sphere__financial_year__slug=financial_year,
             )
-            assert alias_matches.count() <= 1
+            # assert alias_matches.count() <= 1
             if len(alias_matches) > 0:
                 department_obj = alias_matches.first().department
                 
         if department_obj:
+
+            default_code = models.FREQUENCIES[0][0]
+
             models.Indicator.objects.create(
                 indicator_name=indicator_data["Indicator"],
                 department=department_obj,
@@ -193,8 +196,13 @@ def save_imported_indicators(obj_id):
                 subprogramme_name=indicator_data[
                     "Location"
                 ],  # Location column in CSV is mislabeled
-                frequency=[i[0]
-                           for i in models.FREQUENCIES if i[1] == frequency][0],
+                # frequency=[i[0]
+                #            for i in models.FREQUENCIES if i[1] == frequency][0],
+                frequency = next(
+                    (code for code, label in models.FREQUENCIES
+                    if label == frequency),
+                    default_code
+                ),
                 type=indicator_data["Type"],
                 subtype=indicator_data["SubType"],
                 mtsf_outcome=indicator_data["Outcome"],
@@ -284,9 +292,12 @@ class EQPRSFileUploadAdmin(admin.ModelAdmin):
                 "fields": (
                     "user",
                     "file",
+                    "report_type",
                     "import_report",
+                    "financial_year",
                     "num_imported",
-                    "num_not_imported",
+                    "num_not_imported"
+                    
                 )
             },
         ),

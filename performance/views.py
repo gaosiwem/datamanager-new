@@ -6,10 +6,10 @@ from django.db.models import Count, Q
 from rest_framework.pagination import PageNumberPagination
 from budgetportal.models import MainMenuItem
 from django.contrib.postgres.search import SearchQuery
-# from drf_excel.mixins import XLSXFileMixin
+from drf_excel.mixins import XLSXFileMixin
 from django.http import StreamingHttpResponse
 
-# import xlsx_streaming
+import xlsx_streaming
 
 FIELD_MAP = {
     "department_name": "department__name",
@@ -140,24 +140,24 @@ class IndicatorListView(generics.ListAPIView):
         }
 
 
-# class IndicatorXLSXListView(XLSXFileMixin, generics.ListAPIView):
-#     pagination_class = None
-#     template_filename = "performance/template.xlsx"
-#     filename = "eqprs-indicators.xlsx"
-#     queryset = Indicator.objects.all()
+class IndicatorXLSXListView(XLSXFileMixin, generics.ListAPIView):
+    pagination_class = None
+    template_filename = "performance/template.xlsx"
+    filename = "eqprs-indicators.xlsx"
+    queryset = Indicator.objects.all()
 
-#     def list(self, request, *args, **kwargs):
-#         excel_data = get_filtered_queryset(self.get_queryset(), request)
+    def list(self, request, *args, **kwargs):
+        excel_data = get_filtered_queryset(self.get_queryset(), request)
 
-#         with open(self.template_filename, "rb") as template:
-#             stream = xlsx_streaming.stream_queryset_as_xlsx(
-#                 self.filter_queryset(excel_data).values_list(*XLSX_COLUMNS),
-#                 xlsx_template=template,
-#                 batch_size=50,
-#             )
-#         response = StreamingHttpResponse(
-#             stream,
-#             content_type="application/vnd.xlsxformats-officedocument.spreadsheetml.sheet",
-#         )
-#         response["Content-Disposition"] = f"attachment; filename={self.filename}"
-#         return response
+        with open(self.template_filename, "rb") as template:
+            stream = xlsx_streaming.stream_queryset_as_xlsx(
+                self.filter_queryset(excel_data).values_list(*XLSX_COLUMNS),
+                xlsx_template=template,
+                batch_size=50,
+            )
+        response = StreamingHttpResponse(
+            stream,
+            content_type="application/vnd.xlsxformats-officedocument.spreadsheetml.sheet",
+        )
+        response["Content-Disposition"] = f"attachment; filename={self.filename}"
+        return response

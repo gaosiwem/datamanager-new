@@ -1,5 +1,5 @@
 {% load define_action %}
-{% load markdownify %}
+{% load markdownify markdown_extras %}
 {% if location == 'National' %}
 {% assign 'ENE' as short_estimate %}
 {% assign 'Estimates of National Expenditure' as long_estimate %}
@@ -12,7 +12,7 @@
   <div class="IntroSection-textWrap">
     <div class="js-initIntroSection">
       <div class="IntroSection-text js-content">
-        {{ description | linebreaksbr | markdownify | safe }}
+          {{ description | ensure_heading_blocks | markdownify | safe }}
       </div>
     </div>
   </div>

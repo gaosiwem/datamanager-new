@@ -41,6 +41,8 @@ from .government import (
     EXPENDITURE_TIME_SERIES_PHASE_MAPPING,
 )
 
+from budgetportal.utils.Infra_Coordinates import (CoordinateUtils)
+
 logger = logging.getLogger(__name__)
 
 MAPIT_POINT_API_URL = "https://mapit.code4sa.org/point/4326/{},{}"
@@ -73,6 +75,10 @@ class Homepage(models.Model):
     call_to_action_link_url = models.CharField(max_length=1000, blank=True)
     call_to_action_link_target = models.CharField(max_length=1000, blank=True)
 
+class InfrastructureProjectImportFile(models.Model):
+    file = models.FileField(upload_to="media/infrastructure_imports/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    processed = models.BooleanField(default=False)
 
 class InfrastructureProjectPart(models.Model):
     administration_type = models.CharField(max_length=255)
@@ -128,38 +134,83 @@ class InfrastructureProjectPart(models.Model):
             projected_expenditure += float(project.amount_rands or 0.0)
         return projected_expenditure
 
+    def dms_to_decimal(dms_str):
+        # Extract numbers and direction
+        parts = re.findall(r'\d+', dms_str)
+        direction = re.findall(r'[NSEW]', dms_str.upper())
+        if len(parts) != 3 or not direction:
+            raise ValueError(f"Invalid DMS format: {dms_str}")
+        degrees, minutes, seconds = map(int, parts)
+        decimal = degrees + minutes / 60 + seconds / 3600
+        if direction[0] in ['S', 'W']:
+            decimal = -decimal
+        return decimal
+
+    # @staticmethod
+    # def _parse_coordinate(coordinate):
+    #     """Expects a single set of coordinates (lat, long) split by a comma"""
+    #     if not isinstance(coordinate, str):
+    #         raise TypeError("Invalid type for coordinate parsing")
+    #     lat_long = [float(x) for x in coordinate.split(",")]
+    #     cleaned_coordinate = {
+    #         "latitude": lat_long[0], "longitude": lat_long[1]}
+    #     return cleaned_coordinate
+
     @staticmethod
     def _parse_coordinate(coordinate):
-        """Expects a single set of coordinates (lat, long) split by a comma"""
+        """
+        Parses a coordinate string like '33.9249S, 18.4241E' or '33.9249,18.4241'
+        and returns a dictionary with proper latitude and longitude.
+        South and West coordinates are returned as negative.
+        """
+
         if not isinstance(coordinate, str):
             raise TypeError("Invalid type for coordinate parsing")
-        lat_long = [float(x) for x in coordinate.split(",")]
-        cleaned_coordinate = {
-            "latitude": lat_long[0], "longitude": lat_long[1]}
-        return cleaned_coordinate
 
-    @classmethod
-    def clean_coordinates(cls, raw_coordinate_string):
-        cleaned_coordinates = []
         try:
-            if "and" in raw_coordinate_string:
-                list_of_coordinates = raw_coordinate_string.split("and")
-                for coordinate in list_of_coordinates:
-                    cleaned_coordinates.append(
-                        cls._parse_coordinate(coordinate))
-            elif "," in raw_coordinate_string:
-                cleaned_coordinates.append(
-                    cls._parse_coordinate(raw_coordinate_string))
-            else:
-                logger.warning(
-                    "Invalid co-ordinates: {}".format(raw_coordinate_string))
+            coordinate = coordinate.replace(" ", "")
+            parts = coordinate.split(',')
+            if len(parts) != 2:
+                raise ValueError("Coordinate must be in 'lat,long' format")
+
+            lat_str = parts[0].strip()
+            lon_str = parts[1].strip()
+
+            lat = float(lat_str.rstrip('NSEW'))
+            lon = float(lon_str.rstrip('NSEW'))
+
+            # Adjust sign based on directional suffix
+            if 'S' in lat_str.upper():
+                lat = -abs(lat)
+            if 'W' in lon_str.upper():
+                lon = -abs(lon)
+
+            return {"latitude": lat, "longitude": lon}
         except Exception as e:
-            logger.warning(
-                "Caught Exception '{}' for co-ordinates {}".format(
-                    e, raw_coordinate_string
-                )
-            )
-        return cleaned_coordinates
+            raise ValueError(f"Failed to parse coordinate: {coordinate}. Error: {e}")
+
+    @staticmethod
+    def clean_coordinates(raw_coordinate_string):
+        # cleaned_coordinates = []
+        # try:
+        #     if "and" in raw_coordinate_string:
+        #         list_of_coordinates = raw_coordinate_string.split("and")
+        #         for coordinate in list_of_coordinates:
+        #             cleaned_coordinates.append(
+        #                 cls._parse_coordinate(coordinate))
+        #     elif "," in raw_coordinate_string:
+        #         cleaned_coordinates.append(
+        #             cls._parse_coordinate(raw_coordinate_string))
+        #     else:
+        #         logger.warning(
+        #             "Invalid co-ordinates: {}".format(raw_coordinate_string))
+        # except Exception as e:
+        #     logger.warning(
+        #         "Caught Exception '{}' for co-ordinates {}".format(
+        #             e, raw_coordinate_string
+        #         )
+        #     )
+        return CoordinateUtils.clean_coordinates(raw_coordinate_string)
 
     @staticmethod
     def _get_province_from_coord(coordinate):
@@ -168,20 +219,20 @@ class InfrastructureProjectPart(models.Model):
         province_name = cache.get(key, default="cache-miss")
         if province_name == "cache-miss":
             logger.info(f"Coordinate Province Cache MISS for coordinate {key}")
-            params = {"type": "PR"}
-            province_result = requests.get(
-                MAPIT_POINT_API_URL.format(
-                    coordinate["longitude"], coordinate["latitude"]
-                ),
-                params=params,
+           
+            response = requests.get(
+                "https://nominatim.openstreetmap.org/reverse",
+                params={
+                    "lat": coordinate["latitude"],
+                    "lon": coordinate["longitude"],
+                    "format": "json",
+                    "zoom": 5,
+                    "addressdetails": 1
+                },
+                headers={"User-Agent": "GeoProvinceLookup/1.0"}
             )
-            province_result.raise_for_status()
-            r = province_result.json()
-            list_of_objects_returned = list(r.values())
-            if len(list_of_objects_returned) > 0:
-                province_name = list_of_objects_returned[0]["name"]
-            else:
-                province_name = None
+            data = response.json()
+            province_name = data.get("address", {}).get("state")
             cache.set(key, province_name)
         else:
             logger.info(f"Coordinate Province Cache HIT for coordinate {key}")

@@ -140,7 +140,7 @@ def import_dataset(obj_id):
     elif obj.type == "EPRE":
         preprocessed_dataset = preprocess(dataset, EPRE_HEADERS)
 
-        EPREData.objects.all().delete()
+        # EPREData.objects.all().delete()
         for item in preprocessed_dataset:
             EPREData.objects.create(
                 government=item["Government"],

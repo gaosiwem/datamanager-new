@@ -10,6 +10,7 @@ from public_entities.import_export_admin import PublicEntityResource
 from import_export.admin import ImportMixin
 
 from django_q.tasks import async_task, fetch
+from slugify import slugify
 
 
 class PublicEntityExpenditureAdmin(admin.ModelAdmin):
@@ -69,8 +70,6 @@ def generate_import_report(reportArray
 def save_imported_public_entities(obj_id):
     # read file
     obj_to_update = PublicEntitiesFileUpload.objects.get(id=obj_id)
-    print(obj_id)
-    print(obj_to_update.id)
     file_content = obj_to_update.file.read()
 
     detected_encoding = chardet.detect(file_content)['encoding']
@@ -98,27 +97,29 @@ def save_imported_public_entities(obj_id):
     notFoundPublicEntities = []
 
     count = 0
+    print("Public Entities Count")
+    print(len(parsed_data))
     for item in parsed_data: 
         count += 1
         # Access each column by its name
-        vote = item["Vote"]
-        department = item["Department"]
-        entity_name = item["EntityName"]
-        consol_indi = item["ConsolIndi"]
-        pfma = item["PFMA"]
-        type_ = item["Type"]
-        economic_classification1 = item["EconomicClassification1"]
-        economic_classification2 = item["EconomicClassification2"]
-        economic_classification3 = item["EconomicClassification3"]
-        economic_classification4 = item["EconomicClassification4"]
-        economic_classification5 = item["EconomicClassification5"]
-        economic_classification6 = item["EconomicClassification6"]
-        function_group1 = item["FunctionGroup1"]
-        function_group2 = item["FunctionGroup2"]
-        financial_year = item["FinancialYear"]
-        budget_phase = item["BudgetPhase"]
-        amount_r_thou = item["Amount (R-Thou)"]
-        amount = item["Amount"]
+        vote = item["Vote"].strip()
+        department = item["Department"].strip()
+        entity_name = item["EntityName"].strip()
+        consol_indi = item["ConsolIndi"].strip()
+        pfma = item["PFMA"].strip()
+        type_ = item["Type"].strip()
+        economic_classification1 = item["EconomicClassification1"].strip()
+        economic_classification2 = item["EconomicClassification2"].strip()
+        economic_classification3 = item["EconomicClassification3"].strip()
+        economic_classification4 = item["EconomicClassification4"].strip()
+        economic_classification5 = item["EconomicClassification5"].strip()
+        economic_classification6 = item["EconomicClassification6"].strip()
+        function_group1 = item["FunctionGroup1"].strip()
+        function_group2 = item["FunctionGroup2"].strip()
+        financial_year = item["FinancialYear"].strip()
+        budget_phase = item["BudgetPhase"].strip()
+        amount_r_thou = item["Amount (R-Thou)"].strip()
+        amount = item["Amount"].strip()
         financial_year_slug = make_financial_year(financial_year)
         financialYears = FinancialYear.objects.filter(slug=financial_year_slug)
 
@@ -158,27 +159,44 @@ def save_imported_public_entities(obj_id):
                                 f"Department {department} for financial year {financial_year_slug} already exists"
                             )
                     if selectedDepartment:
-                        publicEntities = PublicEntity.objects.filter(
+
+                        # print(
+                        #     f"Public entity: {entity_name}, "
+                        #     f"department: {selectedDepartment}, "
+                        #     f"government: {selectedGovernment.name}, "
+                        #     f"pfma: {pfma}, "
+                        #     f"functiongroup1: {function_group1}, "
+                        #     f"amount: {amount}"
+                        # )
+
+                        # print('before the save')
+
+                        selectedPublicEntity, created = PublicEntity.objects.update_or_create(
                             name=entity_name,
                             department=selectedDepartment,
                             government=selectedGovernment,
-                            pfma=pfma,
-                            functiongroup1=function_group1,
-                            amount=amount,
+                            defaults={
+                                "pfma": pfma,
+                                "functiongroup1": function_group1,
+                                "amount": amount,
+                                "slug": slugify(entity_name),
+                            }
                         )
-                        selectedPublicEntity = None
 
-                        if publicEntities:
-                            selectedPublicEntity = publicEntities.first()
-                        else:
-                            selectedPublicEntity = PublicEntity.objects.create(
-                                name=entity_name,
-                                department=selectedDepartment,
-                                government=selectedGovernment,
-                                pfma=pfma,
-                                functiongroup1=function_group1,
-                                amount=amount,
-                            )
+                        # print('Passed the save')
+                        # selectedPublicEntity = None
+
+                        # if publicEntities:
+                        #     selectedPublicEntity = publicEntities.first()
+                        # else:
+                        #     selectedPublicEntity = PublicEntity.objects.create(
+                        #         name=entity_name,
+                        #         department=selectedDepartment,
+                        #         government=selectedGovernment,
+                        #         pfma=pfma,
+                        #         functiongroup1=function_group1,
+                        #         amount=amount,
+                        #     )
 
                         if selectedPublicEntity:
                             selectedPublicEntityExpenditure = (
@@ -295,7 +313,9 @@ class PublicEntitiesFileUploadAdmin(admin.ModelAdmin):
         # task as a related object synchronously. We have to fetch it by its ID
         # when we want to see if it's available yet.
 
-        obj.import_report = save_imported_public_entities(obj.id)
+        # obj.task_id = async_task(func=save_imported_indicators, obj_id=obj.id)
+        # obj.save()
+        obj.import_report = async_task(func=save_imported_public_entities, obj_id=obj.id)
         obj.save()
 
     def processing_completed(self, obj):

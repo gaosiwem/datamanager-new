@@ -47,9 +47,13 @@ class CustomProvinceWidget(Widget):
     def clean(self, value, row=None, *args, **kwargs):
         project_name = row["project_name"]
         gps_code = row["gps_code"]
+
+        print('Called cleaned coordinates')
+
         cleaned_coordinates = models.InfrastructureProjectPart.clean_coordinates(
             gps_code
         )
+
         provinces = models.InfrastructureProjectPart.get_provinces(
             cleaned_coordinates=cleaned_coordinates, project_name=project_name
         )
@@ -218,6 +222,11 @@ class InfrastructureProjectResource(resources.ModelResource):
         model = models.InfrastructureProjectPart
         import_id_fields = ["project_slug", "financial_year"]
 
+    def before_import_row(self, row, **kwargs):
+        # Ensure the field exists even if empty
+        if "provinces" not in row:
+            row["provinces"] = ""
+
     def import_field(self, field, obj, data, is_m2m=False):
         """
         The only reason to override this function is so that we can force the
@@ -231,3 +240,12 @@ class InfrastructureProjectResource(resources.ModelResource):
             field.attribute and field.column_name in data
         ) or field.attribute == "provinces":
             field.save(obj, data, is_m2m)
+
+    # # def save_instance(self, instance, using_transactions=True, dry_run=False):
+    #     """
+    #     Explicitly save the instance to the DB. Print for debugging.
+    #     """
+    #     print(f"Saving instance to DB: {instance}")
+    #     instance.save()
+    #     return instance
+    

@@ -53,9 +53,16 @@ class GovtFunctionAdmin(admin.ModelAdmin):
     readonly_fields = ("slug",)
 
 
-class InfrastructureProjectAdmin(ImportMixin, admin.ModelAdmin):
+class InfrastructureProjectAdmin(admin.ModelAdmin):
     resource_class = InfrastructureProjectResource
-    formats = [XLSX, CSV]
+    list_display = ("project_slug", "financial_year", "featured")
+    search_fields = ("project_slug", "financial_year")
+    list_filter = ("financial_year", "featured", "provinces")
+
+@admin.register(models.InfrastructureProjectImportFile)
+class InfrastructureProjectImportFileAdmin(admin.ModelAdmin):
+    list_display = ["file", "uploaded_at", "processed"]
+
 
 
 class DepartmentAdmin(ImportMixin, admin.ModelAdmin):

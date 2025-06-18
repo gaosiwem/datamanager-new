@@ -98,11 +98,11 @@ urlpatterns = [
         r"^json/infrastructure-projects/(?P<project_slug>[\w-]+).json$",
         cache_page(CACHE_MINUTES_SECS)(views.infrastructure_project_detail_json),
     ),
-    # url(
-    #     r"^infrastructure-projects/(?P<project_slug>[\w-]+)$",
-    #     cache_page(CACHE_MINUTES_SECS)(views.infrastructure_project_detail),
-    #     name="infrastructure-projects",
-    # ),
+    url(
+        r"^infrastructure-projects/(?P<project_slug>[\w-]+)$",
+        cache_page(CACHE_MINUTES_SECS)(views.infrastructure_project_detail),
+        name="infrastructure-projects",
+    ),
 
     # Department detail
     # - National
@@ -118,6 +118,15 @@ urlpatterns = [
         include((department_urlpatterns, "national"), namespace="national"),
         kwargs={"sphere_slug": "national", "government_slug": "south-africa"},
         name="national-department",
+    ),
+
+        # - Provincial
+    url(r"^(?P<financial_year_id>[\w-]+)"
+        "/(?P<sphere_slug>[\w-]+)"
+        "/(?P<government_slug>[\w-]+)"
+        "/departments"
+        "/(?P<department_slug>[\w-]+)/",
+        include((department_urlpatterns, "provincial"), namespace="provincial"),
     ),
 
     url(

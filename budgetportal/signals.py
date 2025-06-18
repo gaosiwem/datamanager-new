@@ -2,7 +2,14 @@ from budgetportal import models, tasks
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django_q.tasks import async_task
+from .models import InfrastructureProjectImportFile
+from .tasks import import_infrastructure_data
 
+
+@receiver(post_save, sender=InfrastructureProjectImportFile)
+def trigger_import_on_upload(sender, instance, created, **kwargs):
+    if created and not instance.processed:
+        async_task(import_infrastructure_data, instance.id)
 
 # @receiver([post_save], sender=models.IRMSnapshot)
 # def handle_irm_snapshot_post_save(

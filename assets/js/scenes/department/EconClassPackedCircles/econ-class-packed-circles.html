@@ -179,11 +179,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const parts = currentUrl.replace("https://vulekamali.gov.za/", "").split("/").filter(Boolean);
         
         const financialYear = parts[0];
-        const department = parts[3];
+        const type = parts[1]
+        const department = type == 'national' ? parts[3] : parts[4];
+        const province = type == 'national' ? '' : parts[2];
 
         //Get programmes for legend
         d3.json(`/get_programmes?financialYear=${encodeURIComponent(financialYear)}
                     &department=${encodeURIComponent(department)}
+                    &province=${encodeURIComponent(province)}
                     &econ=${encodeURIComponent('')}`).then(data => {
 
             const prog = typeof data === "string" ? JSON.parse(data) : data;

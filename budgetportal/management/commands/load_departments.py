@@ -39,10 +39,13 @@ class Command(BaseCommand):
         sphere = options["sphere"]
         filename = options["filename"]
         update = options.get("update", False)
+        print('Inside the csv method')
 
-        with open(filename) as csvfile:
+        with open(filename, newline='', encoding='utf-8') as csvfile:
+            
             reader = csv.DictReader(csvfile)
             for row in reader:
+                print(row["government"])
                 try:
                     government = Government.objects.get(
                         sphere__financial_year__slug=financial_year,

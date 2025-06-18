@@ -94,13 +94,16 @@
             const currentUrl = window.location.href;
             const parts = currentUrl.replace("https://vulekamali.gov.za/", "").split("/").filter(Boolean);
             const financialYear = parts[0];
-            const department = parts[3];
+            const type = parts[1]
+            const department = type == 'national' ? parts[3] : parts[4];
+            const province = type == 'national' ? '' : parts[2];
 
             // Fetch data based on selected values
             d3.json(`/get_horizontal_bar_data?econ=${encodeURIComponent(dropdown.value == "" || dropdown.value == "All"
                      ? "" : dropdown.value)}&prog=${encodeURIComponent(progDropdown.value == "" || progDropdown.value == "All" 
                      ? "" : progDropdown.value)}
                      &financialYear=${encodeURIComponent(financialYear)}
+                     &province=${encodeURIComponent(province)}
                      &department=${encodeURIComponent(department)}`)
                 .then(dataset => {
                     if (dataset && dataset.children.length > 0) {                        
@@ -200,11 +203,14 @@
         const currentUrl = window.location.href;
         const parts = currentUrl.replace("https://vulekamali.gov.za/", "").split("/").filter(Boolean);
         const financialYear = parts[0];
-        const department = parts[3];
+        const type = parts[1]
+        const department = type == 'national' ? parts[3] : parts[4];
+        const province = type == 'national' ? '' : parts[2];
 
         // Fetch and populate the economic classification dropdown
         d3.json(`/get_economicClassification/?financialYear=${encodeURIComponent(financialYear)}
-                    &department=${encodeURIComponent(department)}`).then(data => {
+                    &department=${encodeURIComponent(department)}
+                    &province=${encodeURIComponent(province)}`).then(data => {
             const econ = typeof data === "string" ? JSON.parse(data) : data;
 
             if (!econ || econ.length === 0) {
@@ -223,7 +229,8 @@
        
         d3.json(`/get_programmes?financialYear=${encodeURIComponent(financialYear)}
                     &department=${encodeURIComponent(department)}
-                    &econ=${encodeURIComponent('')}`)
+                    &econ=${encodeURIComponent('')}
+                    &province=${encodeURIComponent(province)}`)
                     .then(data => {
             const prog = typeof data === "string" ? JSON.parse(data) : data;
 

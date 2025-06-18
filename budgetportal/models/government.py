@@ -368,25 +368,25 @@ class Department(models.Model):
     #     else:
     #         return none_selected_query("vocab_provinces")
 
-    # def get_primary_department(self):
-    #     """
-    #     Check if department is primary
-    #     """
-    #     if not self.is_vote_primary:
-    #         try:
-    #             dept = Department.objects.get(
-    #                 vote_number=self.vote_number,
-    #                 is_vote_primary=True,
-    #                 government=self.government,
-    #             )
-    #         except MultipleObjectsReturned:
-    #             logger.exception(
-    #                 "Department %s has multiple primary " "departments" % self.slug
-    #             )
-    #             raise
-    #         else:
-    #             return dept
-    #     return self
+    def get_primary_department(self):
+        """
+        Check if department is primary
+        """
+        if not self.is_vote_primary:
+            try:
+                dept = Department.objects.get(
+                    vote_number=self.vote_number,
+                    is_vote_primary=True,
+                    government=self.government,
+                )
+            except MultipleObjectsReturned:
+                logger.exception(
+                    "Department %s has multiple primary " "departments" % self.slug
+                )
+                raise
+            else:
+                return dept
+        return self
 
     # def get_dataset(self, group_name, name=None):
     #     """
