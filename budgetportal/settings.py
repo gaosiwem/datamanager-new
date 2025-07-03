@@ -30,9 +30,10 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # If using a reverse proxy like IIS, set the use_x_forwarded options
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
-DJANGO_CSRF_TRUSTED_ORIGINS = "http://localhost:8000"
+DJANGO_CSRF_TRUSTED_ORIGINS = "https://vulekamali.gov.za/"
 
-ALLOWED_HOSTS = ["127.0.0.1","10.131.171.115","localhost"]
+ALLOWED_HOSTS = ["127.0.0.1", "10.131.171.115",
+                 "localhost", "vulekamali.gov.za"]
 # ALLOWED_HOSTS = ["*"]
 
 

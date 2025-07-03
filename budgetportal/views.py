@@ -340,6 +340,8 @@ def infrastructure_project_list(request):
     context = {
         "page": {"layout": "about", "data_key": "about"},
         "site": {"latest_year": FinancialYear.get_latest_year().slug},
+        "navbar": MainMenuItem.objects.prefetch_related("children").all(),
+        
     }
     return render(request, "infrastructure_project_list.html", context)
 
@@ -1227,7 +1229,8 @@ def budget_summary(request):
     context = {
         "consolidated_spending": consolidated_spending(),
         "national_budget_spending" : national_budget_spending(),
-        "provincial_budget_spending" : provincial_budget_spending()
+        "provincial_budget_spending" : provincial_budget_spending(),
+        "navbar": MainMenuItem.objects.prefetch_related("children").all(),
     }
     return render(request, "budget-summary.html", context)
 

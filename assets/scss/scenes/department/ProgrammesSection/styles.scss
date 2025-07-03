@@ -29,7 +29,7 @@
   }
 
   &--right .Card {
-    height: calc(100vh - 145px);
+    // height: calc(100vh - 145px);
 
     iframe {
       width: 100%;
@@ -45,4 +45,19 @@
 
 .ProgrammesSection-share {
   max-width: 250px;
+}
+
+@media only screen and (max-width: 991px) {
+  .treemapContainer {
+      position: relative;
+      left: 70px;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+
+  .treemapContainer {
+    position:relative;
+    left: 1px;
+  }
 }

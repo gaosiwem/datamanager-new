@@ -2,11 +2,27 @@
   display: flex; /* Use flexbox to align items horizontally */
   justify-content: space-around; /* Evenly space treemaps */
   align-items: flex-start; /* Align treemaps at the top */
+  flex-wrap: wrap;
 }
 
 .treemapContainer {
-  flex: 1; /* Allow equal distribution */
-  text-align: start; /* Center the title */
+  -ms-flex: 1 1 0%;
+  flex: 1;
+    /* Allow equal distribution of space */
+  min-width: 300px;
+  /* Minimum width before containers wrap */
+  height: 500px;
+
+  overflow: hidden;
+  /* Ensures SVG content stays within bounds */
+  display: flex;
+
+  -ms-flex-direction: column;
+  flex-direction: column;
+
+  /* Center contents horizontally */
+  padding-bottom: 10px;
+  /* Align text within the container to the start */
 }
 
 .treemapContainer label {
@@ -15,22 +31,89 @@
   font-weight: bold;
   background: #000; 
   color:#fff; 
-  width: 75%; 
+  width: fit-content; 
   padding: 3px;
 }
 
-.treemapContainer p:nth-child(2) {
-  font-family: Roboto, sans-serif;
-  font-size: 11px;
-}
+ /* Styles for the programme/sub-programme name paragraph */
+ .treemapContainer p:nth-child(2) {
+   font-family: Roboto, sans-serif;
+   font-size: 12px;
+   margin: 0;
+   /* Remove default paragraph margins */
+   padding: 2px 0;
+   /* Small vertical padding */
+ }
 
-.treemapContainer p:nth-child(3) {
-  font-family: Roboto, sans-serif;
-  font-size: 13px;
-  font-weight: bold;
-}
+ /* Styles for the programme/sub-programme amount paragraph */
+ .treemapContainer p:nth-child(3) {
+   font-family: Roboto, sans-serif;
+   font-size: 14px;
+   font-weight: bold;
+   margin: 0;
+   /* Remove default paragraph margins */
+   padding-bottom: 5px;
+   /* Space below the amount */
+ }
 
-.treemap {
-  width: 100%;
-  height: 400px; /* Adjust as needed */
-}
+ /* Styles for the div that will contain the D3.js generated SVG */
+ .treemap {
+   width: 100%;
+  cursor: pointer;
+   /* Make the SVG container fill its parent's width */
+   height: calc(100% - 100px);
+   /* Adjust height to accommodate label and paragraphs above */
+   position: relative;
+   /* Essential for positioning the tooltip relative to this container */
+ }
+
+ /* Styles for the D3.js generated tooltip */
+ #tooltip {
+
+   position: absolute;
+   text-align: center;
+   padding: 8px;
+   font: 12px sans-serif;
+   background: rgba(0, 0, 0, 0.7);
+   /* Semi-transparent dark background */
+   color: white;
+   /* White text for contrast */
+   border: 0px;
+   border-radius: 4px;
+   pointer-events: none;
+   /* Crucial: allows mouse events to pass through to elements beneath */
+   z-index: 1000;
+   /* Ensures tooltip appears on top of other elements */
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+   display: none;
+   /* Hidden by default, shown on mouseover */
+ }
+
+ /* Styles for D3.js treemap rectangles */
+ .node {
+   cursor: pointer;
+   /* Indicates interactivity */
+   stroke: #fff;
+   /* White border between treemap nodes */
+   stroke-width: 1px;
+   transition: fill 0.2s ease-in-out;
+   /* Smooth color transition on hover */
+ }
+
+ .node:hover {
+   filter: brightness(1.2);
+   /* Slightly brighter on hover for visual feedback */
+ }
+
+ /* Styles for text labels inside treemap rectangles */
+ .node text {
+   pointer-events: none;
+   /* Prevents text from blocking mouse events on the rect */
+   font-weight: bold;
+   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+   /* Adds a subtle shadow for better readability */
+   text-anchor: middle;
+   /* Ensures text aligns correctly when centered */
+   dominant-baseline: central;
+   /* Centers text vertically within the box */
+ }

@@ -11,6 +11,7 @@ import "./utilities/js/modules/loadStringQueries.js";
 import "./utilities/js/modules/createComponentInterfaces.js";
 import "./utilities/js/modules/polyfillOldFeatures.js";
 import "./utilities/js/embedding/datawrapper.js";
+import "./utilities/js/helpers/formatLargeValues.js";
 
 import "./components/search-results/SearchResult/scripts.js";
 
@@ -46,6 +47,8 @@ import "./components/performance/Table/scripts.jsx";
 
 import "./components/contributed-data/CsoMeta/scripts.js";
 
+import "./components/budget-summary/budget-summary.js";
+
 import "./components/universal/Button/scripts.js";
 import "./components/universal/ResponsiveChart/scripts.jsx";
 import "./components/universal/Comments/scripts.js";
@@ -59,6 +62,12 @@ import "./scenes/department/AdjustedSection/components/ChangeIndicator/scripts.j
 import "./scenes/department/ProgramEconSmallMultiples/programme-econ-small-muls.js";
 import "./components/Share/scripts.js";
 import "./scenes/homepage/Hero/scripts.js";
+import "./scenes/department/ProgrammesSection/index.js";
+import "./scenes/department/EconClassPackedCircles/econ-class-packed-circles.js";
+import "./scenes/department/ProgramEconSmallMultiples/programme-econ-small-muls.js";
+import "./scenes/department/ExpenditureSection/expenditure-section.js";
+import "./scenes/department/ExpenditurePhaseSection/expenditure-phase-section.js";
+import "./scenes/department/ExpenditureMultiplesSection/expenditure-multiples-section.js";
 
 import "./embeds/equitable-share/index.js";
 import "./embeds/chart-bubbles/index.js";

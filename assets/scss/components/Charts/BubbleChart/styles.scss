@@ -1,6 +1,7 @@
 .bubbleChartMainContainer {
   display: flex;
-  gap: 40px;
+  gap: 20px;
+  flex-direction: column;
 }
 
 .bubbleChartMainContainer label {
@@ -11,10 +12,11 @@
     color:#fff; 
     width: 75%; 
     padding: 3px;
+    width: fit-content;
   }
 
   .bubbleChartLegend {
-    font-size: 10px;
+    font-size: 13px;
     padding-top:10px; 
     margin-left:30px;
     width: 100%;
@@ -33,7 +35,26 @@
   }
 
   .bubbleChartLegendContainer {
-    border-right: 1px solid lightgrey;
     padding-right: 50px;
-    height: 100px;
+    height: auto;
   }
+
+  #bubble_graph_svg {
+    position: relative;
+    right: 10%;
+    top: 40px;
+  }
+
+    @media only screen and (max-width: 991px) {
+      #bubble_graph_svg {
+        position: relative;
+        left: 70px;
+      }
+    }
+  
+    @media only screen and (max-width: 767px) {
+  
+      #bubble_graph_svg {
+        position: relative;
+        left: -194px;
+      } }

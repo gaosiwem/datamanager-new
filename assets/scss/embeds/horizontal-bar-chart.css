@@ -31,34 +31,4 @@
   }
   .grid path {
      stroke-width: 1;
-  }
-  
-  rect.bar:hover {
-      /*fill: cyan;*/
-      stroke: cyan;
-      cursor: pointer;
-  }
-  
-  .toolTip {
-    position: absolute;
-    display: none;
-    padding: 4px;
-    min-width: 80px;
-    height: auto;
-    font-family: 'Courier New', Courier, monospace;
-    color: #fff;
-    font-size: 14px;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.7);
-  }
-  .toolTip:after {
-      content: "";
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      margin-left: -8px;
-      border-width: 8px;
-      border-style: solid;
-      border-color: rgba(0, 0, 0, 0.7) transparent transparent transparent;
-   }
-   
+  }   
