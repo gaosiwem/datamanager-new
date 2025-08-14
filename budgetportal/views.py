@@ -835,11 +835,11 @@ def bubble_graph(financialYear, department, govt_label):
     queryset = None
 
     if govt_label == "National":
-        queryset = ENEData.objects.filter(financialYear=financialYear, department=department) \
+        queryset = ENEData.objects.filter(financialYear=financialYear, department=department, budgetPhase='Main appropriation') \
             .values("economicClassification4","programme") \
             .annotate(total_value=Sum("value"))
     else:
-        queryset = EPREData.objects.filter(financialYear=financialYear, department=department, government = govt_label) \
+        queryset = EPREData.objects.filter(financialYear=financialYear, department=department, government=govt_label, budgetPhase='Main appropriation') \
             .values("economicClassification4","programme") \
             .annotate(total_value=Sum("value"))
 
@@ -873,22 +873,22 @@ def treemap_chart(financialYear, department, govt_label):
     queryset = None
     subprogrammes = None
     if govt_label == "National":
-        queryset = ENEData.objects.filter(financialYear=financialYear, department=department) \
+        queryset = ENEData.objects.filter(financialYear=financialYear, department=department, budgetPhase='Main appropriation') \
             .values("programme") \
             .annotate(total_value=Sum("value"))
 
             # Fetch subprogrammes and their total values
-        subprogrammes = ENEData.objects.filter(financialYear=financialYear, department=department) \
+        subprogrammes = ENEData.objects.filter(financialYear=financialYear, department=department, budgetPhase='Main appropriation') \
             .values("programme", "subprogramme") \
             .annotate(total_value=Sum("value"))
 
     else:
-        queryset = EPREData.objects.filter(financialYear=financialYear, department=department, government = govt_label) \
+        queryset = EPREData.objects.filter(financialYear=financialYear, department=department, government=govt_label, budgetPhase='Main appropriation') \
             .values("programme") \
             .annotate(total_value=Sum("value"))
 
             # Fetch subprogrammes and their total values
-        subprogrammes = EPREData.objects.filter(financialYear=financialYear, department=department, government = govt_label) \
+        subprogrammes = EPREData.objects.filter(financialYear=financialYear, department=department, government=govt_label, budgetPhase='Main appropriation') \
             .values("programme", "subprogramme") \
             .annotate(total_value=Sum("value"))
 
@@ -1145,9 +1145,15 @@ def budget_actual_programme(department, financialYear, govt_label):
 
     for prog in prog_list:
 
-        queryset = BudgetVSActualNationalData.objects.filter(department=department, programme=prog) \
-            .values("financialYear","budgetPhase") \
-            .annotate(total_value=Sum("value"))
+        if govt_label == "National":
+            queryset = BudgetVSActualNationalData.objects.filter(department=department, programme=prog) \
+                .values("financialYear","budgetPhase") \
+                .annotate(total_value=Sum("value"))
+            
+        else:
+            queryset = BudgetVSActualProvincialData.objects.filter(department=department, programme=prog) \
+                .values("financialYear","budgetPhase") \
+                .annotate(total_value=Sum("value"))
 
         budget_actual_list = list(queryset)
 
