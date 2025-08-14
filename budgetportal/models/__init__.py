@@ -922,6 +922,8 @@ class DatasetCategory(models.Model):
         max_length=200,
         always_update=True,
     )
+    
+    type = models.CharField(max_length=50, default="Original Budget", choices=(("Original Budget", "Original Budget"), ("Adjusted Budget", "Adjusted Budget")))
 
     excluded_groups = {"budget-vote-documents", "adjusted-budget-vote-documents"}
 

@@ -95,10 +95,20 @@ function datasetReducer(governments, dataset) {
     return governments;
   }
   const government = governments[governmentName];
-  if (dataset.groups.some(group => originalBudgetGroups.includes(group.name)))
-    government.original.push(...(filterKeyFormats(dataset.resources)));
-  if (dataset.groups.some(group => adjustedBudgetGroups.includes(group.name)))
-    government.adjusted.push(...(filterKeyFormats(dataset.resources)));
+
+  for (let index = 0; index < dataset.groups.length; index++) {
+    const element = dataset.groups[index];
+    if (element.type === "Original Budget") {
+      government.original.push(...filterKeyFormats(dataset.resources));
+    } else if (element.type === "Adjusted Budget") {
+      government.adjusted.push(...filterKeyFormats(dataset.resources));
+    }
+  }
+
+  // if (dataset.groups.some(group => originalBudgetGroups.includes(group.name)))
+  //   government.original.push(...(filterKeyFormats(dataset.resources)));
+  // if (dataset.groups.some(group => adjustedBudgetGroups.includes(group.name)))
+  //   government.adjusted.push(...(filterKeyFormats(dataset.resources)));
   return governments;
 }
 

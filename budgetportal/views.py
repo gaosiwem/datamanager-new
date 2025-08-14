@@ -698,6 +698,60 @@ def category_fields(category):
         "description": category.description,
     }
 
+
+def dataset_category_list(request, category_slug, financial_year_id):
+    # Get the dataset
+    datasets = (
+        Dataset.objects
+        .select_related('dataset_category', 'tags', 'organisation', 'financial_year', 'sphere')
+        .filter(dataset_category__slug=category_slug, financial_year__slug=financial_year_id)
+    )
+
+    if not datasets.exists():
+        return JsonResponse({"error": "Dataset not found"}, status=404)
+
+    output = []
+
+    original_categories = DatasetCategory.objects.filter(type="Original Budget").values_list("slug", flat=True)
+    adjusted_categories = DatasetCategory.objects.filter(type="Adjusted Budget").values_list("slug", flat=True)
+
+    for dataset in datasets:
+        # Fetch related resources
+        datasetResources = DatasetResource.objects.filter(
+            dataset_id=dataset.id)
+        resources_data = [
+            {
+                "name": r.fileName,
+                "format": r.format,
+                "url": r.path
+            }
+            for r in datasetResources
+        ]
+
+        # Prepare dataset object for JS reducer
+        groups = []
+        if dataset.dataset_category.slug in original_categories:
+            groups.append({
+                "name": dataset.dataset_category.slug,
+                "type": "Original Budget"
+            })
+        if dataset.dataset_category.slug in adjusted_categories:
+            groups.append({
+                "name": dataset.dataset_category.slug,
+                "type": "Adjusted Budget"
+            })
+
+        dataset_obj = {
+            "sphere": [dataset.sphere.name.lower()] if dataset.sphere else [],
+            "province": [dataset.province] if dataset.province else [],
+            "groups": groups,
+            "resources": resources_data
+        }
+
+        output.append(dataset_obj)
+
+    return JsonResponse(output, safe=False)
+
 def dataset_category_list_page(request):
     categories = DatasetCategory.get_all()
     context = {
@@ -1197,16 +1251,13 @@ def consolidated_spending():
             for item in sorted_data
         ],
         "links": []  # If you need links
-    }
-
-    print(data)
-    
+    }    
     return json.dumps(data)
 
 def national_budget_spending():
     
     financialYear = FinancialYear.get_latest_year().slug
-    queryset = BudgetVSActualNationalData.objects.filter(financialYear=financialYear.split("-")[0]) \
+    queryset = BudgetVSActualNationalData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
         .values("department") \
         .annotate(total_value=Sum("value"))
 
@@ -1232,7 +1283,8 @@ def national_budget_spending():
 def provincial_budget_spending():
     
     financialYear = FinancialYear.get_latest_year().slug
-    queryset = BudgetVSActualProvincialData.objects.filter(financialYear=financialYear.split("-")[0]) \
+
+    queryset = BudgetVSActualProvincialData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
         .values("government") \
         .annotate(total_value=Sum("value"))
 
