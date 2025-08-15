@@ -1229,6 +1229,24 @@ def budget_actual_programme(department, financialYear, govt_label):
 
     return json.dumps(data_list).replace("'","").strip()
 
+
+def format_values(value):
+    def format_number(num):
+        # Keep up to 3 decimals, remove trailing zeros
+        return f"{num:,.2f}".rstrip('0').rstrip('.')
+
+    if value >= 1e12:
+        return f"R {format_number(value / 1e12)} trillion"
+    elif value >= 1e9:
+        return f"R {format_number(value / 1e9)} billion"
+    elif value >= 1e6:
+        return f"R {format_number(value / 1e6)} million"
+    elif value >= 1e3:
+        return f"R {format_number(value / 1e3)} thousand"
+    else:
+        return f"R {format_number(value)}"
+
+
 def consolidated_spending():
 
     financialYear = FinancialYear.get_latest_year().slug
@@ -1253,6 +1271,20 @@ def consolidated_spending():
         "links": []  # If you need links
     }    
     return json.dumps(data)
+
+def consolidated_spending_total():
+    financialYear = FinancialYear.get_latest_year().slug
+    queryset = ConsolidationData.objects.filter(financialYear=financialYear.split("-")[0]) \
+        .values("functionGroup") \
+        .annotate(total_value=Sum("value"))
+
+    data_list = list(queryset)
+    total = 0
+
+    for item in data_list:
+        total += int(item["total_value"])
+    
+    return format_values(total)
 
 def national_budget_spending():
     
@@ -1279,6 +1311,36 @@ def national_budget_spending():
     }
     
     return json.dumps(data)
+
+def national_budget_spending_total():
+    financialYear = FinancialYear.get_latest_year().slug
+    queryset = BudgetVSActualNationalData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
+        .values("department") \
+        .annotate(total_value=Sum("value"))
+
+    data_list = list(queryset)
+    total = 0
+
+    for item in data_list:
+        total += int(item["total_value"])
+
+    return format_values(total)
+
+
+def provincial_budget_spending_total():
+    financialYear = FinancialYear.get_latest_year().slug
+    queryset = BudgetVSActualProvincialData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
+        .values("government") \
+        .annotate(total_value=Sum("value"))
+
+    data_list = list(queryset)
+    total = 0
+
+    for item in data_list:
+        total += int(item["total_value"])
+
+    return format_values(total)
+
 
 def provincial_budget_spending():
     
@@ -1311,6 +1373,9 @@ def budget_summary(request):
     
     context = {
         "consolidated_spending": consolidated_spending(),
+        "consolidated_spending_total": consolidated_spending_total(),
+        "national_budget_spending_total": national_budget_spending_total(),
+        "provincial_budget_spending_total": provincial_budget_spending_total(),
         "national_budget_spending" : national_budget_spending(),
         "provincial_budget_spending" : provincial_budget_spending(),
         "navbar": MainMenuItem.objects.prefetch_related("children").all(),
