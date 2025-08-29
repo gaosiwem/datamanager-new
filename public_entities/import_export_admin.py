@@ -193,6 +193,9 @@ class PublicEntityResource(resources.ModelResource):
     pfma = Field(attribute="pfma", column_name="pfma")
     functiongroup1 = Field(attribute="functiongroup1",
                            column_name="functiongroup1")
+    
+    financialYear = Field(attribute="financialYear",
+                          column_name="financialYear")
     government = Field(
         attribute="government",
         column_name="government",

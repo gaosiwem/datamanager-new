@@ -75,6 +75,10 @@ class PublicEntity(models.Model):
         max_length=200, blank=True, null=True, choices=FUNCTIONGROUP1_CHOICES
     )
 
+    financialYear = models.CharField(
+        max_length=200, blank=True, null=True
+    )
+
     amount = models.DecimalField(max_digits=20, decimal_places=0, default=0)
 
     class Meta:

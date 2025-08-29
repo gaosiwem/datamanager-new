@@ -35,6 +35,7 @@ import "./components/department-budgets/ArrowButtons/scripts.js";
 import "./components/department-budgets/PerformanceIndicators/scripts.jsx";
 
 import "./components/public-entity-budgets/PublicEntitySearch/scripts.jsx";
+import "./components/public-entity-budgets/scripts.jsx";
 import "./components/public-entity-budgets/IntroSection/scripts.jsx";
 import "./components/public-entity-budgets/ArrowButtons/scripts.js";
 import "./components/public-entity-budgets/PerformanceIndicators/scripts.jsx";

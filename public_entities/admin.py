@@ -85,7 +85,7 @@ def save_imported_public_entities(obj_id):
 
     sphere = get_sphere(full_text)
     f = StringIO(full_text)
-    reader = csv.DictReader(f)
+    reader = csv.DictReader(f, delimiter=';', quotechar='"')
     parsed_data = list(reader)
 
     foundGovernments = []
@@ -97,7 +97,6 @@ def save_imported_public_entities(obj_id):
     notFoundPublicEntities = []
 
     count = 0
-    print("Public Entities Count")
     print(len(parsed_data))
     for item in parsed_data: 
         count += 1
@@ -178,6 +177,7 @@ def save_imported_public_entities(obj_id):
                             defaults={
                                 "pfma": pfma,
                                 "functiongroup1": function_group1,
+                                "financialYear": financial_year,
                                 "amount": amount,
                                 "slug": slugify(entity_name),
                             }
@@ -313,10 +313,17 @@ class PublicEntitiesFileUploadAdmin(admin.ModelAdmin):
         # task as a related object synchronously. We have to fetch it by its ID
         # when we want to see if it's available yet.
 
-        # obj.task_id = async_task(func=save_imported_indicators, obj_id=obj.id)
-        # obj.save()
-        obj.import_report = async_task(func=save_imported_public_entities, obj_id=obj.id)
-        obj.save()
+        try:
+            task_id = async_task(func=save_imported_public_entities, obj_id=obj.id)
+            # If your model has a `task_id` field, persist it; otherwise skip this.
+            if hasattr(obj, "task_id"):
+                obj.task_id = task_id
+                obj.save(update_fields=["task_id"])
+        except Exception:
+            # Fallback: run synchronously so admins still get a report
+            report = save_imported_public_entities(obj.id)
+            obj.import_report = report
+            obj.save(update_fields=["import_report"])
 
     def processing_completed(self, obj):
         task = fetch(obj.task_id)

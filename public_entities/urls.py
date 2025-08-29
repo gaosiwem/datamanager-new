@@ -29,6 +29,9 @@ urlpatterns = [
         cache_page(CACHE_MINUTES_SECS)(views.public_entity_list),
         name="public-entity-list",
     ),
+
+    url(r"^(?P<financial_year_id>\d{4}-\d{2})/api/v1/",
+         views.PublicEntityListView.as_view()),
     # # Public Entity detail
     # # - National
     url(
