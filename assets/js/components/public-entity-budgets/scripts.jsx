@@ -29,7 +29,7 @@ class TabularView extends Component {
             excludeColumns: new Set(['id', 'slug', 'intro', 'financialYear', 'government']),
             titleMappings: {
                 'name': 'Entity name',
-                'department_name': 'Relevant department',
+                'department': 'Relevant department',
                 'pfma': 'PFMA',
                 'functiongroup1': 'Function Group',
                 'amount': 'Expenditure'
@@ -182,7 +182,7 @@ class TabularView extends Component {
                     }
                     if (key === 'department') {
                         
-                        let domain = "http://localhost:8000"
+                        let domain = "https://vulekamali.gov.za"
                         value = <a href={`${domain}/${year}/national/departments/${slugify(row.department.name)}`} style={{ color: 'black', cursor: 'pointer' }}>{value}</a>;
                     }
 
