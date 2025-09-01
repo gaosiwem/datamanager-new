@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", function() {
   );
 
   function bubbleChart() {
-    const width = 300;
-    const height = 300;
+    const width = 500;
+    const height = 500;
 
     // location to centre the bubbles
     const centre = { x: width / 2, y: height / 2 };
