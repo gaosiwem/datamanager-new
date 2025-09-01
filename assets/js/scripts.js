@@ -40,9 +40,7 @@ import "./components/public-entity-budgets/IntroSection/scripts.jsx";
 import "./components/public-entity-budgets/ArrowButtons/scripts.js";
 import "./components/public-entity-budgets/PerformanceIndicators/scripts.jsx";
 
-
-import "./components/public-entity-budgets/IntroSection/scripts.jsx"
-import "./components/public-entity-budgets/IntroSection/index.jsx"
+import "./components/public-entity-budgets/IntroSection/index.jsx";
 
 import "./components/performance/Table/scripts.jsx";
 

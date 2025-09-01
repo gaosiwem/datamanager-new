@@ -15,5 +15,20 @@
           {{ description | ensure_heading_blocks | markdownify | safe }}
       </div>
     </div>
+    
+    {% if public_entities %}    
+      <h2>
+        <span class="Navbar-Tag-new">New</span> <a
+          href="/public-entities/{{selected_financial_year}}?department={{name}}">Public Entities</a> associated with this
+        department:
+      </h2>
+      <ul class="DepartmentPublicEntity-list">
+        {% for entity in public_entities %}
+        <li>
+          <a href="{{ entity.url_path }}">{{ entity.name }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
   </div>
 </div>
