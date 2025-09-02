@@ -27,8 +27,8 @@ class TabularView extends Component {
             downloadUrl: '',
             excludeColumns: new Set(['id', 'slug', 'intro', 'financialYear', 'government']),
             titleMappings: {
-                'name': 'Entity name',
-                'department': 'Relevant department',
+                'name': 'Entity Name',
+                'department': 'Relevant Department',
                 'pfma': 'PFMA',
                 'functiongroup1': 'Function Group',
                 'amount': 'Expenditure'
