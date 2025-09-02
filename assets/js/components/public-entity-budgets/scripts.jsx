@@ -17,7 +17,6 @@ class TabularView extends Component {
         super(props);
 
         this.abortController = null;
-
         this.state = {
             rows: null,
             totalCount: 0,
@@ -105,7 +104,7 @@ class TabularView extends Component {
     }
 
     setDownloadUrl() {
-        let url = 'performance-indicators.xlsx/';
+        let url = 'public-entities.xlsx/';
         Object.entries(this.state.selectedFilters).forEach(([key, value], index) => {
             if (value !== null) {
                 url += `${index === 0 ? '?' : '&'}${key}=${encodeURIComponent(value)}`;
@@ -306,7 +305,6 @@ class TabularView extends Component {
         } else {
             formatted = `R ${absValue.toLocaleString()}`;
         }
-
         // Reapply negative sign if needed
         return value < 0 ? `- ${formatted}` : formatted;
         }
