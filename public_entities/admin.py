@@ -212,6 +212,7 @@ def save_imported_public_entities(obj_id):
                                     economic_classification5=economic_classification5,
                                     economic_classification6=economic_classification6,
                                     consol_indi=consol_indi,
+                                    financialYear=financial_year
                                 )
                             )
 

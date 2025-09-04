@@ -82,7 +82,6 @@ class PublicEntity(models.Model):
     amount = models.DecimalField(max_digits=20, decimal_places=0, default=0)
 
     class Meta:
-        unique_together = (("government", "slug"), ("government", "name"))
         ordering = ["name"]
         verbose_name_plural = "public entities"
 
@@ -152,6 +151,10 @@ class PublicEntityExpenditure(models.Model):
     economic_classification6 = models.CharField(
         max_length=200, blank=True, null=True)
     budget_phase = models.CharField(max_length=200, blank=True, null=True)
+
+    financialYear = models.CharField(
+        max_length=200, blank=True, null=True
+    )
 
     amount = models.DecimalField(max_digits=20, decimal_places=0)
 
