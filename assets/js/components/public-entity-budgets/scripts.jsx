@@ -233,7 +233,7 @@ class TabularView extends Component {
 
         return (
             <ThemeProvider theme={tableTheme}>
-                <Button variant="outlined" href={this.state.downloadUrl} style={{ marginTop: 10, position: 'relative', left: 82% }}>
+                <Button variant="outlined" href={this.state.downloadUrl} style={{ marginTop: 10, postion: 'relative', left: '82%', marginBottom: 10 }}>
                     Download as .xlsx
                 </Button>
                 <Paper>
