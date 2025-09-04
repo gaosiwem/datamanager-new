@@ -36,14 +36,12 @@ FIELD_MAP = {
 }
 
 XLSX_COLUMNS = [
-    "department__government__sphere__financial_year__slug",
-    "department__government__sphere__name",
     "department__government__name",
     "department__name",
     "name",
     "pfma",
     "functiongroup1",
-    # "budget_phase",
+    "financialYear",
     "amount"
 
 ]
@@ -85,6 +83,7 @@ def public_entity_page(
     print('financialYear:', start_year)
 
     department_opublic_entities = PublicEntity.objects.filter(department=selected_public_entity.department,  financialYear=start_year)
+    
     print('department entities:', len(department_opublic_entities))
 
     for department_public_entity in department_opublic_entities:
