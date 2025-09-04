@@ -14,6 +14,10 @@ from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from django.contrib.postgres.search import SearchQuery
 from django.db.models import Count, Q
+from drf_excel.mixins import XLSXFileMixin
+from django.http import StreamingHttpResponse
+
+import xlsx_streaming
 
 
 COMMON_DESCRIPTION_ENDING = "from National Treasury in partnership with IMALI YETHU."
@@ -30,6 +34,19 @@ FIELD_MAP = {
     "functiongroup1": "functiongroup1",
     "amount": "amount",
 }
+
+XLSX_COLUMNS = [
+    "department__government__sphere__financial_year__slug",
+    "department__government__sphere__name",
+    "department__government__name",
+    "department__name",
+    "name",
+    "pfma",
+    "functiongroup1",
+    # "budget_phase",
+    "amount"
+
+]
 
 
 
@@ -219,7 +236,7 @@ def public_entity_list(request, financial_year_id):
 
 
 def text_search(qs, search_text):
-    if len(search_text) == 0:
+    if search_text == "":
         return qs
 
     return qs.filter(
@@ -263,7 +280,7 @@ class PublicEntityListView(generics.ListAPIView):
     def get_queryset(self):
         queryset = PublicEntity.objects.all()
         financial_year_id = self.kwargs.get("financial_year_id")
-        print("financial year", financial_year_id)
+        print("financial year excel", financial_year_id)
         if financial_year_id:
             start_year = financial_year_id.split("-")[0]
             queryset = queryset.filter(
@@ -307,3 +324,42 @@ class PublicEntityListView(generics.ListAPIView):
             "department_name": facet_query("department__name"),
             "functiongroup1": facet_query("functiongroup1"),
         }
+
+
+class PublicEntityXLSXListView(XLSXFileMixin, generics.ListAPIView):
+    pagination_class = None
+    template_filename = "public_entities/template.xlsx"
+    filename = "public-entities.xlsx"
+    queryset = PublicEntity.objects.all()
+
+    def get_queryset(self):
+        queryset = PublicEntity.objects.all()
+        financial_year_id = self.kwargs.get("financial_year_id")
+
+        if financial_year_id:
+            start_year = financial_year_id.split("-")[0]
+            queryset = queryset.filter(
+                financialYear=start_year).order_by("-amount")
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+
+        queryset = self.filter_queryset(self.get_queryset())
+
+        search_text = self.request.GET.get("q", "")
+
+        filters = {k: v for k, v in request.GET.items() if k != "q"}
+        excel_data = get_filtered_queryset(queryset, search_text, filters)
+
+        with open(self.template_filename, "rb") as template:
+            stream = xlsx_streaming.stream_queryset_as_xlsx(
+                self.filter_queryset(excel_data).values_list(*XLSX_COLUMNS),
+                xlsx_template=template,
+                batch_size=50,
+            )
+        response = StreamingHttpResponse(
+            stream,
+            content_type="application/vnd.xlsxformats-officedocument.spreadsheetml.sheet",
+        )
+        response["Content-Disposition"] = f"attachment; filename={self.filename}"
+        return response

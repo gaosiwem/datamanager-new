@@ -40,6 +40,12 @@ urlpatterns = [
         kwargs={"sphere_slug": "national", "government_slug": "south-africa"},
         name="national-public-entity",
     ),
+
+    url(
+        r"^(?P<financial_year_id>\d{4}-\d{2})/public-entities.xlsx",
+        views.PublicEntityXLSXListView.as_view(),
+        name="public-entities-xlsx",
+    ),
     # # Public Entities List
     # path(
     #     r"^public-entities$",

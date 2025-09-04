@@ -104,7 +104,10 @@ class TabularView extends Component {
     }
 
     setDownloadUrl() {
-        let url = 'public-entities.xlsx/';
+        let year = this.getFinancialYear();
+        
+        let url = `${year}/public-entities.xlsx`;
+
         Object.entries(this.state.selectedFilters).forEach(([key, value], index) => {
             if (value !== null) {
                 url += `${index === 0 ? '?' : '&'}${key}=${encodeURIComponent(value)}`;
@@ -230,6 +233,9 @@ class TabularView extends Component {
 
         return (
             <ThemeProvider theme={tableTheme}>
+                <Button variant="outlined" href={this.state.downloadUrl} style={{ marginTop: 10, position: 'relative', left: 82% }}>
+                    Download as .xlsx
+                </Button>
                 <Paper>
                     {this.state.isLoading && <CircularProgress />}
                     {this.renderPagination()}
@@ -243,9 +249,7 @@ class TabularView extends Component {
                     </TableContainer>
                     
                 </Paper>
-                <Button variant="outlined" href={this.state.downloadUrl} style={{ marginTop: 10 }}>
-                    Download as .xlsx
-                </Button>
+                
             </ThemeProvider>
         );
     }
