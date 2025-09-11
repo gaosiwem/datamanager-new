@@ -863,13 +863,14 @@ def dataset_category_page(request, category_slug):
     # context["guide"] = CategoryGuide.objects.filter(category_slug=category_slug).first()
     return render(request, "government_dataset_category.html", context)
 
-def download_resource(request, category_slug, datasetresource_file):
+
+def download_resource(request, category_slug, dataset_slug, datasetresource_file):
     try:
         resource = DatasetResource.objects.get(file='resources/' + datasetresource_file)
         # file = str(resource.file).replace('resources/', '')
         # Construct the full file path
         file_path = os.path.join(settings.MEDIA_ROOT, str(resource.file))
-        print(file_path)
+    
         # Open and serve the file using FileResponse
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"File '{file_path}' does not exist.")

@@ -150,7 +150,7 @@ urlpatterns = [
         name="dataset",
     ),
      url(
-        r"^datasets/(?P<category_slug>[-\w]+)/resources/(?P<datasetresource_file>[^/]+\.[a-zA-Z0-9]+)/?$",
+        r"^datasets/(?P<category_slug>[-\w]+)/(?P<dataset_slug>[-\w]+)/resources/(?P<datasetresource_file>[^/]+\.[a-zA-Z0-9]+)/?$",
         cache_page(CACHE_MINUTES_SECS)(views.download_resource),
         name="download_resource",
     ),
