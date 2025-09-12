@@ -13,6 +13,7 @@ from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from django.conf.urls.static import static
 
+
 from . import views
 
 CACHE_MINUTES_SECS = 60 * 5  # minutes
@@ -134,9 +135,9 @@ urlpatterns = [
         cache_page(CACHE_MINUTES_SECS)(views.dataset_category_list_page),
         name="dataset-landing-page",
     ),
-    url(
-        r"^datasets/(?P<category_slug>[-\w]+)/(?P<financial_year_id>[-\w]+)?$", views.dataset_category_list, name="dataset-list",
-    ),
+    # url(
+    #     r"^datasets/(?P<category_slug>[-\w]+)/?$", views.dataset_category_list, name="dataset-list",
+    # ),
     url(
         r"^datasets/(?P<category_slug>[-\w]+)/?$",
         cache_page(CACHE_MINUTES_SECS)(views.dataset_category_page),
@@ -150,7 +151,7 @@ urlpatterns = [
         name="dataset",
     ),
      url(
-        r"^datasets/(?P<category_slug>[-\w]+)/(?P<dataset_slug>[-\w]+)/resources/(?P<datasetresource_file>[^/]+\.[a-zA-Z0-9]+)/?$",
+        r"^datasets/(?P<category_slug>[-\w]+)/resources/(?P<datasetresource_file>[^/]+\.[a-zA-Z0-9]+)/?$",
         cache_page(CACHE_MINUTES_SECS)(views.download_resource),
         name="download_resource",
     ),

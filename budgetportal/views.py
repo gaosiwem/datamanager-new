@@ -699,12 +699,12 @@ def category_fields(category):
     }
 
 
-def dataset_category_list(request, category_slug, financial_year_id):
+def dataset_category_list(request, category_slug):
     # Get the dataset
     datasets = (
         Dataset.objects
         .select_related('dataset_category', 'tags', 'organisation', 'financial_year', 'sphere')
-        .filter(dataset_category__slug=category_slug, financial_year__slug=financial_year_id)
+        .filter(dataset_category__slug=category_slug)
     )
 
     if not datasets.exists():
@@ -767,11 +767,15 @@ def dataset_category_list_page(request):
     return render(request, "datasets.html", context)
 
 def resource_fields(resource):
+
+    print("path: ", resource.path if resource.file == "" else resource.path)
+    print("path: ", resource.path)
+    print("file: ", resource.file)
     return {
         "fileName": resource.fileName,
         "file": resource.file,
         "format": resource.format,
-        "path": resource.file,
+        "path": resource.path if resource.file == "" else resource.file,
     }
 
 def dataset_fields(dataset):
@@ -780,6 +784,7 @@ def dataset_fields(dataset):
         "title": dataset.title,
         "url_path": dataset.get_url_path(),
         "resources": [resource_fields(r) for r in dataset.resources.all()],
+        "financial_year": dataset.financial_year.slug if dataset.financial_year.slug else ""
         # "organization": dataset.get_organization(),
         # "author": dataset.author,
         # "created": dataset.created_date,
@@ -811,6 +816,9 @@ def dataset_category_context(category_slug):
         datasets = Dataset.objects.filter(dataset_category=category)
 
         for dataset in datasets:
+            print("dataset:", dataset.slug)
+            print("dataset:", dataset.financial_year.slug)
+            
             field_subset = dataset_fields(dataset)
             context["datasets"].append(field_subset)
                     
@@ -836,9 +844,12 @@ def dataset_context(category_slug, dataset_slug):
     }
 
     context.update(dataset_fields(dataset))
+    print("context:", context)
+    
     return context
 
 def dataset_page(request, category_slug, dataset_slug):
+    
     context = dataset_context(category_slug, dataset_slug)
     context["navbar"] = MainMenuItem.objects.prefetch_related("children").all()
     context["latest_year"] = FinancialYear.get_latest_year().slug
@@ -864,7 +875,7 @@ def dataset_category_page(request, category_slug):
     return render(request, "government_dataset_category.html", context)
 
 
-def download_resource(request, category_slug, dataset_slug, datasetresource_file):
+def download_resource(request, category_slug, datasetresource_file):
     try:
         resource = DatasetResource.objects.get(file='resources/' + datasetresource_file)
         # file = str(resource.file).replace('resources/', '')
@@ -1093,6 +1104,9 @@ def get_programmes(request):
     
     department = get_department_name(request)
     prov = request.GET.get('province', '').strip() 
+    if prov == 'datasets':
+        return JsonResponse("[]", safe=False)
+
     province = ''
     if prov != '':
         province = get_province(prov)
@@ -1388,6 +1402,9 @@ def get_department_name(request):
     dep = request.GET.get('department', '') 
     
     department_query= Department.objects.filter(slug=dep).values("name")
+    if not department_query.exists():
+        return ""
+    
     department_name =list(department_query)[0].get('name')
     return department_name
 

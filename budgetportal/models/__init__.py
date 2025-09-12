@@ -1000,7 +1000,8 @@ class Dataset(models.Model):
     short_description = models.TextField()
     description = models.TextField()
     tags = models.ForeignKey(
-        Tag, on_delete=models.CASCADE
+        Tag, on_delete=models.CASCADE,
+        blank=True, null=True
     )
     organisation = models.ForeignKey(
         Organisation, on_delete=models.CASCADE
@@ -1017,9 +1018,10 @@ class Dataset(models.Model):
         GovernmentFunction, on_delete=models.CASCADE
     )
     dimensions = models.ForeignKey(
-        Dimension, on_delete=models.CASCADE
+        Dimension, on_delete=models.CASCADE,
+        null=True, blank=True,
     )
-    province = models.CharField(max_length=1024, default='Gauteng')
+    province = models.CharField(max_length=1024, default='South Africa')
 
     dataset_category = models.ForeignKey(
         DatasetCategory, on_delete=models.CASCADE,
@@ -1039,7 +1041,7 @@ class DatasetResource(models.Model):
     )
     path = models.CharField(max_length=1024)
     format = models.CharField(max_length=1024)
-    file = models.FileField(upload_to=resources_file_path)
+    file = models.FileField(upload_to=resources_file_path, blank=True, null=True)
 
     dataset = models.ForeignKey(
         Dataset, 
