@@ -1015,7 +1015,8 @@ class Dataset(models.Model):
     )
 
     government_functions = models.ForeignKey(
-        GovernmentFunction, on_delete=models.CASCADE
+        GovernmentFunction, on_delete=models.CASCADE,
+        blank=True, null=True
     )
     dimensions = models.ForeignKey(
         Dimension, on_delete=models.CASCADE,
