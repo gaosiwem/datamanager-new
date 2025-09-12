@@ -1040,8 +1040,19 @@ class DatasetResource(models.Model):
         max_length=200,
         always_update=True,
     )
-    path = models.CharField(max_length=1024)
-    format = models.CharField(max_length=1024)
+    path = models.CharField(max_length=1024, blank=True, null=True)
+    format = models.CharField(
+        max_length=255,
+        choices=(
+            ("PDF", "PDF"),
+            ("XLSX", "XLSX"),
+            ("Doc", "Doc"),
+            ("XML", "XML"),
+            ("CSV", "CSV"),
+            ("Audio / Video", "Audio / Video"),
+            ("Other", "Other"),
+        ),
+    )
     file = models.FileField(upload_to=resources_file_path, blank=True, null=True)
 
     dataset = models.ForeignKey(
