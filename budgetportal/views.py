@@ -246,7 +246,7 @@ def department_list_data(financial_year_id):
             for department in government.departments.all():
                 departments.append(
                     {
-                        "name": department.name,
+                        "name": department.mapped_name if department.mapped_name != None else department.name,
                         "slug": str(department.slug),
                         "vote_number": department.vote_number,
                         "url_path": department.get_url_path(),
@@ -493,6 +493,8 @@ def department_page(
             }
         )
 
+    department_name = department.mapped_name if department.mapped_name != None else department.name
+
     # contributed_datasets = []
     # for dataset in department.get_contributed_datasets():
     #     contributed_datasets.append(
@@ -505,7 +507,7 @@ def department_page(
 
     # ======= main budget docs =========================
     voteDocuments = VoteDocument.objects.filter(
-        department__name=department.name, financialYear=selected_year
+        department__name=department_name, financialYear=selected_year
     )
     pdf_link = ""
     excel_link = ""
@@ -518,7 +520,7 @@ def department_page(
             excel_link = doc.document_url
 
     department_budget = {
-        "name": department.name,
+        "name": department_name,
         "pdf_link": pdf_link,
         "excel_link": excel_link,
     }
@@ -587,7 +589,7 @@ def department_page(
         # "budget_actual": department.get_expenditure_time_series_summary(),
         "budget_actual_programmes": (
             BudgetVSActualNationalData.objects.filter(
-                department=department.name, financialYear=selected_year.slug[:4]
+                department=department_name, financialYear=selected_year.slug[:4]
             )
             .values_list('programme', flat=True)
             .distinct()
@@ -606,7 +608,7 @@ def department_page(
         #      sphere__slug=department.government.sphere.slug
         # ).count(),
         "is_vote_primary": department.is_vote_primary,
-        "name": department.name,
+        "name": department_name,
         # "projects": get_department_project_summary(govt_label, department),
         "slug": str(department.slug),
         "sphere": {
@@ -615,11 +617,11 @@ def department_page(
         },
         "selected_financial_year": financial_year_id,
         "selected_tab": "departments",
-        "title": "%s budget %s  - vulekamali" % (department.name, selected_year.slug),
+        "title": "%s budget %s  - vulekamali" % (department_name, selected_year.slug),
         "description": "%s department: %s budget data for the %s financial year %s"
         % (
             govt_label,
-            department.name,
+            department_name,
             selected_year.slug,
             COMMON_DESCRIPTION_ENDING,
         ),
@@ -644,11 +646,11 @@ def department_page(
         #     )
         # ),
         "vote_number": department.vote_number,
-        "treemap_chart" : treemap_chart(selected_year.slug[:4], department.name, govt_label),
-        "bubble_graph" : bubble_graph(selected_year.slug[:4], department.name, govt_label),
-        "historical_expenditure" : historical_expenditure(department.name, govt_label),
-        "budget_actual_programme" : budget_actual_programme(department.name, selected_year.slug[:4], govt_label),
-        "budget_actual_spending" : budget_actual_spending(department.name, govt_label),        
+        "treemap_chart" : treemap_chart(selected_year.slug[:4], department_name, govt_label),
+        "bubble_graph" : bubble_graph(selected_year.slug[:4], department_name, govt_label),
+        "historical_expenditure" : historical_expenditure(department_name, govt_label),
+        "budget_actual_programme" : budget_actual_programme(department_name, selected_year.slug[:4], govt_label),
+        "budget_actual_spending": budget_actual_spending(department_name, govt_label),
         
         # "horizontal_bar_graph": horizontal_bar_graph(selected_year.slug[:4], department.name),
         # "histogram_graph": histogram_graph(department.name),
@@ -934,7 +936,7 @@ def treemap_chart(financialYear, department, govt_label):
 
     print('inside treemap')
 
-    print(govt_label)
+    print(department)
 
     queryset = None
     subprogrammes = None
@@ -1397,16 +1399,14 @@ def budget_summary(request):
     }
     return render(request, "budget-summary.html", context)
 
-def get_department_name(request): 
+def get_department_name(request):
+    dep = request.GET.get('department', '')
 
-    dep = request.GET.get('department', '') 
-    
-    department_query= Department.objects.filter(slug=dep).values("name")
-    if not department_query.exists():
+    department_query = Department.objects.filter(slug=dep).values("name", "mapped_name").first()
+    if not department_query:
         return ""
-    
-    department_name =list(department_query)[0].get('name')
-    return department_name
+
+    return department_query["mapped_name"] or department_query["name"]
 
 def get_province(prov):    
 

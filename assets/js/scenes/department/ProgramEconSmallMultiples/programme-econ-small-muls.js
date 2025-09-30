@@ -19,11 +19,8 @@ document.addEventListener("DOMContentLoaded", function() {
    * @returns {object} An object containing financialYear, type, department, and province.
    */
   function getUrlParts() {
-    const currentUrl = window.location.href;
-    const parts = currentUrl
-      .replace("https://vulekamali.gov.za/", "")
-      .split("/")
-      .filter(Boolean);
+    const currentUrl = new URL(window.location.href);
+    const parts = currentUrl.pathname.split("/").filter(Boolean);
 
     const financialYear = parts[0];
     const type = parts[1];

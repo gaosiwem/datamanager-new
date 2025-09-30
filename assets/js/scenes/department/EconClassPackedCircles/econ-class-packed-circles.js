@@ -14,8 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
     let dataset;
 
     if (selectedProgramme === "") {
-      const parts = getUrlParts();
-      const { financialYear, department, province } = getFinancialInfo(parts);
+      const { financialYear, department, province } = getUrlParts();
 
       let firstProgramme = fetchAndRenderLegend(
         financialYear,
@@ -119,23 +118,19 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  function getUrlParts() {
-    const currentUrl = window.location.href;
-    // const parts = currentUrl.replace("https://vulekamali.gov.za/", "").split("/").filter(Boolean);
-    const parts = currentUrl
-      .replace("https://vulekamali.gov.za/", "")
-      .split("/")
-      .filter(Boolean);
-    return parts;
-  }
+function getUrlParts() {
+  const currentUrl = new URL(window.location.href);
+  const parts = currentUrl.pathname.split("/").filter(Boolean);
 
-  function getFinancialInfo(parts) {
-    const financialYear = parts[0];
-    const type = parts[1];
-    const department = type === "national" ? parts[3] : parts[4];
-    const province = type === "national" ? "" : parts[2];
-    return { financialYear, department, province };
-  }
+  const financialYear = parts[0];
+  const type = parts[1];
+  // Determine department and province based on type (national or provincial)
+  const department = type === "national" ? parts[3] : parts[4];
+  const province = type === "national" ? "" : parts[2];
+
+  return { financialYear, type, department, province };
+}
+
 
   function getColorScale() {
     return d3
