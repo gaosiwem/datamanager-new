@@ -246,7 +246,8 @@ def department_list_data(financial_year_id):
             for department in government.departments.all():
                 departments.append(
                     {
-                        "name": department.mapped_name if department.mapped_name != None else department.name,
+                        "name": department.display_name if department.display_name != None else department.name,
+                        "display_name": department.name if department.display_name == None else department.display_name,
                         "slug": str(department.slug),
                         "vote_number": department.vote_number,
                         "url_path": department.get_url_path(),
@@ -493,8 +494,8 @@ def department_page(
             }
         )
 
-    department_name = department.mapped_name if department.mapped_name != None else department.name
-
+    department_name = department.display_name if department.display_name != None else department.name
+    mapped_name = department.mapped_name if department.mapped_name != None and department.display_name == department.name else department.name
     # contributed_datasets = []
     # for dataset in department.get_contributed_datasets():
     #     contributed_datasets.append(
@@ -646,11 +647,11 @@ def department_page(
         #     )
         # ),
         "vote_number": department.vote_number,
-        "treemap_chart" : treemap_chart(selected_year.slug[:4], department_name, govt_label),
-        "bubble_graph" : bubble_graph(selected_year.slug[:4], department_name, govt_label),
-        "historical_expenditure" : historical_expenditure(department_name, govt_label),
-        "budget_actual_programme" : budget_actual_programme(department_name, selected_year.slug[:4], govt_label),
-        "budget_actual_spending": budget_actual_spending(department_name, govt_label),
+        "treemap_chart": treemap_chart(selected_year.slug[:4], department.name, department.mapped_name, govt_label),
+        "bubble_graph": bubble_graph(selected_year.slug[:4], department.name, department.mapped_name, govt_label),
+        "historical_expenditure": historical_expenditure(department.name, department.mapped_name, govt_label),
+        "budget_actual_programme": budget_actual_programme(department.name, department.mapped_name, selected_year.slug[:4], govt_label),
+        "budget_actual_spending": budget_actual_spending(department.name, department.mapped_name, govt_label),
         
         # "horizontal_bar_graph": horizontal_bar_graph(selected_year.slug[:4], department.name),
         # "histogram_graph": histogram_graph(department.name),
@@ -898,8 +899,9 @@ def download_resource(request, category_slug, datasetresource_file):
     except FileNotFoundError:
         raise Http404("File not found.")
     
-def bubble_graph(financialYear, department, govt_label):
 
+def get_bubble_graph_items(financialYear, department, govt_label):
+     
     queryset = None
 
     if govt_label == "National":
@@ -912,7 +914,16 @@ def bubble_graph(financialYear, department, govt_label):
             .annotate(total_value=Sum("value"))
 
     # Convert queryset to list of dictionaries
-    data_list = list(queryset)
+    return list(queryset)
+
+    
+def bubble_graph(financialYear, department, mappedDeptName, govt_label):    
+
+    # Convert queryset to list of dictionaries
+    data_list = get_bubble_graph_items(financialYear, department, govt_label)
+
+    if(len(data_list) == 0):
+        data_list = get_bubble_graph_items(financialYear, mappedDeptName, govt_label)
 
     # Sort by total_value (ascending order)
     sorted_data = sorted(data_list, key=itemgetter("total_value"))
@@ -932,11 +943,8 @@ def bubble_graph(financialYear, department, govt_label):
 
     return json.dumps(data).replace("'","")
 
-def treemap_chart(financialYear, department, govt_label):
 
-    print('inside treemap')
-
-    print(department)
+def get_treemap_list_items(financialYear, department, govt_label):
 
     queryset = None
     subprogrammes = None
@@ -961,7 +969,18 @@ def treemap_chart(financialYear, department, govt_label):
             .annotate(total_value=Sum("value"))
 
     programme_list = list(queryset)
+    
     subprogramme_list = list(subprogrammes)
+
+    return programme_list, subprogramme_list
+
+def treemap_chart(financialYear, department, mappedDeptName, govt_label):
+
+    programme_list, subprogramme_list = get_treemap_list_items(financialYear, department, govt_label)
+
+    if len(programme_list) == 0 and len(subprogramme_list) == 0:
+        programme_list, subprogramme_list = get_treemap_list_items(
+            financialYear, mappedDeptName, govt_label)
 
     # Sort by total_value (ascending order)
     sorted_programmes = sorted(programme_list, key=itemgetter("total_value"))
@@ -1139,8 +1158,8 @@ def get_programmes(request):
     return JsonResponse(data, safe=False)
 
 
-def historical_expenditure(department, govt_label):
-    
+def get_historical_expenditure(department, govt_label):
+
     if govt_label == "National":
         queryset = BudgetVSActualNationalData.objects.filter(department=department) \
             .values("financialYear", "budgetPhase") \
@@ -1150,7 +1169,23 @@ def historical_expenditure(department, govt_label):
             .values("financialYear", "budgetPhase") \
             .annotate(total_value=Sum("value"))
 
-    history_list = list(queryset)
+    return list(queryset)
+
+def historical_expenditure(department, mapped_name, govt_label):
+    
+    print("mapped name")
+    print(mapped_name)
+    print(department)
+    history_list = get_historical_expenditure(department, govt_label)
+    # mapped_list = []
+
+    # if mapped_name != None:
+    #     mapped_list = get_historical_expenditure(mapped_name, govt_label)
+
+    # history_list.append(mapped_list)
+
+    print("history")
+    print(len(history_list))
 
     sorted_history = sorted(history_list, key=itemgetter("financialYear"))
 
@@ -1168,15 +1203,28 @@ def historical_expenditure(department, govt_label):
     return json.dumps(data).replace("'","")
 
 
-def budget_actual_spending(department, govt_label):
+# def budgeted_vs_actual(department_name, selected_year):
+
+#     results = BudgetVSActualNationalData.objects.filter(
+#             department=department_name, financialYear=selected_year.slug[:4]
+#         ).values_list('programme', flat=True).distinct()
+    
+#     if(len)
+
+def budget_actual_spending(department, mappedName, govt_label):
+
+    departments = [department]
+
+    if mappedName:
+        departments.append(mappedName)
 
     if govt_label == "National":
-        queryset = BudgetVSActualNationalData.objects.filter(department=department) \
+        queryset = BudgetVSActualNationalData.objects.filter(department__in=departments) \
             .values("financialYear","budgetPhase") \
             .annotate(total_value=Sum("value"))
 
     else:
-        queryset = BudgetVSActualProvincialData.objects.filter(department=department, government=govt_label) \
+        queryset = BudgetVSActualProvincialData.objects.filter(department__in=departments, government=govt_label) \
             .values("financialYear","budgetPhase") \
             .annotate(total_value=Sum("value"))
 
@@ -1198,33 +1246,54 @@ def budget_actual_spending(department, govt_label):
     return json.dumps(data).replace("'","").strip()
 
 
-def budget_actual_programme(department, financialYear, govt_label):
+def get_budget_actual_programmes(department, financialYear, govt_label, mappedName=None):
 
-    if govt_label == "National":    
-        progQueryset =  BudgetVSActualNationalData.objects.filter(department=department, financialYear=financialYear) \
-                .values_list('programme', flat=True) \
-                .distinct()
+    departments = [department]
+    print("department list")
+    print(departments)
+    if mappedName:
+        departments.append(mappedName)
 
+    if govt_label == "National":
+        progQueryset = (
+            BudgetVSActualNationalData.objects
+            .filter(department__in=departments, financialYear=financialYear)
+            .values_list("programme", flat=True)
+            .distinct()
+        )
     else:
-        progQueryset =  BudgetVSActualProvincialData.objects.filter(department=department, financialYear=financialYear, government=govt_label) \
-                .values_list('programme', flat=True) \
-                .distinct()
+        progQueryset = (
+            BudgetVSActualProvincialData.objects
+            .filter(department__in=departments, financialYear=financialYear, government=govt_label)
+            .values_list("programme", flat=True)
+            .distinct()
+        )
+    return list(progQueryset)
+
+
+def budget_actual_programme(department, mappedName, financialYear, govt_label):
                         
-    prog_list = list(progQueryset)
+    prog_list = get_budget_actual_programmes(
+        department, financialYear, govt_label, mappedName)
 
     data_list = []
 
     for prog in prog_list:
 
         if govt_label == "National":
-            queryset = BudgetVSActualNationalData.objects.filter(department=department, programme=prog) \
-                .values("financialYear","budgetPhase") \
+            queryset = (
+                BudgetVSActualNationalData.objects
+                .filter(department__in=[department, mappedName] if mappedName else [department], programme=prog)
+                .values("financialYear", "budgetPhase")
                 .annotate(total_value=Sum("value"))
-            
+            )
         else:
-            queryset = BudgetVSActualProvincialData.objects.filter(department=department, programme=prog) \
-                .values("financialYear","budgetPhase") \
+            queryset = (
+                BudgetVSActualProvincialData.objects
+                .filter(department__in=[department, mappedName] if mappedName else [department], programme=prog, government=govt_label)
+                .values("financialYear", "budgetPhase")
                 .annotate(total_value=Sum("value"))
+            )
 
         budget_actual_list = list(queryset)
 

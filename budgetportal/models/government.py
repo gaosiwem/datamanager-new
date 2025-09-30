@@ -230,6 +230,12 @@ class Department(models.Model):
         "We just add the correct name here without touching the initial name.",
         default=None, null=True, blank=True
     )
+
+    display_name = models.CharField(
+        max_length=200,
+        help_text="This field is used to display the department name, if it`s empty the name will be displayed automatically. ",
+        default=None, null=True, blank=True
+    )
     slug = models.SlugField(
         max_length=200,
         editable=True,
