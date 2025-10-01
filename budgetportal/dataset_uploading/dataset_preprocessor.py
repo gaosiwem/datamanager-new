@@ -97,7 +97,7 @@ def import_dataset(obj_id):
     if obj.type == "ENE":
         preprocessed_dataset = preprocess(dataset, ENE_HEADERS)
 
-        ENEData.objects.all().delete()
+        # ENEData.objects.all().delete()
         for item in preprocessed_dataset:
             ENEData.objects.create(
                 voteNumber=item["VoteNumber"],
@@ -125,7 +125,7 @@ def import_dataset(obj_id):
 
     elif obj.type == "Consolidation":
         preprocessed_dataset = preprocess(dataset, CONSOLIDATED_HEADERS)
-        ConsolidationData.objects.all().delete()
+        # ConsolidationData.objects.all().delete()
         for item in preprocessed_dataset:
             ConsolidationData.objects.create(
                 functionGroup=item["FunctionGroup"],
@@ -170,7 +170,7 @@ def import_dataset(obj_id):
     elif obj.type == "Budget-vs-Actual-National":
         preprocessed_dataset = preprocess(dataset, BUDGET_ACTUAL_HEADERS)
 
-        BudgetVSActualNationalData.objects.all().delete()
+        # BudgetVSActualNationalData.objects.all().delete()
         for item in preprocessed_dataset:
             BudgetVSActualNationalData.objects.create(
                 government=item["Government"],
@@ -200,7 +200,7 @@ def import_dataset(obj_id):
     elif obj.type == "Budget-vs-Actual-Provincial":
         preprocessed_dataset = preprocess(dataset, BUDGET_ACTUAL_HEADERS)
 
-        BudgetVSActualProvincialData.objects.all().delete()
+        # BudgetVSActualProvincialData.objects.all().delete()
         for item in preprocessed_dataset:
             BudgetVSActualProvincialData.objects.create(
                 government=item["Government"],
