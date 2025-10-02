@@ -296,7 +296,7 @@ class DatasetResourceInline(admin.TabularInline):  # or `admin.StackedInline` fo
     extra = 1
 
 class DatasetCategoryAdmin(SortableAdmin):
-    list_display = ("title", "description")
+    list_display = ("title", "description","slug")
     model = models.DatasetCategory
 
 class DimensionAdmin(SortableAdmin):

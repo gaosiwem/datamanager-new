@@ -69,7 +69,7 @@ class DeptSearchContainer extends React.Component {
   }
 
   requestResources() {
-     const url = `/datasets/budget-speeches/${this.props.financialYear}`;
+     const url = `/datasets/key-budget-documents/${this.props.financialYear}`;
     fetchWrapper(url)
       .then((response) => {
         this.setState({resourceGroups: resultsToResources(response)});

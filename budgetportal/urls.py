@@ -135,9 +135,12 @@ urlpatterns = [
         cache_page(CACHE_MINUTES_SECS)(views.dataset_category_list_page),
         name="dataset-landing-page",
     ),
-    # url(
-    #     r"^datasets/(?P<category_slug>[-\w]+)/?$", views.dataset_category_list, name="dataset-list",
-    # ),
+    url(
+        r"^datasets/(?P<category_slug>[-\w]+)/(?P<financial_year_id>\d{4}-\d{2})?$", views.dataset_category_list, name="dataset-list",
+    ),
+    url(
+        r"^datasets/key-budget-documents/(?P<financial_year_id>\d{4}-\d{2})?$", views.dataset_category_list, name="dataset-list",
+    ),
     url(
         r"^datasets/(?P<category_slug>[-\w]+)/?$",
         cache_page(CACHE_MINUTES_SECS)(views.dataset_category_page),

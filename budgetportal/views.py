@@ -572,6 +572,13 @@ def department_page(
     elif department.government.sphere.slug == "provincial":
         govt_label = department.government.name
 
+    budget_actual_programmes = list(
+        BudgetVSActualNationalData.objects.filter(
+            department=department_name,
+            financialYear=selected_year.slug[:4]
+        ).values_list('programme', flat=True).distinct()
+    )
+
     context = {
         "comments_enabled": True,
         # "subprogramme_viz_data": DepartmentSubprogrammes(department),
@@ -588,13 +595,7 @@ def department_page(
         # ),
         # "expenditure_over_time": department.get_expenditure_over_time(),
         # "budget_actual": department.get_expenditure_time_series_summary(),
-        "budget_actual_programmes": (
-            BudgetVSActualNationalData.objects.filter(
-                department=department_name, financialYear=selected_year.slug[:4]
-            )
-            .values_list('programme', flat=True)
-            .distinct()
-        ),
+        "budget_actual_programmes": budget_actual_programmes,
         # "adjusted_budget_summary": department.get_adjusted_budget_summary(),
         # "contributed_datasets": contributed_datasets if contributed_datasets else None,
         "financial_years": financial_years_context,
@@ -702,12 +703,38 @@ def category_fields(category):
     }
 
 
-def dataset_category_list(request, category_slug):
+def dataset_category_list(request,category_slug,financial_year_id):
     # Get the dataset
+    originalBudgetGroups = [
+        'appropriation-bills',
+        'budget-highlights',
+        'budget-reviews',
+        'budget-speeches',
+        'division-of-revenue-bills',
+        'estimates-of-national-expenditure',
+        'estimates-of-provincial-revenue-and-expenditure',
+        'provincial-allocations',
+        'occasional-budget-documents',
+        'people-s-guides',
+        'tax-pocket-guides']
+    
+    adjustedBudgetGroups = [
+        'adjusted-estimates-of-national-expenditure',
+        'adjusted-estimates-of-provincial-revenue-and-expenditure',
+        'adjustments-appropriation-bills',
+        'division-of-revenue-amendment-bills',
+        'medium-term-budget-policy-statements',
+        'medium-term-budget-policy-statement-speeches',
+        'rates-and-monetary-amounts-and-amendment-of-revenue-laws-bills',
+        'tax-administration-laws-amendment-bills',
+        'taxation-laws-amendment-bills']
+    
+    category = originalBudgetGroups + adjustedBudgetGroups
+
     datasets = (
         Dataset.objects
         .select_related('dataset_category', 'tags', 'organisation', 'financial_year', 'sphere')
-        .filter(dataset_category__slug=category_slug)
+        .filter(dataset_category__slug__in = category, )
     )
 
     if not datasets.exists():
@@ -981,6 +1008,8 @@ def treemap_chart(financialYear, department, mappedDeptName, govt_label):
     if len(programme_list) == 0 and len(subprogramme_list) == 0:
         programme_list, subprogramme_list = get_treemap_list_items(
             financialYear, mappedDeptName, govt_label)
+        
+    print('treemap list: ', programme_list)
 
     # Sort by total_value (ascending order)
     sorted_programmes = sorted(programme_list, key=itemgetter("total_value"))
