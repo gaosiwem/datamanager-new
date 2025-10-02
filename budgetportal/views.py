@@ -925,32 +925,34 @@ def download_resource(request, category_slug, datasetresource_file):
         raise Http404("Resource not found.")
     except FileNotFoundError:
         raise Http404("File not found.")
-    
-
-def get_bubble_graph_items(financialYear, department, govt_label):
-     
-    queryset = None
-
-    if govt_label == "National":
-        queryset = ENEData.objects.filter(financialYear=financialYear, department=department, budgetPhase='Main appropriation') \
-            .values("economicClassification4","programme") \
-            .annotate(total_value=Sum("value"))
-    else:
-        queryset = EPREData.objects.filter(financialYear=financialYear, department=department, government=govt_label, budgetPhase='Main appropriation') \
-            .values("economicClassification4","programme") \
-            .annotate(total_value=Sum("value"))
-
-    # Convert queryset to list of dictionaries
-    return list(queryset)
-
-    
+      
 def bubble_graph(financialYear, department, mappedDeptName, govt_label):    
 
     # Convert queryset to list of dictionaries
-    data_list = get_bubble_graph_items(financialYear, department, govt_label)
 
-    if(len(data_list) == 0):
-        data_list = get_bubble_graph_items(financialYear, mappedDeptName, govt_label)
+    departments = [department]
+
+    if mappedDeptName:
+        departments.append(mappedDeptName)
+        
+    queryset = None
+
+    if govt_label == "National":
+        queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments) \
+            .values("economicClassification4", "programme") \
+            .annotate(total_value=Sum("value"))
+    else:
+        queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, government=govt_label) \
+            .values("economicClassification4", "programme") \
+            .annotate(total_value=Sum("value"))
+
+    # Convert queryset to list of dictionaries
+    data_list = list(queryset)
+
+    # data_list = get_bubble_graph_items(financialYear, department, govt_label)
+
+    # if(len(data_list) == 0):
+    #     data_list = get_bubble_graph_items(financialYear, mappedDeptName, govt_label)
 
     # Sort by total_value (ascending order)
     sorted_data = sorted(data_list, key=itemgetter("total_value"))
@@ -970,46 +972,44 @@ def bubble_graph(financialYear, department, mappedDeptName, govt_label):
 
     return json.dumps(data).replace("'","")
 
+def treemap_chart(financialYear, department, mappedDeptName, govt_label):
 
-def get_treemap_list_items(financialYear, department, govt_label):
+    departments = [department]
+
+    if mappedDeptName != None:
+        departments.append(mappedDeptName)
+
+    print('original dept:', department)
+    print('mapped dept:', mappedDeptName)
+    print('list dept', departments)
 
     queryset = None
     subprogrammes = None
     if govt_label == "National":
-        queryset = ENEData.objects.filter(financialYear=financialYear, department=department, budgetPhase='Main appropriation') \
+        queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments) \
             .values("programme") \
             .annotate(total_value=Sum("value"))
 
-            # Fetch subprogrammes and their total values
-        subprogrammes = ENEData.objects.filter(financialYear=financialYear, department=department, budgetPhase='Main appropriation') \
+        # Fetch subprogrammes and their total values
+        subprogrammes = ENEData.objects.filter(financialYear=financialYear, department__in=departments) \
             .values("programme", "subprogramme") \
             .annotate(total_value=Sum("value"))
 
     else:
-        queryset = EPREData.objects.filter(financialYear=financialYear, department=department, government=govt_label, budgetPhase='Main appropriation') \
+        queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, government=govt_label, budgetPhase='Main appropriation') \
             .values("programme") \
             .annotate(total_value=Sum("value"))
 
-            # Fetch subprogrammes and their total values
-        subprogrammes = EPREData.objects.filter(financialYear=financialYear, department=department, government=govt_label, budgetPhase='Main appropriation') \
+        # Fetch subprogrammes and their total values
+        subprogrammes = EPREData.objects.filter(financialYear=financialYear, department__in=departments, government=govt_label, budgetPhase='Main appropriation') \
             .values("programme", "subprogramme") \
             .annotate(total_value=Sum("value"))
 
     programme_list = list(queryset)
-    
+
+    print("programme list: ", len(programme_list))
+
     subprogramme_list = list(subprogrammes)
-
-    return programme_list, subprogramme_list
-
-def treemap_chart(financialYear, department, mappedDeptName, govt_label):
-
-    programme_list, subprogramme_list = get_treemap_list_items(financialYear, department, govt_label)
-
-    if len(programme_list) == 0 and len(subprogramme_list) == 0:
-        programme_list, subprogramme_list = get_treemap_list_items(
-            financialYear, mappedDeptName, govt_label)
-        
-    print('treemap list: ', programme_list)
 
     # Sort by total_value (ascending order)
     sorted_programmes = sorted(programme_list, key=itemgetter("total_value"))
@@ -1043,7 +1043,7 @@ def get_horizontal_bar_data(request):
     subprogramme_list = []
 
     # Get 'econ' and 'prog' from GET parameters, defaulting to 'All' if not provided
-    department = get_department_name(request)
+    departments = get_department_name(request)
     
     prov = request.GET.get('province', '').strip() 
     province = ''
@@ -1060,24 +1060,24 @@ def get_horizontal_bar_data(request):
     if econ == '' and prog == '':
 
         if province == '':
-            queryset = ENEData.objects.filter(financialYear=financialYear, department=department) \
+            queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
         else:
             
-            queryset = EPREData.objects.filter(financialYear=financialYear, department=department, government = province) \
+            queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, government = province) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
         subprogramme_list = list(queryset)
     
     elif econ != '' and prog == '':
         if province == '':
-            queryset = ENEData.objects.filter(financialYear=financialYear, department=department, economicClassification4=econ) \
+            queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4=econ) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
 
         else:
-            queryset = EPREData.objects.filter(financialYear=financialYear, department=department, economicClassification4=econ, government = province) \
+            queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4=econ, government = province) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
 
@@ -1086,12 +1086,12 @@ def get_horizontal_bar_data(request):
     elif econ == '' and prog != '':
 
         if province == '':
-            queryset = ENEData.objects.filter(financialYear=financialYear, department=department, programme=prog) \
+            queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments, programme=prog) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
 
         else:
-            queryset = EPREData.objects.filter(financialYear=financialYear, department=department, programme=prog, government = province) \
+            queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, programme=prog, government=province) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
         subprogramme_list = list(queryset)
@@ -1099,12 +1099,12 @@ def get_horizontal_bar_data(request):
     elif econ != '' and prog != '':
 
         if province == '':
-            queryset = ENEData.objects.filter(financialYear=financialYear, department=department, economicClassification4=econ, programme=prog) \
+            queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4=econ, programme=prog) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
 
         else:
-            queryset = EPREData.objects.filter(financialYear=financialYear, department=department, economicClassification4=econ, programme=prog, government = province) \
+            queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4=econ, programme=prog, government=province) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
         subprogramme_list = list(queryset)
@@ -1135,15 +1135,15 @@ def get_economicClassification(request):
     
     financial_year = request.GET.get('financialYear', '').split("-")[0]; 
     prov = request.GET.get('province', '').strip() 
-    department = get_department_name(request)
+    departments = get_department_name(request)
 
     econ_classifications = None
     
     if prov == '':
-        econ_classifications = ENEData.objects.filter(financialYear=financial_year, department=department).values_list("economicClassification4", flat=True).distinct()
+        econ_classifications = ENEData.objects.filter(financialYear=financial_year, department__in=departments).values_list("economicClassification4", flat=True).distinct()
     else:
         province = get_province(prov)
-        econ_classifications = EPREData.objects.filter(financialYear=financial_year, department=department, government = province).values_list("economicClassification4", flat=True).distinct()
+        econ_classifications = EPREData.objects.filter(financialYear=financial_year, department__in=departments, government = province).values_list("economicClassification4", flat=True).distinct()
 
     econList = list(econ_classifications)
     data = json.dumps(econList)
@@ -1152,7 +1152,10 @@ def get_economicClassification(request):
 
 def get_programmes(request):
     
-    department = get_department_name(request)
+    departments = get_department_name(request)
+    print('department name')
+    print(departments)
+
     prov = request.GET.get('province', '').strip() 
     if prov == 'datasets':
         return JsonResponse("[]", safe=False)
@@ -1161,31 +1164,27 @@ def get_programmes(request):
     if prov != '':
         province = get_province(prov)
 
-    print('Province prt')
-    print(province)
-
     econ = request.GET.get('econ', '').strip() 
     financialYear = request.GET.get('financialYear', '').split("-")[0]; 
     prog = None
 
     if(econ == ''):
         if prov == '':
-            prog = ENEData.objects.filter(financialYear=financialYear, department=department).values_list("programme", flat=True).distinct()
+            prog = ENEData.objects.filter(financialYear=financialYear, department__in=departments).values_list("programme", flat=True).distinct()
        
         else:
-            prog =  EPREData.objects.filter(financialYear=financialYear, department=department, government = province).values_list("programme", flat=True).distinct()
+            prog =  EPREData.objects.filter(financialYear=financialYear, department__in=departments, government = province).values_list("programme", flat=True).distinct()
     else:
         if prov == '':
-            prog = EPREData.objects.filter(financialYear=financialYear, department=department, economicClassification4 = econ).values_list("programme", flat=True).distinct()
+            prog = EPREData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4 = econ).values_list("programme", flat=True).distinct()
 
         else:
-            prog = EPREData.objects.filter(financialYear=financialYear, department=department, economicClassification4 = econ, government = province).values_list("programme", flat=True).distinct()
+            prog = EPREData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4 = econ, government = province).values_list("programme", flat=True).distinct()
 
     progList = list(prog)
     data = json.dumps(progList)
 
     return JsonResponse(data, safe=False)
-
 
 def get_historical_expenditure(department, govt_label):
 
@@ -1201,21 +1200,9 @@ def get_historical_expenditure(department, govt_label):
     return list(queryset)
 
 def historical_expenditure(department, mapped_name, govt_label):
-    
-    print("mapped name")
-    print(mapped_name)
-    print(department)
+
     history_list = get_historical_expenditure(department, govt_label)
-    # mapped_list = []
-
-    # if mapped_name != None:
-    #     mapped_list = get_historical_expenditure(mapped_name, govt_label)
-
-    # history_list.append(mapped_list)
-
-    print("history")
-    print(len(history_list))
-
+    
     sorted_history = sorted(history_list, key=itemgetter("financialYear"))
 
     data = {
@@ -1230,15 +1217,6 @@ def historical_expenditure(department, mapped_name, govt_label):
         "links": []  # If you need links
     }
     return json.dumps(data).replace("'","")
-
-
-# def budgeted_vs_actual(department_name, selected_year):
-
-#     results = BudgetVSActualNationalData.objects.filter(
-#             department=department_name, financialYear=selected_year.slug[:4]
-#         ).values_list('programme', flat=True).distinct()
-    
-#     if(len)
 
 def budget_actual_spending(department, mappedName, govt_label):
 
@@ -1273,7 +1251,6 @@ def budget_actual_spending(department, mappedName, govt_label):
     } 
 
     return json.dumps(data).replace("'","").strip()
-
 
 def get_budget_actual_programmes(department, financialYear, govt_label, mappedName=None):
 
@@ -1499,12 +1476,20 @@ def budget_summary(request):
 
 def get_department_name(request):
     dep = request.GET.get('department', '')
-
-    department_query = Department.objects.filter(slug=dep).values("name", "mapped_name").first()
+    province = request.GET.get('province', '')
+    
+    sphere = 'national' if province == '' else 'provincial'
+    
+    department_query = Department.objects.filter(
+        slug=dep, government__sphere__slug=sphere).values("name", "mapped_name").first()
+    print(department_query)
     if not department_query:
         return ""
+    
+    departments = [department_query["mapped_name"]]
+    departments.append(department_query["name"])
 
-    return department_query["mapped_name"] or department_query["name"]
+    return departments
 
 def get_province(prov):    
 
