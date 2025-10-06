@@ -579,6 +579,8 @@ def department_page(
         ).values_list('programme', flat=True).distinct()
     )
 
+    intro = department.intro.replace("\\n", "\n")
+
     context = {
         "comments_enabled": True,
         # "subprogramme_viz_data": DepartmentSubprogrammes(department),
@@ -605,10 +607,11 @@ def department_page(
             "slug": str(department.government.slug),
         },
         # "government_functions": [f.name for f in department.get_govt_functions()],
-        "intro": department.intro,
+        "intro":intro,
         # "infra_enabled": IRMSnapshot.objects.filter(
         #      sphere__slug=department.government.sphere.slug
         # ).count(),
+
         "is_vote_primary": department.is_vote_primary,
         "name": department_name,
         # "projects": get_department_project_summary(govt_label, department),
