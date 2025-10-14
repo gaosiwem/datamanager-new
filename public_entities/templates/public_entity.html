@@ -27,16 +27,16 @@
                             <td align="right">{{ public_entity.pfma }}</td>
                         </tr>
                         <tr>
-                            <td>Total expenditure ({{ selected_financial_year }}):</td>
+                            <td>Projected expenditure ({{ selected_financial_year }}):</td>
                             <td align="right">R{{ public_entity.amount|intcomma }}</td>
                         </tr>
                         <tr>
-                            <td>Total expenditure as % of {{ department }}:</td>
+                            <td>Projected expenditure as % of {{ department }}:</td>
                             <td align="right">{{ percentage_of_total_department_amount|stringformat:".2f%%" }}</td>
                         </tr>
                         <tr>
                             <td>
-                                Total expenditure as % of <a href="/public-entities/{{ selected_financial_year }}">all
+                                Projected expenditure as % of <a href="/public-entities/{{ selected_financial_year }}">all
                                     entities</a>:
                             </td>
                             <td align="right">{{ percentage_of_total_amount|stringformat:".2f%%" }}</td>
