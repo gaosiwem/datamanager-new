@@ -180,7 +180,8 @@ def save_imported_public_entities(obj_id):
                                 "financialYear": financial_year,
                                 "amount": amount,
                                 "slug": slugify(entity_name),
-                            }
+                            },
+                            budgetPhase=budget_phase
                         )
 
                         # print('Passed the save')

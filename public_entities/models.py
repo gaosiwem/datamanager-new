@@ -81,6 +81,10 @@ class PublicEntity(models.Model):
 
     amount = models.DecimalField(max_digits=20, decimal_places=0, default=0)
 
+    budgetPhase = models.CharField(
+        max_length=200, blank=True, null=True
+    )
+
     class Meta:
         ordering = ["name"]
         verbose_name_plural = "public entities"

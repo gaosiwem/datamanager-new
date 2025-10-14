@@ -283,7 +283,7 @@ class PublicEntityListView(generics.ListAPIView):
         if financial_year_id:
             start_year = financial_year_id.split("-")[0]
             queryset = queryset.filter(
-                financialYear=start_year).order_by("-amount")
+                financialYear=start_year, budgetPhase='Main appropriation').order_by("-amount")
         return queryset
 
     def list(self, request, *args, **kwargs):
