@@ -25,13 +25,13 @@ class TabularView extends Component {
             selectedFilters: {},
             isLoading: false,
             downloadUrl: '',
-            excludeColumns: new Set(['id', 'slug', 'intro', 'financialYear', 'government']),
+            excludeColumns: new Set(['id', 'slug', 'intro', 'financialYear', 'government', 'budgetPhase']),
             titleMappings: {
                 'name': 'Entity Name',
                 'department': 'Relevant Department',
                 'pfma': 'PFMA',
                 'functiongroup1': 'Function Group',
-                'amount': 'Expenditure'
+                'amount': 'Projected Expenditure'
             }
         }
 
