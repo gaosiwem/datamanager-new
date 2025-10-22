@@ -246,8 +246,7 @@ def department_list_data(financial_year_id):
             for department in government.departments.all():
                 departments.append(
                     {
-                        "name": department.display_name if department.display_name != None else department.name,
-                        "display_name": department.name if department.display_name == None else department.display_name,
+                        "name": department.name,
                         "slug": str(department.slug),
                         "vote_number": department.vote_number,
                         "url_path": department.get_url_path(),
@@ -494,8 +493,6 @@ def department_page(
             }
         )
 
-    department_name = department.display_name if department.display_name != None else department.name
-    mapped_name = department.mapped_name if department.mapped_name != None and department.display_name == department.name else department.name
     # contributed_datasets = []
     # for dataset in department.get_contributed_datasets():
     #     contributed_datasets.append(
@@ -508,7 +505,7 @@ def department_page(
 
     # ======= main budget docs =========================
     voteDocuments = VoteDocument.objects.filter(
-        department__name=department_name, financialYear=selected_year
+        department__name=department.name, financialYear=selected_year
     )
     pdf_link = ""
     excel_link = ""
@@ -521,7 +518,7 @@ def department_page(
             excel_link = doc.document_url
 
     department_budget = {
-        "name": department_name,
+        "name": department.name,
         "pdf_link": pdf_link,
         "excel_link": excel_link,
     }
@@ -574,7 +571,7 @@ def department_page(
 
     budget_actual_programmes = list(
         BudgetVSActualNationalData.objects.filter(
-            department=department_name,
+            department=department.name,
             financialYear=selected_year.slug[:4]
         ).values_list('programme', flat=True).distinct()
     )
@@ -613,7 +610,7 @@ def department_page(
         # ).count(),
 
         "is_vote_primary": department.is_vote_primary,
-        "name": department_name,
+        "name": department.name,
         # "projects": get_department_project_summary(govt_label, department),
         "slug": str(department.slug),
         "sphere": {
@@ -622,11 +619,11 @@ def department_page(
         },
         "selected_financial_year": financial_year_id,
         "selected_tab": "departments",
-        "title": "%s budget %s  - vulekamali" % (department_name, selected_year.slug),
+        "title": "%s budget %s  - vulekamali" % (department.name, selected_year.slug),
         "description": "%s department: %s budget data for the %s financial year %s"
         % (
             govt_label,
-            department_name,
+            department.name,
             selected_year.slug,
             COMMON_DESCRIPTION_ENDING,
         ),
@@ -651,11 +648,11 @@ def department_page(
         #     )
         # ),
         "vote_number": department.vote_number,
-        "treemap_chart": treemap_chart(selected_year.slug[:4], department.name, department.mapped_name, govt_label),
-        "bubble_graph": bubble_graph(selected_year.slug[:4], department.name, department.mapped_name, govt_label),
-        "historical_expenditure": historical_expenditure(department.name, department.mapped_name, govt_label),
-        "budget_actual_programme": budget_actual_programme(department.name, department.mapped_name, selected_year.slug[:4], govt_label),
-        "budget_actual_spending": budget_actual_spending(department.name, department.mapped_name, govt_label),
+        "treemap_chart": treemap_chart(selected_year.slug[:4], department.name,  govt_label),
+        "bubble_graph": bubble_graph(selected_year.slug[:4], department.name,  govt_label),
+        "historical_expenditure": historical_expenditure(department.name,  govt_label),
+        "budget_actual_programme": budget_actual_programme(department.name,  selected_year.slug[:4], govt_label),
+        "budget_actual_spending": budget_actual_spending(department.name,  govt_label),
         
         # "horizontal_bar_graph": horizontal_bar_graph(selected_year.slug[:4], department.name),
         # "histogram_graph": histogram_graph(department.name),
@@ -929,23 +926,18 @@ def download_resource(request, category_slug, datasetresource_file):
     except FileNotFoundError:
         raise Http404("File not found.")
       
-def bubble_graph(financialYear, department, mappedDeptName, govt_label):    
+def bubble_graph(financialYear, department, govt_label):    
 
     # Convert queryset to list of dictionaries
-
-    departments = [department]
-
-    if mappedDeptName:
-        departments.append(mappedDeptName)
         
     queryset = None
 
     if govt_label == "National":
-        queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments) \
+        queryset = ENEData.objects.filter(financialYear=financialYear, department=department) \
             .values("economicClassification4", "programme") \
             .annotate(total_value=Sum("value"))
     else:
-        queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, government=govt_label) \
+        queryset = EPREData.objects.filter(financialYear=financialYear, department=department, government=govt_label) \
             .values("economicClassification4", "programme") \
             .annotate(total_value=Sum("value"))
 
@@ -975,36 +967,27 @@ def bubble_graph(financialYear, department, mappedDeptName, govt_label):
 
     return json.dumps(data).replace("'","")
 
-def treemap_chart(financialYear, department, mappedDeptName, govt_label):
-
-    departments = [department]
-
-    if mappedDeptName != None:
-        departments.append(mappedDeptName)
-
-    print('original dept:', department)
-    print('mapped dept:', mappedDeptName)
-    print('list dept', departments)
+def treemap_chart(financialYear, department, govt_label):
 
     queryset = None
     subprogrammes = None
     if govt_label == "National":
-        queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments) \
+        queryset = ENEData.objects.filter(financialYear=financialYear, department=department) \
             .values("programme") \
             .annotate(total_value=Sum("value"))
 
         # Fetch subprogrammes and their total values
-        subprogrammes = ENEData.objects.filter(financialYear=financialYear, department__in=departments) \
+        subprogrammes = ENEData.objects.filter(financialYear=financialYear, department=department) \
             .values("programme", "subprogramme") \
             .annotate(total_value=Sum("value"))
 
     else:
-        queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, government=govt_label, budgetPhase='Main appropriation') \
+        queryset = EPREData.objects.filter(financialYear=financialYear, department=department, government=govt_label, budgetPhase='Main appropriation') \
             .values("programme") \
             .annotate(total_value=Sum("value"))
 
         # Fetch subprogrammes and their total values
-        subprogrammes = EPREData.objects.filter(financialYear=financialYear, department__in=departments, government=govt_label, budgetPhase='Main appropriation') \
+        subprogrammes = EPREData.objects.filter(financialYear=financialYear, department=department, government=govt_label, budgetPhase='Main appropriation') \
             .values("programme", "subprogramme") \
             .annotate(total_value=Sum("value"))
 
@@ -1046,7 +1029,7 @@ def get_horizontal_bar_data(request):
     subprogramme_list = []
 
     # Get 'econ' and 'prog' from GET parameters, defaulting to 'All' if not provided
-    departments = get_department_name(request)
+    department = get_department_name(request)
     
     prov = request.GET.get('province', '').strip() 
     province = ''
@@ -1063,24 +1046,24 @@ def get_horizontal_bar_data(request):
     if econ == '' and prog == '':
 
         if province == '':
-            queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments) \
+            queryset = ENEData.objects.filter(financialYear=financialYear, department=department) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
         else:
             
-            queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, government = province) \
+            queryset = EPREData.objects.filter(financialYear=financialYear, department=department, government = province) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
         subprogramme_list = list(queryset)
     
     elif econ != '' and prog == '':
         if province == '':
-            queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4=econ) \
+            queryset = ENEData.objects.filter(financialYear=financialYear, department=department, economicClassification4=econ) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
 
         else:
-            queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4=econ, government = province) \
+            queryset = EPREData.objects.filter(financialYear=financialYear, department=department, economicClassification4=econ, government = province) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
 
@@ -1089,12 +1072,12 @@ def get_horizontal_bar_data(request):
     elif econ == '' and prog != '':
 
         if province == '':
-            queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments, programme=prog) \
+            queryset = ENEData.objects.filter(financialYear=financialYear, department=department, programme=prog) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
 
         else:
-            queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, programme=prog, government=province) \
+            queryset = EPREData.objects.filter(financialYear=financialYear, department=department, programme=prog, government=province) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
         subprogramme_list = list(queryset)
@@ -1102,12 +1085,12 @@ def get_horizontal_bar_data(request):
     elif econ != '' and prog != '':
 
         if province == '':
-            queryset = ENEData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4=econ, programme=prog) \
+            queryset = ENEData.objects.filter(financialYear=financialYear, department=department, economicClassification4=econ, programme=prog) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
 
         else:
-            queryset = EPREData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4=econ, programme=prog, government=province) \
+            queryset = EPREData.objects.filter(financialYear=financialYear, department=department, economicClassification4=econ, programme=prog, government=province) \
                 .values("subprogramme", "value") \
                 .annotate(total_value=Sum("value"))
         subprogramme_list = list(queryset)
@@ -1138,15 +1121,15 @@ def get_economicClassification(request):
     
     financial_year = request.GET.get('financialYear', '').split("-")[0]; 
     prov = request.GET.get('province', '').strip() 
-    departments = get_department_name(request)
+    department = get_department_name(request)
 
     econ_classifications = None
     
     if prov == '':
-        econ_classifications = ENEData.objects.filter(financialYear=financial_year, department__in=departments).values_list("economicClassification4", flat=True).distinct()
+        econ_classifications = ENEData.objects.filter(financialYear=financial_year, department=department).values_list("economicClassification4", flat=True).distinct()
     else:
         province = get_province(prov)
-        econ_classifications = EPREData.objects.filter(financialYear=financial_year, department__in=departments, government = province).values_list("economicClassification4", flat=True).distinct()
+        econ_classifications = EPREData.objects.filter(financialYear=financial_year, department=department, government = province).values_list("economicClassification4", flat=True).distinct()
 
     econList = list(econ_classifications)
     data = json.dumps(econList)
@@ -1155,9 +1138,9 @@ def get_economicClassification(request):
 
 def get_programmes(request):
     
-    departments = get_department_name(request)
+    department = get_department_name(request)
     print('department name')
-    print(departments)
+    print(department)
 
     prov = request.GET.get('province', '').strip() 
     if prov == 'datasets':
@@ -1173,16 +1156,17 @@ def get_programmes(request):
 
     if(econ == ''):
         if prov == '':
-            prog = ENEData.objects.filter(financialYear=financialYear, department__in=departments).values_list("programme", flat=True).distinct()
+            prog = ENEData.objects.filter(financialYear=financialYear, department=department).values_list("programme", flat=True).distinct()
        
         else:
-            prog =  EPREData.objects.filter(financialYear=financialYear, department__in=departments, government = province).values_list("programme", flat=True).distinct()
+            prog =  EPREData.objects.filter(financialYear=financialYear, department=department, government = province).values_list("programme", flat=True).distinct()
     else:
         if prov == '':
-            prog = EPREData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4 = econ).values_list("programme", flat=True).distinct()
+            prog = EPREData.objects.filter(financialYear=financialYear, department=department, economicClassification4 = econ).values_list("programme", flat=True).distinct()
 
         else:
-            prog = EPREData.objects.filter(financialYear=financialYear, department__in=departments, economicClassification4 = econ, government = province).values_list("programme", flat=True).distinct()
+            prog = EPREData.objects.filter(financialYear=financialYear, department=department,
+                                           economicClassification4=econ, government=province).values_list("programme", flat=True).distinct()
 
     progList = list(prog)
     data = json.dumps(progList)
@@ -1202,7 +1186,7 @@ def get_historical_expenditure(department, govt_label):
 
     return list(queryset)
 
-def historical_expenditure(department, mapped_name, govt_label):
+def historical_expenditure(department, govt_label):
 
     history_list = get_historical_expenditure(department, govt_label)
     
@@ -1221,20 +1205,15 @@ def historical_expenditure(department, mapped_name, govt_label):
     }
     return json.dumps(data).replace("'","")
 
-def budget_actual_spending(department, mappedName, govt_label):
-
-    departments = [department]
-
-    if mappedName:
-        departments.append(mappedName)
+def budget_actual_spending(department, govt_label):
 
     if govt_label == "National":
-        queryset = BudgetVSActualNationalData.objects.filter(department__in=departments) \
+        queryset = BudgetVSActualNationalData.objects.filter(department=department) \
             .values("financialYear","budgetPhase") \
             .annotate(total_value=Sum("value"))
 
     else:
-        queryset = BudgetVSActualProvincialData.objects.filter(department__in=departments, government=govt_label) \
+        queryset = BudgetVSActualProvincialData.objects.filter(department=department, government=govt_label) \
             .values("financialYear","budgetPhase") \
             .annotate(total_value=Sum("value"))
 
@@ -1255,35 +1234,29 @@ def budget_actual_spending(department, mappedName, govt_label):
 
     return json.dumps(data).replace("'","").strip()
 
-def get_budget_actual_programmes(department, financialYear, govt_label, mappedName=None):
-
-    departments = [department]
-    print("department list")
-    print(departments)
-    if mappedName:
-        departments.append(mappedName)
+def get_budget_actual_programmes(department, financialYear, govt_label):
 
     if govt_label == "National":
         progQueryset = (
             BudgetVSActualNationalData.objects
-            .filter(department__in=departments, financialYear=financialYear)
+            .filter(department=department, financialYear=financialYear)
             .values_list("programme", flat=True)
             .distinct()
         )
     else:
         progQueryset = (
             BudgetVSActualProvincialData.objects
-            .filter(department__in=departments, financialYear=financialYear, government=govt_label)
+            .filter(department=department, financialYear=financialYear, government=govt_label)
             .values_list("programme", flat=True)
             .distinct()
         )
     return list(progQueryset)
 
 
-def budget_actual_programme(department, mappedName, financialYear, govt_label):
+def budget_actual_programme(department, financialYear, govt_label):
                         
     prog_list = get_budget_actual_programmes(
-        department, financialYear, govt_label, mappedName)
+        department, financialYear, govt_label)
 
     data_list = []
 
@@ -1292,14 +1265,14 @@ def budget_actual_programme(department, mappedName, financialYear, govt_label):
         if govt_label == "National":
             queryset = (
                 BudgetVSActualNationalData.objects
-                .filter(department__in=[department, mappedName] if mappedName else [department], programme=prog)
+                .filter(department=department, programme=prog)
                 .values("financialYear", "budgetPhase")
                 .annotate(total_value=Sum("value"))
             )
         else:
             queryset = (
                 BudgetVSActualProvincialData.objects
-                .filter(department__in=[department, mappedName] if mappedName else [department], programme=prog, government=govt_label)
+                .filter(department=department, programme=prog, government=govt_label)
                 .values("financialYear", "budgetPhase")
                 .annotate(total_value=Sum("value"))
             )
@@ -1341,7 +1314,6 @@ def format_values(value):
     else:
         return f"R {format_number(value)}"
 
-
 def consolidated_spending():
 
     financialYear = FinancialYear.get_latest_year().slug
@@ -1354,12 +1326,19 @@ def consolidated_spending():
     # Sort by total_value (ascending order)
     sorted_data = sorted(data_list, key=itemgetter("total_value"))
 
+    total_budget = sum([item["total_value"] for item in queryset])
+
+    print("total budget:", total_budget)
+
     # Prepare data for the bubble chart
     data = {
         "children": [
             {
+                "id": slugify(item["functionGroup"]),
                 "name": item["functionGroup"],
                 "value": float(item["total_value"]),
+                "percentage": float(item["total_value"]) / float(total_budget) * 100 if total_budget else 0,
+                "url": f"/consolidated_spending_details/{slugify(item['functionGroup'])}/"
             }
             for item in sorted_data
         ],
@@ -1379,7 +1358,73 @@ def consolidated_spending_total():
     for item in data_list:
         total += int(item["total_value"])
     
-    return format_values(total)
+    return total
+
+
+def consolidated_spending_details(request, focus_slug):
+
+    try:
+        # Latest financial year
+        financialYear = FinancialYear.get_latest_year().slug
+        financialYearFormatted = financialYear.split("-")[0]
+
+        function_group = focus_slug.replace('-', ' ').title()
+
+        # Get queryset for the selected Function Group
+        qs = ConsolidationData.objects.filter(
+            functionGroup__iexact=function_group)
+        if not qs.exists():
+            raise Http404(f"No data found for {function_group}")
+
+        # Group by Economic Classification for bar chart
+        summary = list(
+            qs.values('economicClassification3')
+              .annotate(total_value=Sum('value'))
+        )
+
+        total_budget = qs.aggregate(total=Sum('value'))['total'] or Decimal(0)
+        total_budget_float = float(total_budget)
+
+        # Category-level data for the bar chart
+        category_data = []
+        for item in summary:
+            econ_name = item['economicClassification3']
+            total_val_float = float(item['total_value'])
+            category_data.append({
+                "id": slugify(econ_name),
+                "name": econ_name,
+                "value": total_val_float,
+                "percentage": (total_val_float / total_budget_float * 100) if total_budget_float else 0
+            })
+
+        # Yearly trend for line chart
+        yearly_data = list(
+            qs.values('financialYear')
+              .annotate(year_total=Sum('value'))
+              .order_by('financialYear')
+        )
+
+        # Convert Decimals → float
+        for item in yearly_data:
+            item['year_total'] = float(item['year_total'])
+
+        # Context
+        context = {
+            'function_group': function_group,
+            'financial_year': financialYearFormatted,
+            'total_budget': total_budget_float,
+            'category_data': json.dumps(category_data),
+            'yearly_data': json.dumps(yearly_data),
+            'navbar': MainMenuItem.objects.prefetch_related("children").all(),
+        }
+        
+        return render(request, "budgetsummary/consolidated_focus_detail.html", context)
+
+    except Exception as e:
+        print(f"Error in budget_summary_detail: {e}")
+        raise
+
+
 
 def national_budget_spending():
     
@@ -1477,22 +1522,80 @@ def budget_summary(request):
     }
     return render(request, "budget-summary.html", context)
 
-def get_department_name(request):
-    dep = request.GET.get('department', '')
-    province = request.GET.get('province', '')
-    
-    sphere = 'national' if province == '' else 'provincial'
-    
-    department_query = Department.objects.filter(
-        slug=dep, government__sphere__slug=sphere).values("name", "mapped_name").first()
-    print(department_query)
-    if not department_query:
-        return ""
-    
-    departments = [department_query["mapped_name"]]
-    departments.append(department_query["name"])
 
-    return departments
+def budget_summary_detail(request, focus_slug):
+
+    try:
+        # Latest financial year
+        financialYear = FinancialYear.get_latest_year().slug
+        financialYearFormatted = financialYear.split("-")[0]
+
+        function_group = focus_slug.replace('-', ' ').title()
+
+        # Get queryset for the selected Function Group
+        qs = ConsolidationData.objects.filter(
+            functionGroup__iexact=function_group)
+        if not qs.exists():
+            raise Http404(f"No data found for {function_group}")
+
+        # Group by Economic Classification for bar chart
+        summary = list(
+            qs.values('economicClassification3')
+              .annotate(total_value=Sum('value'))
+        )
+
+        total_budget = qs.aggregate(total=Sum('value'))['total'] or Decimal(0)
+        total_budget_float = float(total_budget)
+
+        # Category-level data for the bar chart
+        category_data = []
+        for item in summary:
+            econ_name = item['economicClassification3']
+            total_val_float = float(item['total_value'])
+            category_data.append({
+                "id": slugify(econ_name),
+                "name": econ_name,
+                "value": total_val_float,
+                "percentage": (total_val_float / total_budget_float * 100) if total_budget_float else 0
+            })
+
+        # Yearly trend for line chart
+        yearly_data = list(
+            qs.values('financialYear')
+              .annotate(year_total=Sum('value'))
+              .order_by('financialYear')
+        )
+
+        # Convert Decimals → float
+        for item in yearly_data:
+            item['year_total'] = float(item['year_total'])
+
+        # Context
+        context = {
+            'function_group': function_group,
+            'financial_year': financialYearFormatted,
+            'total_budget': total_budget_float,
+            'category_data': json.dumps(category_data),
+            'yearly_data': json.dumps(yearly_data),
+            'navbar': MainMenuItem.objects.prefetch_related("children").all(),
+        }
+
+        return render(request, "budgetsummary/consolidated_focus_detail.html", context)
+
+    except Exception as e:
+        print(f"Error in budget_summary_detail: {e}")
+        raise
+
+
+def get_department_name(request):
+    dep = request.GET.get('department', '') 
+    
+    department_query= Department.objects.filter(slug=dep).values("name")
+    if not department_query.exists():
+        return ""
+
+    department_name = list(department_query)[0].get('name')
+    return department_name
 
 def get_province(prov):    
 

@@ -90,12 +90,11 @@ class DepartmentAdmin(ImportMixin, admin.ModelAdmin):
     list_display = (
         "vote_number",
         "name",
-        "mapped_name",
         "get_government",
         "get_sphere",
         "get_financial_year",
     )
-    list_display_links = ("vote_number", "name", "mapped_name")
+    list_display_links = ("vote_number", "name")
     list_filter = (
         "government__sphere__financial_year__slug",
         "government__sphere__name",
@@ -105,8 +104,7 @@ class DepartmentAdmin(ImportMixin, admin.ModelAdmin):
         "government__sphere__financial_year__slug",
         "government__sphere__name",
         "government__name",
-        "name",
-        "mapped_name",
+        "name"
     )
     readonly_fields = ("slug",)
     list_per_page = 20

@@ -223,24 +223,9 @@ class Department(models.Model):
         "this name might cause a mismatch with already-published datasets which might "
         "need to be update to match this.",
     )
-    mapped_name = models.CharField(
-        max_length=200,
-        help_text="This field is used mostly on update "
-        "Instead of changing the department name that might affect other functionality "
-        "We just add the correct name here without touching the initial name.",
-        default=None, null=True, blank=True
-    )
-
-    display_name = models.CharField(
-        max_length=200,
-        help_text="This field is used to display the department name, if it`s empty the name will be displayed automatically. ",
-        default=None, null=True, blank=True
-    )
-    slug = models.SlugField(
-        max_length=200,
-        editable=True,
-        unique=False,
-        help_text="Automatically generated from name or mapped_name"
+    
+    slug = AutoSlugField(
+        populate_from="name", max_length=200, always_update=True, editable=True
     )
     vote_number = models.IntegerField()
     is_vote_primary = models.BooleanField(default=True)
@@ -256,14 +241,6 @@ class Department(models.Model):
         self._estimates_of_subprogramme_expenditure_dataset = None
         self._expenditure_time_series_dataset = None
         super(Department, self).__init__(*args, **kwargs)
-
-    def save(self, *args, **kwargs):
-        """Generate slug from mapped_name if present, otherwise from name."""
-        base_name = self.mapped_name if self.mapped_name else self.name
-        
-        self.slug = slugify(base_name)
-
-        super().save(*args, **kwargs)
 
     class Meta:
         unique_together = (("government", "slug"), ("government", "name"))
@@ -287,7 +264,6 @@ class Department(models.Model):
             self.is_vote_primary
             and existing_vote_primary
             and existing_vote_primary.first() != self
-            and self.mapped_name == None
         ):
             raise ValidationError(
                 "There is already a primary department for "
