@@ -348,7 +348,7 @@ def save_imported_dataset(obj_id):
 
     async_task(
         import_dataset(obj_id),
-        id=obj_id,
+        obj_id=obj_id,
         task_name="Import dataset",
     )   
 

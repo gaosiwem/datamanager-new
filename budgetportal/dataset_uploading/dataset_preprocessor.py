@@ -5,7 +5,7 @@ from import_export.widgets import ForeignKeyWidget
 from tablib import Databook
 from tablib import Dataset
 
-from budgetportal.models import DatasetUpload, ENEData, ConsolidationData, EPREData, BudgetVSActualNationalData, BudgetVSActualProvincialData,VoteDocumentUpload, Department, VoteDocument, FinancialYear, Sphere, Government
+from budgetportal.models import AENEData, DatasetUpload, ENEData, ConsolidationData, EPREData, BudgetVSActualNationalData, BudgetVSActualProvincialData,VoteDocumentUpload, Department, VoteDocument, FinancialYear, Sphere, Government
 from budgetportal.dataset_uploading import preprocess													
 
 ENE_HEADERS = [
@@ -84,165 +84,335 @@ VOTEDOCUMENTSDATA_HEADERS = [
     "financial_year"
 ]
 
+AENE_HEADERS = [
+    "VoteNumber",
+    "Department",
+    "ProgNumber",
+    "Programme",
+    "SubprogNumber",
+    "Subprogramme",
+    "EconomicClassification1",
+    "EconomicClassification2",
+    "EconomicClassification3",
+    "EconomicClassification4",
+    "EconomicClassification5",
+    "FinancialYear",
+    "BudgetPhase",
+    "AmountKind",
+    "Value"
+]
+
 
 def import_dataset(obj_id):
-    
     obj = DatasetUpload.objects.get(id=obj_id)
-    
     file = obj.file.read()
+
     data_book = Databook().load(file, "xlsx")
     dataset = data_book.sheets()[0]
-    preprocessed_dataset = None
 
-    if obj.type == "ENE":
-        preprocessed_dataset = preprocess(dataset, ENE_HEADERS)
+    # Central configuration for all dataset types
+    DATASET_CONFIG = {
+        "ENE": {
+            "headers": ENE_HEADERS,
+            "model": ENEData,
+            "resource": ENEResource,
+            "fields": [
+                "voteNumber", "department", "progNumber", "programme",
+                "subprogNumber", "subprogramme", "economicClassification1",
+                "economicClassification2", "economicClassification3",
+                "economicClassification4", "economicClassification5",
+                "functionGroup1", "financialYear", "budgetPhase", "value"
+            ],
+        },
+        "AENE": {
+            "headers": AENE_HEADERS,
+            "model": AENEData,
+            "resource": AENEResource,
+            "fields": [
+                "voteNumber", "department", "progNumber", "programme",
+                "subprogNumber", "subprogramme", "economicClassification1",
+                "economicClassification2", "economicClassification3",
+                "economicClassification4", "economicClassification5",
+                "financialYear", "budgetPhase", "amountKind", "value"
+            ],
+        },
+        "Consolidation": {
+            "headers": CONSOLIDATED_HEADERS,
+            "model": ConsolidationData,
+            "resource": ConsolidationResource,
+            "fields": [
+                "functionGroup", "economicClassification2",
+                "economicClassification3", "financialYear", "value"
+            ],
+        },
+        "EPRE": {
+            "headers": EPRE_HEADERS,
+            "model": EPREData,
+            "resource": EPREResource,
+            "fields": [
+                "government", "voteNumber", "department", "progNumber", "programme",
+                "subprogNumber", "subprogramme", "economicClassification1",
+                "economicClassification2", "economicClassification3",
+                "economicClassification4", "economicClassification5",
+                "functionGroup1", "functionGroup2", "financialYear",
+                "budgetPhase", "value"
+            ],
+        },
+        "Budget-vs-Actual-National": {
+            "headers": BUDGET_ACTUAL_HEADERS,
+            "model": BudgetVSActualNationalData,
+            "resource": BudgetVSActualResource,
+            "fields": [
+                "government", "voteNumber", "progNumber", "department",
+                "programme", "subprogNumber", "subprogramme",
+                "economicClassification1", "economicClassification2",
+                "economicClassification3", "economicClassification4",
+                "economicClassification5", "functionGroup1",
+                "financialYear", "budgetPhase", "amountKind", "value"
+            ],
+        },
+        "Budget-vs-Actual-Provincial": {
+            "headers": BUDGET_ACTUAL_HEADERS,
+            "model": BudgetVSActualProvincialData,
+            "resource": BudgetVSActualResource,
+            "fields": [
+                "government", "voteNumber", "progNumber", "department",
+                "programme", "subprogNumber", "subprogramme",
+                "economicClassification1", "economicClassification2",
+                "economicClassification3", "economicClassification4",
+                "economicClassification5", "functionGroup1",
+                "financialYear", "budgetPhase", "amountKind", "value"
+            ],
+        },
+    }
 
-        # ENEData.objects.all().delete()
-        for item in preprocessed_dataset:
-            ENEData.objects.create(
-                voteNumber=item["VoteNumber"],
-                progNumber=item["ProgNumber"],
-                department=item["Department"],
-                programme=item["Programme"],
-                subprogNumber=item["SubprogNumber"],
-                subprogramme=item["Subprogramme"],
-                economicClassification1=item[
-                    "EconomicClassification1"],
-                economicClassification2=item[
-                    "EconomicClassification2"],
-                economicClassification3=item[
-                    "EconomicClassification3"],
-                economicClassification4=item[
-                    "EconomicClassification4"],
-                economicClassification5=item[
-                    "EconomicClassification5"],
-                functionGroup1=item["FunctionGroup1"],
-                financialYear=item["FinancialYear"],
-                budgetPhase=item["BudgetPhase"],
-                value=item["Value"],
-            )      
+    # Select correct configuration
+    config = DATASET_CONFIG.get(obj.type)
+    if not config:
+        raise ValueError(f"Unsupported dataset type: {obj.type}")
+
+    headers = config["headers"]
+    model_class = config["model"]
+    resource_class = config["resource"]
+    fields = config["fields"]
+
+    # Preprocess and clean data
+    preprocessed_dataset = preprocess(dataset, headers)
+    # Create model objects
+    
+    header_to_field = dict(zip(headers, fields))
+
+    objects_to_create = [
+        model_class(**{header_to_field[k]: v for k, v in item.items()})
+        for item in preprocessed_dataset
+    ]
+
+    model_class.objects.bulk_create(objects_to_create)
+
+    # Prepare dataset for import-export validation
+    dataset_import = Dataset()
+    if preprocessed_dataset:
+        dataset_import.headers = preprocessed_dataset[0].keys()
+        for row in preprocessed_dataset:
+            dataset_import.append(row.values())
+
+    # Use correct resource dynamically
+    resource = resource_class()
+    result = resource.import_data(dataset_import, dry_run=True)
+    
+    if result.has_errors():
+        print("Import errors found:", result.invalid_rows)
+        return result
+
+    return resource.import_data(dataset_import, dry_run=False)
+
+
+
+# def import_dataset(obj_id):
+    
+#     obj = DatasetUpload.objects.get(id=obj_id)
+    
+#     file = obj.file.read()
+#     data_book = Databook().load(file, "xlsx")
+#     dataset = data_book.sheets()[0]
+#     preprocessed_dataset = None
+
+#     if obj.type == "ENE":
+#         preprocessed_dataset = preprocess(dataset, ENE_HEADERS)
+
+#         # ENEData.objects.all().delete()
+#         for item in preprocessed_dataset:
+#             ENEData.objects.create(
+#                 voteNumber=item["VoteNumber"],
+#                 progNumber=item["ProgNumber"],
+#                 department=item["Department"],
+#                 programme=item["Programme"],
+#                 subprogNumber=item["SubprogNumber"],
+#                 subprogramme=item["Subprogramme"],
+#                 economicClassification1=item[
+#                     "EconomicClassification1"],
+#                 economicClassification2=item[
+#                     "EconomicClassification2"],
+#                 economicClassification3=item[
+#                     "EconomicClassification3"],
+#                 economicClassification4=item[
+#                     "EconomicClassification4"],
+#                 economicClassification5=item[
+#                     "EconomicClassification5"],
+#                 functionGroup1=item["FunctionGroup1"],
+#                 financialYear=item["FinancialYear"],
+#                 budgetPhase=item["BudgetPhase"],
+#                 value=item["Value"],
+#             )   
+
+#     if obj.type == "AENE":
+#         preprocessed_dataset = preprocess(dataset, AENE_HEADERS)
+
+#         for item in preprocessed_dataset:
+#             AENEData.objects.create(
+#                 voteNumber=item["VoteNumber"],
+#                 progNumber=item["ProgNumber"],
+#                 department=item["Department"],
+#                 programme=item["Programme"],
+#                 subprogNumber=item["SubprogNumber"],
+#                 subprogramme=item["Subprogramme"],
+#                 economicClassification1=item[
+#                     "EconomicClassification1"],
+#                 economicClassification2=item[
+#                     "EconomicClassification2"],
+#                 economicClassification3=item[
+#                     "EconomicClassification3"],
+#                 economicClassification4=item[
+#                     "EconomicClassification4"],
+#                 economicClassification5=item[
+#                     "EconomicClassification5"],                
+#                 financialYear=item["FinancialYear"],
+#                 budgetPhase=item["BudgetPhase"],
+#                 amountKind=item["AmountKind"],
+#                 value=item["Value"],
+#             )
         
 
-    elif obj.type == "Consolidation":
-        preprocessed_dataset = preprocess(dataset, CONSOLIDATED_HEADERS)
-        # ConsolidationData.objects.all().delete()
-        for item in preprocessed_dataset:
-            ConsolidationData.objects.create(
-                functionGroup=item["FunctionGroup"],
-                economicClassification2=item[
-                    "EconomicClassification2"],
-                economicClassification3=item[
-                    "EconomicClassification3"],                
-                financialYear=item["FinancialYear"],
-                value=item["Value"],
-            )
+#     elif obj.type == "Consolidation":
+#         preprocessed_dataset = preprocess(dataset, CONSOLIDATED_HEADERS)
+#         # ConsolidationData.objects.all().delete()
+#         for item in preprocessed_dataset:
+#             ConsolidationData.objects.create(
+#                 functionGroup=item["FunctionGroup"],
+#                 economicClassification2=item[
+#                     "EconomicClassification2"],
+#                 economicClassification3=item[
+#                     "EconomicClassification3"],                
+#                 financialYear=item["FinancialYear"],
+#                 value=item["Value"],
+#             )
     
-    elif obj.type == "EPRE":
-        preprocessed_dataset = preprocess(dataset, EPRE_HEADERS)
+#     elif obj.type == "EPRE":
+#         preprocessed_dataset = preprocess(dataset, EPRE_HEADERS)
 
-        # EPREData.objects.all().delete()
-        for item in preprocessed_dataset:
-            EPREData.objects.create(
-                government=item["Government"],
-                voteNumber=item["VoteNumber"],
-                progNumber=item["ProgNumber"],
-                department=item["Department"],
-                programme=item["Programme"],
-                subprogNumber=item["SubprogNumber"],
-                subprogramme=item["Subprogramme"],
-                economicClassification1=item[
-                    "EconomicClassification1"],
-                economicClassification2=item[
-                    "EconomicClassification2"],
-                economicClassification3=item[
-                    "EconomicClassification3"],
-                economicClassification4=item[
-                    "EconomicClassification4"],
-                economicClassification5=item[
-                    "EconomicClassification5"],
-                functionGroup1=item["FunctionGroup1"],
-                functionGroup2=item["FunctionGroup2"],
-                financialYear=item["FinancialYear"],
-                budgetPhase=item["BudgetPhase"],
-                value=item["Value"],
-            )
+#         # EPREData.objects.all().delete()
+#         for item in preprocessed_dataset:
+#             EPREData.objects.create(
+#                 government=item["Government"],
+#                 voteNumber=item["VoteNumber"],
+#                 progNumber=item["ProgNumber"],
+#                 department=item["Department"],
+#                 programme=item["Programme"],
+#                 subprogNumber=item["SubprogNumber"],
+#                 subprogramme=item["Subprogramme"],
+#                 economicClassification1=item[
+#                     "EconomicClassification1"],
+#                 economicClassification2=item[
+#                     "EconomicClassification2"],
+#                 economicClassification3=item[
+#                     "EconomicClassification3"],
+#                 economicClassification4=item[
+#                     "EconomicClassification4"],
+#                 economicClassification5=item[
+#                     "EconomicClassification5"],
+#                 functionGroup1=item["FunctionGroup1"],
+#                 functionGroup2=item["FunctionGroup2"],
+#                 financialYear=item["FinancialYear"],
+#                 budgetPhase=item["BudgetPhase"],
+#                 value=item["Value"],
+#             )
 
-    elif obj.type == "Budget-vs-Actual-National":
-        preprocessed_dataset = preprocess(dataset, BUDGET_ACTUAL_HEADERS)
+#     elif obj.type == "Budget-vs-Actual-National":
+#         preprocessed_dataset = preprocess(dataset, BUDGET_ACTUAL_HEADERS)
 
-        # BudgetVSActualNationalData.objects.all().delete()
-        for item in preprocessed_dataset:
-            BudgetVSActualNationalData.objects.create(
-                government=item["Government"],
-                voteNumber=item["VoteNumber"],
-                progNumber=item["ProgNumber"],
-                department=item["Department"],
-                programme=item["Programme"],
-                subprogNumber=item["SubprogNumber"],
-                subprogramme=item["Subprogramme"],
-                economicClassification1=item[
-                    "EconomicClassification1"],
-                economicClassification2=item[
-                    "EconomicClassification2"],
-                economicClassification3=item[
-                    "EconomicClassification3"],
-                economicClassification4=item[
-                    "EconomicClassification4"],
-                economicClassification5=item[
-                    "EconomicClassification5"],
-                functionGroup1=item["FunctionGroup1"],
-                financialYear=item["FinancialYear"],
-                budgetPhase=item["BudgetPhase"],
-                amountKind=item["AmountKind"],
-                value=item["Value"],                
-            )
+#         # BudgetVSActualNationalData.objects.all().delete()
+#         for item in preprocessed_dataset:
+#             BudgetVSActualNationalData.objects.create(
+#                 government=item["Government"],
+#                 voteNumber=item["VoteNumber"],
+#                 progNumber=item["ProgNumber"],
+#                 department=item["Department"],
+#                 programme=item["Programme"],
+#                 subprogNumber=item["SubprogNumber"],
+#                 subprogramme=item["Subprogramme"],
+#                 economicClassification1=item[
+#                     "EconomicClassification1"],
+#                 economicClassification2=item[
+#                     "EconomicClassification2"],
+#                 economicClassification3=item[
+#                     "EconomicClassification3"],
+#                 economicClassification4=item[
+#                     "EconomicClassification4"],
+#                 economicClassification5=item[
+#                     "EconomicClassification5"],
+#                 functionGroup1=item["FunctionGroup1"],
+#                 financialYear=item["FinancialYear"],
+#                 budgetPhase=item["BudgetPhase"],
+#                 amountKind=item["AmountKind"],
+#                 value=item["Value"],                
+#             )
 
-    elif obj.type == "Budget-vs-Actual-Provincial":
-        preprocessed_dataset = preprocess(dataset, BUDGET_ACTUAL_HEADERS)
+#     elif obj.type == "Budget-vs-Actual-Provincial":
+#         preprocessed_dataset = preprocess(dataset, BUDGET_ACTUAL_HEADERS)
 
-        # BudgetVSActualProvincialData.objects.all().delete()
-        for item in preprocessed_dataset:
-            BudgetVSActualProvincialData.objects.create(
-                government=item["Government"],
-                voteNumber=item["VoteNumber"],
-                progNumber=item["ProgNumber"],
-                department=item["Department"],
-                programme=item["Programme"],
-                subprogNumber=item["SubprogNumber"],
-                subprogramme=item["Subprogramme"],
-                economicClassification1=item[
-                    "EconomicClassification1"],
-                economicClassification2=item[
-                    "EconomicClassification2"],
-                economicClassification3=item[
-                    "EconomicClassification3"],
-                economicClassification4=item[
-                    "EconomicClassification4"],
-                economicClassification5=item[
-                    "EconomicClassification5"],
-                functionGroup1=item["FunctionGroup1"],
-                financialYear=item["FinancialYear"],
-                budgetPhase=item["BudgetPhase"],
-                amountKind=item["AmountKind"],
-                value=item["Value"],                
-            )
+#         # BudgetVSActualProvincialData.objects.all().delete()
+#         for item in preprocessed_dataset:
+#             BudgetVSActualProvincialData.objects.create(
+#                 government=item["Government"],
+#                 voteNumber=item["VoteNumber"],
+#                 progNumber=item["ProgNumber"],
+#                 department=item["Department"],
+#                 programme=item["Programme"],
+#                 subprogNumber=item["SubprogNumber"],
+#                 subprogramme=item["Subprogramme"],
+#                 economicClassification1=item[
+#                     "EconomicClassification1"],
+#                 economicClassification2=item[
+#                     "EconomicClassification2"],
+#                 economicClassification3=item[
+#                     "EconomicClassification3"],
+#                 economicClassification4=item[
+#                     "EconomicClassification4"],
+#                 economicClassification5=item[
+#                     "EconomicClassification5"],
+#                 functionGroup1=item["FunctionGroup1"],
+#                 financialYear=item["FinancialYear"],
+#                 budgetPhase=item["BudgetPhase"],
+#                 amountKind=item["AmountKind"],
+#                 value=item["Value"],                
+#             )
 
-    dataset = Dataset()
+#     dataset = Dataset()
 
-    if preprocessed_dataset:
-        dataset.headers = preprocessed_dataset[0].keys()  # Set headers
+#     if preprocessed_dataset:
+#         dataset.headers = preprocessed_dataset[0].keys()  # Set headers
 
-        # Append rows
-        for row in preprocessed_dataset:
-            dataset.append(row.values())  # Add dat
+#         # Append rows
+#         for row in preprocessed_dataset:
+#             dataset.append(row.values())  # Add dat
 
-    resource = ENEResource()
-    result = resource.import_data(dataset, dry_run=True)  # Test first
+#     resource = ENEResource()
+#     result = resource.import_data(dataset, dry_run=True)  # Test first
 
-    print(result.has_errors())  # Check if any errors occur
+#     print(result.has_errors())  # Check if any errors occur
 
-    if not result.has_errors():
-        return resource.import_data(dataset, dry_run=False)
+#     if not result.has_errors():
+#         return resource.import_data(dataset, dry_run=False)
 
 
 def save_vote_documents_data(obj_id):
@@ -260,8 +430,7 @@ def save_vote_documents_data(obj_id):
         preprocessed_dataset = None
 
         preprocessed_dataset = preprocess(sheet, VOTEDOCUMENTSDATA_HEADERS)
-        print(preprocessed_dataset)
-
+        
         for item in preprocessed_dataset:
 
             financialYears = FinancialYear.objects.filter(slug=item["financial_year"])
@@ -347,6 +516,35 @@ class ENEResource(resources.ModelResource):
 
     class Meta:
         model = ENEData
+        skip_unchanged = True
+        report_skipped = False
+
+
+class AENEResource(resources.ModelResource):
+    voteNumber = Field(
+        column_name="VoteNumber",
+    )
+    department = Field(
+        column_name="Department",
+    )
+    progNumber = Field(
+        column_name="ProgNumber",
+    )
+    programme = Field(column_name="Programme")
+    subprogNumber = Field(column_name="SubprogNumber")
+    subprogramme = Field(column_name="Subprogramme")
+    economicClassification1 = Field(column_name="EconomicClassification1")
+    economicClassification2 = Field(column_name="EconomicClassification2")
+    economicClassification3 = Field(column_name="EconomicClassification3")
+    economicClassification4 = Field(column_name="EconomicClassification4")
+    economicClassification5 = Field(column_name="EconomicClassification5")    
+    financialYear = Field(column_name="FinancialYear")
+    budgetPhase = Field(column_name="BudgetPhase")
+    amountKind = Field(column_name="AmountKind")
+    value = Field(column_name="Value")
+
+    class Meta:
+        model = AENEData
         skip_unchanged = True
         report_skipped = False
 

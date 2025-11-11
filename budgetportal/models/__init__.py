@@ -1074,6 +1074,7 @@ class DatasetUpload(models.Model):
     type = models.CharField(
         max_length=255,
         choices=(
+            ("AENE", "AENE"),
             ("ENE", "ENE"),
             ("EPRE", "EPRE"),
             ("Budget-vs-Actual-National", "Budget-vs-Actual-National"),
@@ -1097,6 +1098,25 @@ class ENEData(models.Model):
     functionGroup1 = models.CharField(max_length=1024)
     financialYear = models.CharField(max_length=1024)
     budgetPhase = models.CharField(max_length=1024)
+    value = models.DecimalField(
+        max_digits=15, decimal_places=2, default=0)
+
+
+class AENEData(models.Model):
+    voteNumber = models.IntegerField()
+    department = models.CharField(max_length=1024)
+    progNumber = models.IntegerField()
+    programme = models.CharField(max_length=1024)
+    subprogNumber = models.CharField(max_length=1024)
+    subprogramme = models.CharField(max_length=1024)
+    economicClassification1 = models.CharField(max_length=1024)
+    economicClassification2 = models.CharField(max_length=1024)
+    economicClassification3 = models.CharField(max_length=1024)
+    economicClassification4 = models.CharField(max_length=1024)
+    economicClassification5 = models.CharField(max_length=1024)
+    financialYear = models.CharField(max_length=1024)
+    budgetPhase = models.CharField(max_length=1024)
+    amountKind = models.CharField(max_length=1024)
     value = models.DecimalField(
         max_digits=15, decimal_places=2, default=0)
 
