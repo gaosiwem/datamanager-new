@@ -355,8 +355,8 @@ def save_imported_dataset(obj_id):
 def save_vote_documents(obj_id):
 
     async_task(
-        save_vote_documents_data(obj_id),
-        id=obj_id,
+        save_vote_documents_data,
+        obj_id=obj_id,
         task_name="Uploading the vote data",
     )   
 

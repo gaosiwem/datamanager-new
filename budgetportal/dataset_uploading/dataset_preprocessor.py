@@ -5,7 +5,7 @@ from import_export.widgets import ForeignKeyWidget
 from tablib import Databook
 from tablib import Dataset
 
-from budgetportal.models import AENEData, DatasetUpload, ENEData, ConsolidationData, EPREData, BudgetVSActualNationalData, BudgetVSActualProvincialData,VoteDocumentUpload, Department, VoteDocument, FinancialYear, Sphere, Government
+from budgetportal.models import AENEData, DatasetCategory, DatasetUpload, ENEData, ConsolidationData, EPREData, BudgetVSActualNationalData, BudgetVSActualProvincialData,VoteDocumentUpload, Department, VoteDocument, FinancialYear, Sphere, Government
 from budgetportal.dataset_uploading import preprocess													
 
 ENE_HEADERS = [
@@ -79,6 +79,7 @@ VOTEDOCUMENTSDATA_HEADERS = [
     "department_name",
     "dataset_name",
     "dataset_title",
+    "dataset_category",
     "document_type",
     "document_url",
     "financial_year"
@@ -472,6 +473,8 @@ def save_vote_documents_data(obj_id):
                                 government=selectedGovernment,
                                 dataset_name=item["dataset_name"],
                                 dataset_title=item["dataset_title"],
+                                dataset_category=DatasetCategory.objects.get(
+                                    slug=item["dataset_category"]),
                                 document_type=item["document_type"],
                                 document_url=item["document_url"]
                             )

@@ -39,8 +39,8 @@
 
 
 {% if department_adjusted_budget %}
-{% assign department_adjusted_budget.document.url as pdf_link_adjusted %}
-{% assign department_adjusted_budget.tables.url as excel_link_adjusted %}
+{% assign department_adjusted_budget.pdf_link as pdf_link_adjusted %}
+{% assign department_adjusted_budget.excel_link as excel_link_adjusted %}
 {% else %}
 {% assign "" as pdf_link_adjusted %}
 {% assign "" as excel_link_adjusted %}

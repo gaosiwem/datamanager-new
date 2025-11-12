@@ -1,4 +1,7 @@
 
+
+from .models import BudgetVSActualNationalData, ConsolidationData, FinancialYear, MainMenuItem
+from django.utils.text import slugify
 import json
 from django.conf import settings
 import requests
@@ -505,13 +508,12 @@ def department_page(
 
     # ======= main budget docs =========================
     voteDocuments = VoteDocument.objects.filter(
-        department__name=department.name, financialYear=selected_year
+        department__name=department.name, financialYear=selected_year,
+        dataset_category__slug="estimates-of-national-expenditure"
     )
     pdf_link = ""
     excel_link = ""
     for doc in voteDocuments:
-        print("Docs'")
-        print(doc.document_type)
         if doc.document_type == "PDF":
             pdf_link = doc.document_url
         else:
@@ -522,6 +524,31 @@ def department_page(
         "pdf_link": pdf_link,
         "excel_link": excel_link,
     }
+
+    # ======= adjusted budget docs =========================
+    
+    adjusted_budget = VoteDocument.objects.filter(
+        department__name=department.name, financialYear=selected_year,
+        dataset_category__slug="adjusted-budget-vote-documents"
+    )
+
+    if adjusted_budget:
+        for doc in adjusted_budget:
+            if doc.document_type == "PDF":
+                pdf_link = doc.document_url
+            else:
+                excel_link = doc.document_url
+
+        department_adjusted_budget = {
+            "name": department.name,
+            "pdf_link": pdf_link,
+            "excel_link": excel_link,
+        }
+    else:
+        department_adjusted_budget = None
+
+    print("department_adjusted_budget: ", department_adjusted_budget)
+
 
     # budget_dataset = department.get_dataset(group_name="budget-vote-documents")
     # if budget_dataset:
@@ -541,26 +568,7 @@ def department_page(
     # else:
     #     department_budget = None
 
-    # # ======= adjusted budget docs =========================
-    # adjusted_budget_dataset = department.get_dataset(
-    #     group_name="adjusted-budget-vote-documents"
-    # )
-    # if adjusted_budget_dataset:
-    #     document_resource = adjusted_budget_dataset.get_resource(format="PDF")
-    #     if document_resource:
-    #         document_resource = resource_fields(document_resource)
-    #     tables_resource = adjusted_budget_dataset.get_resource(
-    #         format="XLS"
-    #     ) or adjusted_budget_dataset.get_resource(format="XLSX")
-    #     if tables_resource:
-    #         tables_resource = resource_fields(tables_resource)
-    #     department_adjusted_budget = {
-    #         "name": adjusted_budget_dataset.name,
-    #         "document": document_resource,
-    #         "tables": tables_resource,
-    #     }
-    # else:
-    #     department_adjusted_budget = None
+    
 
     primary_department = department.get_primary_department()
 
@@ -628,7 +636,7 @@ def department_page(
             COMMON_DESCRIPTION_ENDING,
         ),
         "department_budget": department_budget,
-        # "department_adjusted_budget": department_adjusted_budget,
+        "department_adjusted_budget": department_adjusted_budget,
         # "procurement_resource_links": ProcurementResourceLink.objects.filter(
         #     sphere_slug__in=(
         #         "all",
@@ -705,6 +713,8 @@ def category_fields(category):
 
 def dataset_category_list(request,category_slug,financial_year_id):
     # Get the dataset
+    
+    
     originalBudgetGroups = [
         'appropriation-bills',
         'budget-highlights',
@@ -734,7 +744,7 @@ def dataset_category_list(request,category_slug,financial_year_id):
     datasets = (
         Dataset.objects
         .select_related('dataset_category', 'tags', 'organisation', 'financial_year', 'sphere')
-        .filter(dataset_category__slug__in = category, )
+        .filter(dataset_category__slug__in = category,financial_year__slug=financial_year_id )
     )
 
     if not datasets.exists():
@@ -874,7 +884,6 @@ def dataset_context(category_slug, dataset_slug):
     }
 
     context.update(dataset_fields(dataset))
-    print("context:", context)
     
     return context
 
@@ -1304,19 +1313,18 @@ def format_values(value):
         return f"{num:,.2f}".rstrip('0').rstrip('.')
 
     if value >= 1e12:
-        return f"R {format_number(value / 1e12)} trillion"
+        return f"R {format_number(value / 1e12)} Trillion"
     elif value >= 1e9:
-        return f"R {format_number(value / 1e9)} billion"
+        return f"R {format_number(value / 1e9)} Billion"
     elif value >= 1e6:
-        return f"R {format_number(value / 1e6)} million"
+        return f"R {format_number(value / 1e6)} Million"
     elif value >= 1e3:
-        return f"R {format_number(value / 1e3)} thousand"
+        return f"R {format_number(value / 1e3)} Thousand"
     else:
         return f"R {format_number(value)}"
 
-def consolidated_spending():
-
-    financialYear = FinancialYear.get_latest_year().slug
+def consolidated_spending(financialYear):
+    
     queryset = ConsolidationData.objects.filter(financialYear=financialYear.split("-")[0]) \
         .values("functionGroup") \
         .annotate(total_value=Sum("value"))
@@ -1338,7 +1346,7 @@ def consolidated_spending():
                 "name": item["functionGroup"],
                 "value": float(item["total_value"]),
                 "percentage": float(item["total_value"]) / float(total_budget) * 100 if total_budget else 0,
-                "url": f"/consolidated_spending_details/{slugify(item['functionGroup'])}/"
+                "url": f"/budget-summary/consolidated_spending_details/{financialYear}/{slugify(item['functionGroup'])}/"
             }
             for item in sorted_data
         ],
@@ -1346,8 +1354,7 @@ def consolidated_spending():
     }    
     return json.dumps(data)
 
-def consolidated_spending_total():
-    financialYear = FinancialYear.get_latest_year().slug
+def consolidated_spending_total(financialYear):
     queryset = ConsolidationData.objects.filter(financialYear=financialYear.split("-")[0]) \
         .values("functionGroup") \
         .annotate(total_value=Sum("value"))
@@ -1358,28 +1365,28 @@ def consolidated_spending_total():
     for item in data_list:
         total += int(item["total_value"])
     
-    return total
+    return format_values(total)
 
 
-def consolidated_spending_details(request, focus_slug):
+def consolidated_spending_details(request, financial_year_id, focus_slug):
 
     try:
         # Latest financial year
-        financialYear = FinancialYear.get_latest_year().slug
-        financialYearFormatted = financialYear.split("-")[0]
+        financialYear = financial_year_id.split("-")[0]
 
         function_group = focus_slug.replace('-', ' ').title()
 
         # Get queryset for the selected Function Group
         qs = ConsolidationData.objects.filter(
-            functionGroup__iexact=function_group)
-        if not qs.exists():
-            raise Http404(f"No data found for {function_group}")
+            functionGroup__iexact=function_group, financialYear = financialYear)
+        # if not qs.exists():
+        #     raise Http404(f"No data found for {function_group}")
 
         # Group by Economic Classification for bar chart
         summary = list(
             qs.values('economicClassification3')
               .annotate(total_value=Sum('value'))
+              .order_by('-total_value')
         )
 
         total_budget = qs.aggregate(total=Sum('value'))['total'] or Decimal(0)
@@ -1397,7 +1404,22 @@ def consolidated_spending_details(request, focus_slug):
                 "percentage": (total_val_float / total_budget_float * 100) if total_budget_float else 0
             })
 
+        # category_data = {
+        # "children": [
+        #         {
+        #             "id": slugify(item['economicClassification3']),
+        #             "name": item['economicClassification3'],
+        #             "value": float(item['total_value']),
+        #             "percentage": round((float(item['total_value']) / total_budget_float * 100), 1) if total_budget_float else 0
+        #         }
+        #         for item in summary
+        #     ],
+        # }               
+
         # Yearly trend for line chart
+        qs = ConsolidationData.objects.filter(
+            functionGroup__iexact=function_group)
+        
         yearly_data = list(
             qs.values('financialYear')
               .annotate(year_total=Sum('value'))
@@ -1407,12 +1429,12 @@ def consolidated_spending_details(request, focus_slug):
         # Convert Decimals → float
         for item in yearly_data:
             item['year_total'] = float(item['year_total'])
-
+        
         # Context
         context = {
             'function_group': function_group,
-            'financial_year': financialYearFormatted,
-            'total_budget': total_budget_float,
+            'financial_year': financial_year_id,
+            'total_budget': format_values(int(total_budget_float)),
             'category_data': json.dumps(category_data),
             'yearly_data': json.dumps(yearly_data),
             'navbar': MainMenuItem.objects.prefetch_related("children").all(),
@@ -1425,10 +1447,211 @@ def consolidated_spending_details(request, focus_slug):
         raise
 
 
+def national_spending_details(request, financial_year_id, department):
+    try:
+        # --- Get the latest financial year ---
+        financialYear = financial_year_id.split("-")[0]
 
-def national_budget_spending():
+        department_query = Department.objects.filter(slug=department).values("name")
+        department_name = list(department_query)[0].get('name')
+
+        # --- Query base dataset ---
+        qs = BudgetVSActualNationalData.objects.filter(
+            department=department_name,
+            financialYear=financialYear,
+        )
+
+        # =========== Pie graph
+
+        function_summary = (
+            qs.values("functionGroup1")
+            .annotate(total_value=Sum("value"))
+            .order_by("-total_value")
+        )
+
+        function_data = [
+            {
+                "name": item["functionGroup1"],
+                "value": float(item["total_value"]),
+            }
+            for item in function_summary
+        ]
+
+        # ============ Bar Graph
+
+        econ_summary = (
+            qs.values("economicClassification1")
+            .annotate(total_value=Sum("value"))
+            .order_by("-total_value")
+        )
+
+        econ_data = [
+            {
+                "name": item["economicClassification1"],
+                "value": float(item["total_value"]),
+            }
+            for item in econ_summary
+        ]
+
+        # =============Horizontal Bar graph
+        item_summary = (
+            qs.values("economicClassification3")
+            .annotate(total_value=Sum("value"))
+            .order_by("-total_value")[:10]
+        )
+
+        top_items_data = [
+            {
+                "id": slugify(item["economicClassification3"]),
+                "name": item["economicClassification3"],
+                "value": float(item["total_value"]),
+            }
+            for item in item_summary
+        ]
+
+        # ==========Line Graph 
+        line = BudgetVSActualNationalData.objects.filter(
+            department=department_name
+        )
+   
+        yearly_data = list(
+            line.values("financialYear")
+            .annotate(year_total=Sum("value"))
+            .order_by("financialYear")
+        )
+
+        for item in yearly_data:
+            item["year_total"] = float(item["year_total"])
+
+        total_budget = qs.aggregate(total=Sum("value"))["total"] or Decimal(0)
+        total_budget_float = float(total_budget)
+
+        national_budget_summary = {
+            
+            "function_data": json.dumps(function_data),
+            "econ_data": json.dumps(econ_data),
+            "top_items_data": json.dumps(top_items_data),
+            "yearly_data": json.dumps(yearly_data),
+        }
+
+        context = {
+            "budget_type": "National Budget Summary",
+            "department": department_name,
+            "total_budget": national_budget_spending_total(financial_year_id, department_name),
+            "financial_year": financial_year_id,
+            "national_budget_summary": json.dumps(national_budget_summary),
+            "navbar": MainMenuItem.objects.prefetch_related("children").all(),
+        }
+
+        print("context1: ", context)
+
+        return render(request, "budgetsummary/national_provincial_focus_detail.html", context)
+
+    except Exception as e:
+        print(f"Error in budget_summary_detail: {e}")
+        raise   
     
-    financialYear = FinancialYear.get_latest_year().slug
+def provincial_spending_details(request, financial_year_id, province):
+    try:
+        # --- Get the latest financial year ---
+        financialYear = financial_year_id.split("-")[0]
+
+        government_name = Government.objects.filter(slug=province).values("name")[0].get('name')
+        print('government name', government_name)
+
+        # --- Query base dataset ---
+        qs = BudgetVSActualProvincialData.objects.filter(
+            government=government_name,
+            financialYear=financialYear,
+        )
+
+        # =========== Pie graph
+
+        function_summary = (
+            qs.values("functionGroup1")
+            .annotate(total_value=Sum("value"))
+            .order_by("-total_value")
+        )
+
+        function_data = [
+            {
+                "name": item["functionGroup1"],
+                "value": float(item["total_value"]),
+            }
+            for item in function_summary
+        ]
+
+        # ============ Bar Graph
+
+        econ_summary = (
+            qs.values("economicClassification1")
+            .annotate(total_value=Sum("value"))
+            .order_by("-total_value")
+        )
+
+        econ_data = [
+            {
+                "name": item["economicClassification1"],
+                "value": float(item["total_value"]),
+            }
+            for item in econ_summary
+        ]
+
+        # =============Horizontal Bar graph
+        item_summary = (
+            qs.values("economicClassification3")
+            .annotate(total_value=Sum("value"))
+            .order_by("-total_value")[:10]
+        )
+
+        top_items_data = [
+            {
+                "id": slugify(item["economicClassification3"]),
+                "name": item["economicClassification3"],
+                "value": float(item["total_value"]),
+            }
+            for item in item_summary
+        ]
+
+        # ==========Line Graph 
+        line = BudgetVSActualProvincialData.objects.filter(
+            government=government_name,
+        )
+   
+        yearly_data = list(
+            line.values("financialYear")
+            .annotate(year_total=Sum("value"))
+            .order_by("financialYear")
+        )
+
+        for item in yearly_data:
+            item["year_total"] = float(item["year_total"])
+
+        national_budget_summary = {            
+            "function_data": json.dumps(function_data),
+            "econ_data": json.dumps(econ_data),
+            "top_items_data": json.dumps(top_items_data),
+            "yearly_data": json.dumps(yearly_data),
+        }
+
+        context = {
+            "budget_type": "Provincial Budget Summary",
+            "total_budget": provincial_budget_spending_total(financial_year_id, government_name),
+            "department": government_name,
+            "financial_year": financial_year_id,
+            "national_budget_summary": json.dumps(national_budget_summary),
+            "navbar": MainMenuItem.objects.prefetch_related("children").all(),
+        }
+
+        return render(request, "budgetsummary/national_provincial_focus_detail.html", context)
+
+    except Exception as e:
+        print(f"Error in budget_summary_detail: {e}")
+        raise   
+    
+
+def national_budget_spending(financialYear):
+
     queryset = BudgetVSActualNationalData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
         .values("department") \
         .annotate(total_value=Sum("value"))
@@ -1444,6 +1667,7 @@ def national_budget_spending():
             {
                 "name": item["department"],
                 "value": float(item["total_value"]),
+                "url": f"/budget-summary/national_budget_summary/{financialYear}/{slugify(item['department'])}/"
             }
             for item in sorted_data
         ],
@@ -1452,11 +1676,16 @@ def national_budget_spending():
     
     return json.dumps(data)
 
-def national_budget_spending_total():
-    financialYear = FinancialYear.get_latest_year().slug
-    queryset = BudgetVSActualNationalData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
-        .values("department") \
-        .annotate(total_value=Sum("value"))
+def national_budget_spending_total(financialYear, department=None):
+
+    if department:
+        queryset = BudgetVSActualNationalData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation', department=department) \
+            .values("department") \
+            .annotate(total_value=Sum("value"))
+    else:
+        queryset = BudgetVSActualNationalData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
+            .values("department") \
+            .annotate(total_value=Sum("value"))
 
     data_list = list(queryset)
     total = 0
@@ -1467,11 +1696,16 @@ def national_budget_spending_total():
     return format_values(total)
 
 
-def provincial_budget_spending_total():
-    financialYear = FinancialYear.get_latest_year().slug
-    queryset = BudgetVSActualProvincialData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
-        .values("government") \
-        .annotate(total_value=Sum("value"))
+def provincial_budget_spending_total(financialYear, province= None):
+
+    if province:
+        queryset = BudgetVSActualProvincialData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation', government=province) \
+            .values("government") \
+            .annotate(total_value=Sum("value"))
+    else:
+        queryset = BudgetVSActualProvincialData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
+            .values("government") \
+            .annotate(total_value=Sum("value"))
 
     data_list = list(queryset)
     total = 0
@@ -1482,9 +1716,7 @@ def provincial_budget_spending_total():
     return format_values(total)
 
 
-def provincial_budget_spending():
-    
-    financialYear = FinancialYear.get_latest_year().slug
+def provincial_budget_spending(financialYear):
 
     queryset = BudgetVSActualProvincialData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
         .values("government") \
@@ -1501,6 +1733,7 @@ def provincial_budget_spending():
             {
                 "name": item["government"],
                 "value": float(item["total_value"]),
+                "url": f"/budget-summary/provincial_budget_summary/{financialYear}/{slugify(item['government'])}/"
             }
             for item in sorted_data
         ],
@@ -1509,17 +1742,40 @@ def provincial_budget_spending():
     
     return json.dumps(data)
 
-def budget_summary(request):
-    
+
+def budget_summary(request, financial_year_id= None):
+
+    if financial_year_id is None:
+        financial_year_id = FinancialYear.get_latest_year().slug
+    selected_year = get_object_or_404(FinancialYear, slug=financial_year_id)
+
     context = {
-        "consolidated_spending": consolidated_spending(),
-        "consolidated_spending_total": consolidated_spending_total(),
-        "national_budget_spending_total": national_budget_spending_total(),
-        "provincial_budget_spending_total": provincial_budget_spending_total(),
-        "national_budget_spending" : national_budget_spending(),
-        "provincial_budget_spending" : provincial_budget_spending(),
+        "consolidated_spending": consolidated_spending(selected_year.slug),
+        "consolidated_spending_total": consolidated_spending_total(selected_year.slug),
+        "national_budget_spending_total": national_budget_spending_total(selected_year.slug),
+        "provincial_budget_spending_total": provincial_budget_spending_total(selected_year.slug),
+        "national_budget_spending" : national_budget_spending(selected_year.slug),
+        "provincial_budget_spending" : provincial_budget_spending(selected_year.slug),
         "navbar": MainMenuItem.objects.prefetch_related("children").all(),
+        "financial_years": [],
+        "selected_financial_year": selected_year.slug,
+        "latest_year": FinancialYear.get_latest_year().slug
     }
+
+    for year in FinancialYear.get_available_years():
+        is_selected = year.slug == financial_year_id
+        context["financial_years"].append(
+            {
+                "id": year.slug,
+                "is_selected": is_selected,
+                "closest_match": {
+                    "is_exact_match": True,
+                    "url_path": "/budget-summary/%s" % year.slug,
+                },
+            }
+        )
+
+    print("context: ", context)
     return render(request, "budget-summary.html", context)
 
 
@@ -1556,6 +1812,7 @@ def budget_summary_detail(request, focus_slug):
                 "id": slugify(econ_name),
                 "name": econ_name,
                 "value": total_val_float,
+                "financialYear": financialYear,
                 "percentage": (total_val_float / total_budget_float * 100) if total_budget_float else 0
             })
 

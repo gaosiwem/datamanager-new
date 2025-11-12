@@ -1195,9 +1195,17 @@ class BudgetVSActualProvincialData(models.Model):
 class VoteDocumentUpload(models.Model):    
     file = models.FileField(upload_to=datasets_file_path)
 
+def get_default_category():
+    return DatasetCategory.objects.get(slug="estimates-of-national-expenditure").id
+
 class VoteDocument(models.Model):
     dataset_name = models.CharField(max_length=1024, blank=False, null=False)
     dataset_title = models.CharField(max_length=1024, blank=False, null=False)
+    dataset_category = models.ForeignKey(
+        DatasetCategory, on_delete=models.CASCADE,
+        default=get_default_category,
+    )
+
     document_type = models.CharField(max_length=50, blank=False, null=False)
     document_url = models.CharField(max_length=1024, blank=True, null=True)
     slug = AutoSlugField(populate_from="dataset_name",
