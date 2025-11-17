@@ -1,6 +1,7 @@
 
 
-from .models import BudgetVSActualNationalData, ConsolidationData, FinancialYear, MainMenuItem
+from collections import defaultdict
+from .models import AENEData, BudgetVSActualNationalData, ConsolidationData, FinancialYear, MainMenuItem
 from django.utils.text import slugify
 import json
 from django.conf import settings
@@ -603,7 +604,7 @@ def department_page(
         # "expenditure_over_time": department.get_expenditure_over_time(),
         # "budget_actual": department.get_expenditure_time_series_summary(),
         "budget_actual_programmes": budget_actual_programmes,
-        # "adjusted_budget_summary": department.get_adjusted_budget_summary(),
+        "adjusted_budget_summary": get_adjusted_budget_summary(selected_year.slug, department.name),
         # "contributed_datasets": contributed_datasets if contributed_datasets else None,
         "financial_years": financial_years_context,
         "government": {
@@ -1858,3 +1859,137 @@ def get_province(prov):
 
     province = Government.objects.filter(slug=prov).first().name
     return province
+
+def get_adjusted_budget_summary(financialYear, department):
+
+    print("financial year:", financialYear)
+    queryset = AENEData.objects.filter(department=department, financialYear=financialYear.split("-")[0]) \
+        .values("amountKind", "budgetPhase", "programme", "subprogramme", "economicClassification2", "economicClassification3", "value")
+
+    data_list = list(queryset)
+
+    # print("data list: ", data_list)
+
+    # 1. Adjustment by type
+    adjustment_by_type =  defaultdict(float)
+    for item in data_list:
+        budgetPhase = item["budgetPhase"]
+        value = float(item["value"])
+        adjustment_by_type[budgetPhase] += value
+
+    adjustment_by_type = [
+        {
+            "name": k,
+            "value": v,
+            "type": "kind"
+        }
+        for k, v in adjustment_by_type.items()
+    ]
+
+    # 2. Adjustment by programme
+    adjustment_by_programme = defaultdict(float)
+    for item in data_list:
+        programme = item["programme"]
+        value = float(item["value"])
+        adjustment_by_programme[programme] += value
+
+    adjustment_by_prog = [
+        {
+            "name": k,
+            "value": v,
+        }
+        for k, v in adjustment_by_programme.items()
+    ]
+    
+    # 3. Adjustment by economic classification
+    econ = defaultdict(float)
+    for item in data_list:
+        # econ2 = item["economicClassification2"]
+        econ3 = item["economicClassification3"]
+        value = float(item["value"] or 0)
+        econ[econ3] += value
+
+    # adjustment_by_econ = [
+    #     {
+    #         "economicClassification2": k, "economicClassification3": dict(v)
+    #     }
+    #     for k, v in econ.items()
+    # ]
+
+    adjustment_by_econ = [
+        {
+            "name": k,
+            "value": v,
+        }
+        for k, v in econ.items()
+    ]
+
+    # 4. Veriments
+
+    def filter_rows(**kwargs):
+        return [
+            row for row in data_list
+            if all(str(row.get(k, "")).strip() == str(v).strip() for k, v in kwargs.items())
+        ]
+
+    veriments = filter_rows(budgetPhase="Utilisation of unspend funds - Virements & Shifts")
+    tota_virements = sum(float(item["value"]) for item in veriments)
+
+    # 5. Special approipriations
+    special_approp = filter_rows(budgetPhase="Special appropriation")
+    total_special_approp = sum(float(item["value"]) for item in special_approp)
+
+    total_voted = filter_rows(budgetPhase= "Appropriation")
+    sum_voted = sum(float(item["value"]) for item in total_voted)
+
+    # 6. Direct charges
+    direct_charges_by_subprogramme = defaultdict(float)
+    direct_charges_filter = filter_rows(programme="Direct charge against the National Revenue Fund")
+    for item in direct_charges_filter:
+        subProgramme = item["subprogramme"]
+        value = float(item["value"])
+        direct_charges_by_subprogramme[subProgramme] += value
+
+    total = sum(float(item["value"]) for item in direct_charges_filter)
+    direct_charges = [
+        {
+            "label": k,
+            "amount": v,
+            "percentage": (float(v) / total) * 100 if total else 0,
+        }
+        for k, v in direct_charges_by_subprogramme.items()
+    ]
+
+    # 7. Total adjustmenst
+
+    total_voted = sum(float(
+        item["value"]) for item in data_list if item["budgetPhase"] == 'Appropriation')
+    total_adjusted = sum(float(
+        item["value"]) for item in data_list if item["budgetPhase"] == 'Adjusted appropriation')
+    total_adjustment = total_adjusted - total_voted
+    percent_change = (total_adjustment / total_voted * 100) if total_voted != 0 else 0
+
+    summary = {
+        "by_type": json.dumps(adjustment_by_type),
+        "total_change": {
+            "amount": total_adjustment,
+            "percentage": percent_change,
+        },
+        "econ_classes": json.dumps(adjustment_by_econ),
+        "programmes": json.dumps(adjustment_by_prog),
+        "virements": {
+            "label": "virements and shifts",
+            "amount": tota_virements,
+            "percentage": 100
+            * (tota_virements / float(total_voted)) if total_voted != 0 else 0,
+        },
+        "special_appropriation": {
+            "amount": total_special_approp,
+            "percentage": (float(total_special_approp) / float(total_voted)) * 100 if total_voted != 0 else 0,
+        },
+        "direct_charges": direct_charges,        
+        "department_data_csv": None,
+        "dataset_detail_page": None,
+    }
+
+    return summary
