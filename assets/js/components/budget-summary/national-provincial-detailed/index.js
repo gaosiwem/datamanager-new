@@ -3,6 +3,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let budget_summary_data = document.getElementById("national-budget-summary-data");  
 
+  if(budget_summary_data){   
+  
+
   const data = JSON.parse(budget_summary_data.textContent);
 
   const functionData = JSON.parse(data.function_data);
@@ -261,7 +264,7 @@ const palette = [
         },
       },
     });
-
+  }
 
 });
 
