@@ -8,8 +8,10 @@ document.addEventListener("DOMContentLoaded", function () {
             try {
                 dataset = JSON.parse(treeMapData.textContent);
                 dataset.children = dataset.children.map(d => ({
+                    id: d.id || d.name,
                     name: d.Name || d.name,
                     value: d.Count || d.value,
+                    url: d.url || null,
                     subprogrammes: d.children || []
                 }));
 
@@ -60,7 +62,12 @@ document.addEventListener("DOMContentLoaded", function () {
                                 .style("left", `${d3.event.pageX + 10}px`) // Position tooltip relative to mouse
                                 .style("top", `${d3.event.pageY - 10}px`);
                          })
-                         .on("mouseout", () => tooltip.style("display", "none"));
+                         .on("mouseout", () => tooltip.style("display", "none"))
+                         .on("click", function(event, d) {
+                                if (event.data.url) {
+                                  window.location.href = event.data.url; // navigates to this detailed page
+                                }
+                        });     
 
                     nodes.append("text")
                          .attr("x", 5)
@@ -100,13 +107,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function formatValues(value) {
     if (value >= 1e12) {
-        return `R ${(value / 1e12).toFixed(1).toLocaleString()} trillion`; // Trillions
+        return `R ${(value / 1e12).toFixed(2).toLocaleString()} trillion`; // Trillions
     } else if (value >= 1e9) {
-        return `R ${(value / 1e9).toFixed(1).toLocaleString()} billion`; // Billions
+        return `R ${(value / 1e9).toFixed(2).toLocaleString()} billion`; // Billions
     } else if (value >= 1e6) {
-        return `R ${(value / 1e6).toFixed(1).toLocaleString()} million`; // million
+        return `R ${(value / 1e6).toFixed(2).toLocaleString()} million`; // million
     } else if (value >= 1e3) {
-        return `R ${(value / 1e3).toFixed(1).toLocaleString()} thousand`; // thousand
+        return `R ${(value / 1e3).toFixed(2).toLocaleString()} thousand`; // thousand
     } else {
         return 'R ' + value.toLocaleString(); // Default formatting
     }

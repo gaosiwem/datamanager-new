@@ -25,22 +25,22 @@
 <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; padding: 20px;">
      <div style="width: 80%; max-width: 1000px;">
           <div>
-               <h3>Consolidated Budget Summary</h3>
-               <p style="font-weight: bold; font-size: 16px;">{{ consolidated_spending_total |safe }}</p>
+               <h2>Consolidated Budget Summary</h2>
+               <p style="font-weight: bold; font-size: 18px;">{{ consolidated_spending_total |safe }}</p>
           </div>
           <div class="chart-container" id="chart-consolidation"></div>
      </div>
      <div style="width: 80%; max-width: 1000px;">
           <div>
-               <h3>National Budget Summary</h3>
-               <p style="font-weight: bold; font-size: 16px;">{{ national_budget_spending_total |safe }}</p>
+               <h2>National Budget Summary</h2>
+               <p style="font-weight: bold; font-size: 18px;">{{ national_budget_spending_total |safe }}</p>
           </div>
           <div class="chart-container" id="chart-national-budget"></div>
      </div>
      <div style="width: 80%; max-width: 1000px;">
           <div>
-               <h3>Provincial Budget Summary</h3>
-               <p style="font-weight: bold; font-size: 16px;">{{ provincial_budget_spending_total |safe }}</p>
+               <h2>Provincial Budget Summary</h2>
+               <p style="font-weight: bold; font-size: 18px;">{{ provincial_budget_spending_total |safe }}</p>
           </div>
           <div class="chart-container" id="chart-provincial-budget"></div>
      </div>
@@ -56,11 +56,9 @@
     .chart-container {
         width: 100%;
         max-width: 1000px;
-        height: auto;
-        margin: 20px 0;
+        height: auto; 
         background: #f4f4f4;
         border-radius: 8px;
-        padding: 10px;
     }
 
     .tooltip {

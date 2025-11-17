@@ -39,7 +39,13 @@ urlpatterns = [
     url(r'^get_economicClassification/', views.get_economicClassification, name='econ'),
     url(r'^get_horizontal_bar_data/', views.get_horizontal_bar_data, name='getGraphData'),
     url(r'^get_programmes/', views.get_programmes, name='getProg'),
-    url(r'^budget-summary/', cache_page(CACHE_MINUTES_SECS)(views.budget_summary), name='budget_summary'),    
+    url(r'^budget-summary/(?P<financial_year_id>\d{4}-\d{2})?$', cache_page(CACHE_MINUTES_SECS)(views.budget_summary), name='budget_summary'), 
+    url(r'^budget-summary/consolidated_spending_details/(?P<financial_year_id>\d{4}-\d{2})/(?P<focus_slug>[\w-]+)/?$',views.consolidated_spending_details, name='focus-detail'),
+    url(r'^budget-summary/national_budget_summary/(?P<financial_year_id>\d{4}-\d{2})/(?P<department>[\w-]+)/?$',
+        views.national_spending_details, name='national-detail'),
+    url(r'^budget-summary/provincial_budget_summary/(?P<financial_year_id>\d{4}-\d{2})/(?P<province>[\w-]+)/?$',
+        views.provincial_spending_details, name='provincial-detail'),
+    
     
     url(
         r"^learning-resources/?$",

@@ -8,19 +8,19 @@ export default function trimValues(rawValue, abbreviated) {
   }
 
   if (value >= 1000000000) {
-    return `${(value / 1000000000).toFixed(1).replace(/\.0$/, '')} ${billion}`;
+    return `${(value / 1000000000).toFixed(2).replace(/\.0$/, '')} ${billion}`;
   }
 
   if (value >= 1000000) {
-    return `${(value / 1000000).toFixed(1).replace(/\.0$/, '')} ${million}`;
+    return `${(value / 1000000).toFixed(2).replace(/\.0$/, '')} ${million}`;
   }
 
   if (value <= -1000000000) {
-    return `${(value / 1000000000).toFixed(1).replace(/\.0$/, '')} ${billion}`;
+    return `${(value / 1000000000).toFixed(2).replace(/\.0$/, '')} ${billion}`;
   }
 
   if (value <= -1000000) {
-    return `${(value / 1000000).toFixed(1).replace(/\.0$/, '')} ${million}`;
+    return `${(value / 1000000).toFixed(2).replace(/\.0$/, '')} ${million}`;
   }
 
 

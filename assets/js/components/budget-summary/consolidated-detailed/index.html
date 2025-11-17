@@ -1,0 +1,86 @@
+
+{% load define_action %}
+
+<style>
+    /* Targets both chart canvases */
+    #categoryBarChart,
+    #yearlyLineChart {
+        /* 1. Ensure the canvas border itself is gone */
+        border: none !important;
+        /* 2. Ensure no default line color is used by Chart.js (though JS should handle this) */
+        stroke: transparent !important;
+    }
+
+    /* Targets the parent container if necessary, in case the line is a container border */
+    .chart-container-div-name {
+        /* Replace this with the actual class/ID of the parent div */
+        border: none !important;
+    }
+</style>
+
+<div class="ProgrammesSection" id="programmes">
+    <div class="Section is-invisible">
+        <a href="/">Vulekamali</a>
+        <a href="/budget-summary/{{ financial_year }}"> / Budget Summary</a>
+        <span> / Consolidated Budget Summary</span>
+    </div>
+    
+    <h3 class="Title Title--section">{{ function_group }} — Spending Overview</h3>
+    
+    <h4>Total Allocation ({{ financial_year }}): {{ total_budget }}</h4>
+
+    <div class="ProgrammesSection-container">
+        <div class="ProgrammesSection-item">
+            <h4 class="Title Title--section">Spending by economic classifications</h4>
+            <div class="ProgrammesSection-share u-marginTop10 u-marginBottom15">
+                <div data-component="Share" data-anchor="programmes" data-color="{{ color }}"></div>
+            </div>
+
+            <div class="col-md-6">
+
+                <p>This shows how funds are distributed across different economic classifications
+                    under the {{ function_group }} category for the financial year {{ financial_year }}. Each bar represents
+                    a category and how much money was allocated or spent in that category.
+                </p>
+            </div>
+        </div>
+
+        <div class="ProgrammesSection-item ProgrammesSection-item--right">
+            <div class="Page-content">
+                <div class="Card">
+                    <div style="height: 400px; width: 100%;">
+                        <canvas id="categoryBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ProgrammesSection-item">
+            <h4 class="Title Title--section">Yearly spending</h4>
+            <div class="ProgrammesSection-share u-marginTop10 u-marginBottom15">
+                <div data-component="Share" data-anchor="programmes" data-color="{{ color }}"></div>
+            </div>
+
+            <div class="col-md-6">
+                <h4>Yearly spending</h4>
+
+                <p>This shows how spending changes over time for each EconomicClassification3 category
+                    It helps to identify trends and patterns in expenditure across different years.
+                </p>
+            </div>
+        </div>
+        <div class="ProgrammesSection-item ProgrammesSection-item--right">
+            <div class="Page-content">
+                <div class="Card">
+                    <div class="col-md-6">
+                        <div style="height: 400px; width: 100%;">
+                            <canvas id="yearlyLineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script id="category-data" type="application/json">{{ category_data|safe }}</script>
+    <script id="yearly-data" type="application/json">{{ yearly_data|safe }}</script>
+</div>

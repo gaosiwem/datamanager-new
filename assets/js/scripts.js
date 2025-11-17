@@ -47,6 +47,8 @@ import "./components/performance/Table/scripts.jsx";
 import "./components/contributed-data/CsoMeta/scripts.js";
 
 import "./components/budget-summary/budget-summary.js";
+import "./components/budget-summary/consolidated-detailed/index.js";
+import "./components/budget-summary/national-provincial-detailed/index.js";
 
 import "./components/universal/Button/scripts.js";
 import "./components/universal/ResponsiveChart/scripts.jsx";
