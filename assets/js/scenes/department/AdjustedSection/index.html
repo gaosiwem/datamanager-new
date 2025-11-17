@@ -31,7 +31,7 @@
         </p>
       {% endif %}
 
-      {% if parliament %}
+       {% if parliament %}
         <p class="js-tooltips">
           Amendments to Parliaments' budget are determined independently of the national government's budget
           processes in accordance with the Financial Management of Parliament and Provincial Legislatures Act,
@@ -71,7 +71,7 @@
       </div>
     {% endif %}
 
-    {% if items %}
+   {% if items %}
       <div class="AdjustedSection-item">
         <div class="AdjustedSection-indicatorsGrid">
           <div class="AdjustedSection-indicator">
@@ -133,20 +133,15 @@
       <div class="AdjustedSection-item">
         <div class="Card Card--fullHeight">
           <div class="Title Title--interSection u-marginBottom15">
-            Adjustments by type
+            Total adjustment by type
           </div>
-
-          <div
-              data-component="ChartAdaptor"
-              data-items="{{ items.by_type | jsonify | escape }}"
-              data-type="adjusted"
-              data-scale="1"
-              data-color="{{ color }}"
-              data-title="Adjustments by type"
-              data-subtitle="{{ subtitle }}"
-              data-description=""
-          >
-          </div>
+          <div class="Page-content">
+            <div class="Card">
+              <div style="height: 400px; width: 100%;">
+                <canvas id="categoryBarChart"></canvas>
+              </div>
+            </div>            
+            <script id="category-data" type="application/json">{{ items.by_type|safe }}</script>        
         </div>
       </div>
     {% endif %}
@@ -155,78 +150,75 @@
       <div class="AdjustedSection-item">
         <div class="Card Card--fullHeight Card--dark">
           <div class="Title Title--interSection u-marginBottom15">
-            Adjustments by type
+            Total adjustment by type
           </div>
 
           <p>No adjustments were made to the total budget of this department</p>
         </div>
       </div>
     {% endif %}
+     </div>
 
-
-    {% if items and items.econ_classes %}
+     <!-- Econ section-->
+      {% if items and items.econ_classes %}
       <div class="AdjustedSection-item">
         <div class="Card Card--fullHeight">
-          <div class="Title Title--interSection">
-            Total adjustments by economic classification
-          </div>
-          <div
-              data-component="ChartAdaptor"
-              data-type="adjusted"
-              data-items="{{ items.econ_classes | jsonify | escape }}"
-              data-scale="1"
-              data-title="Total adjustments by economic classification"
-              data-subtitle="{{ subtitle }}"
-              data-description=""
-          >
-          </div>
-        </div>
-      </div>
-    {% endif %}
-
-    {% if items and items.econ_classes == null %}
-      <div class="AdjustedSection-item">
-        <div class="Card Card--fullHeight Card--dark">
           <div class="Title Title--interSection u-marginBottom15">
             Total adjustments by economic classification
           </div>
-
-          <p>There were no adjustements to economic classification totals</p>
-        </div>
-      </div>
-    {% endif %}
-
-    {% if items and items.programmes %}
-      <div class="AdjustedSection-item">
-        <div class="Card Card--fullHeight">
-          <div class="Title Title--interSection">
-            Total adjustments by programme
-          </div>
-
-          <div
-              data-component="ChartAdaptor"
-              data-type="adjusted"
-              data-items="{{ items.programmes | jsonify | escape }}"
-              data-scale="1"
-              data-title="Total adjustments by programme"
-              data-subtitle="{{ subtitle }}"
-              data-description=""
-          >
+          <div class="Page-content">
+            <div class="Card">
+              <div style="height: 400px; width: 100%;">
+                <canvas id="econBarChart"></canvas>
+              </div>
+            </div>
+            <script id="econ-data" type="application/json">{{ items.econ_classes|safe }}</script>
           </div>
         </div>
-      </div>
-    {% endif %}
-
-    {% if items and items.programmes == null %}
-      <div class="AdjustedSection-item">
-        <div class="Card Card--fullHeight Card--dark">
-          <div class="Title Title--interSection u-marginBottom15">
-            Total adjustments by economic classification
+        {% endif %}
+      
+        {% if items and items.econ_classes == null %}
+        <div class="AdjustedSection-item">
+          <div class="Card Card--fullHeight Card--dark">
+            <div class="Title Title--interSection u-marginBottom15">
+              Total adjustments by economic classification
+            </div>
+      
+            <p>There were no adjustements to economic classification totals</p>
           </div>
-
-          <p>There were no adjustements to programme totals</p>
         </div>
+        {% endif %}
       </div>
-    {% endif %}
+
+          <!-- Programmes section-->
+          {% if items and items.programmes %}
+          <div class="AdjustedSection-item">
+            <div class="Card Card--fullHeight">
+              <div class="Title Title--interSection u-marginBottom15">
+                Total adjustments by programmes
+              </div>
+              <div class="Page-content">
+                <div class="Card">
+                  <div style="height: 400px; width: 100%;">
+                    <canvas id="programmesBarChart"></canvas>
+                  </div>
+                </div>
+                <script id="programmes-data" type="application/json">{{ items.programmes|safe }}</script>
+              </div>
+            </div>
+            {% endif %}
+          
+            {% if items and items.programmes == null %}
+            <div class="AdjustedSection-item">
+              <div class="Card Card--fullHeight Card--dark">
+                <div class="Title Title--interSection u-marginBottom15">
+                  Total adjustments by programmes
+                </div>
+          
+                <p>There were no adjustements to programmes totals</p>
+              </div>
+            </div>
+            {% endif %}
+          </div>
   </div>
 </div>
