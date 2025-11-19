@@ -691,7 +691,7 @@ def department_page(
     context["public_entities"] = []
 
     for public_entity in PublicEntity.objects.filter(
-        department__slug=department_slug, government=department.government
+        department__slug=department_slug, government=department.government, budgetPhase='Main appropriation'
     ):
         context["public_entities"].append(
             {
