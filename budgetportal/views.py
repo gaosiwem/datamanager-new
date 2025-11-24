@@ -1927,20 +1927,33 @@ def get_adjusted_budget_summary(financialYear, department):
     # 4. Veriments
 
     def filter_rows(**kwargs):
-        return [
-            row for row in data_list
-            if all(str(row.get(k, "")).strip() == str(v).strip() for k, v in kwargs.items())
-        ]
 
-    veriments = filter_rows(budgetPhase="Utilisation of unspend funds - Virements & Shifts")
+        def norm(v):
+            return str(v).strip().lower() if v is not None else ""
+
+        results = []
+        for row in data_list:
+            match = True
+            for key, val in kwargs.items():
+                actual = norm(row.get(key))
+                expected = norm(val)
+
+                if actual != expected:
+                    match = False
+                    break
+
+            if match:
+                results.append(row)
+
+        return results
+
+    veriments = filter_rows(
+        budgetPhase="Utilisation of unspend funds - Virements & Shifts")
     tota_virements = sum(float(item["value"]) for item in veriments)
 
     # 5. Special approipriations
     special_approp = filter_rows(budgetPhase="Special appropriation")
     total_special_approp = sum(float(item["value"]) for item in special_approp)
-
-    total_voted = filter_rows(budgetPhase= "Appropriation")
-    sum_voted = sum(float(item["value"]) for item in total_voted)
 
     # 6. Direct charges
     direct_charges_by_subprogramme = defaultdict(float)
@@ -1964,9 +1977,11 @@ def get_adjusted_budget_summary(financialYear, department):
 
     total_voted = sum(float(
         item["value"]) for item in data_list if item["budgetPhase"] == 'Appropriation')
-    total_adjusted = sum(float(
-        item["value"]) for item in data_list if item["budgetPhase"] == 'Adjusted appropriation')
-    total_adjustment = total_adjusted - total_voted
+    total_adjustment = sum(float(
+        item["value"]) for item in data_list if item["budgetPhase"] == 'Total adjustments')
+    total_unforeseeable = sum(float(
+        item["value"]) for item in data_list if item["budgetPhase"] == 'Unforeseeable/unavoidable')
+    # total_adjustment = total_adjusted - total_voted
     percent_change = (total_adjustment / total_voted * 100) if total_voted != 0 else 0
 
     summary = {
@@ -1977,11 +1992,16 @@ def get_adjusted_budget_summary(financialYear, department):
         },
         "econ_classes": json.dumps(adjustment_by_econ),
         "programmes": json.dumps(adjustment_by_prog),
-        "virements": {
-            "label": "virements and shifts",
-            "amount": tota_virements,
-            "percentage": 100
-            * (tota_virements / float(total_voted)) if total_voted != 0 else 0,
+        # "virements": {
+        #     "label": "virements and shifts",
+        #     "amount": tota_virements,
+        #     "percentage": 100
+        #     * (tota_virements / float(total_voted)) if total_voted != 0 else 0,
+        # },
+        "unforeseeable":{
+            "label": "Unforeseeable / Unavoidable",
+            "amount": total_unforeseeable,
+            "percentage": (float(total_unforeseeable) / float(total_voted)) * 100 if total_voted != 0 else 0,
         },
         "special_appropriation": {
             "amount": total_special_approp,

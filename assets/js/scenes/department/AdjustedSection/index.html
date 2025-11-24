@@ -86,12 +86,13 @@
 
           <div class="AdjustedSection-indicator">
             <div class="Title Title--interSection u-marginBottom10">
-              {{ items.virements.label }}
+              {{ items.unforeseeable.label }}
             </div>
 
-            {% include 'scenes/department/AdjustedSection/components/ChangeIndicator/index.html' with percentage=items.virements.percentage amount=items.virements.amount %}
+            {% include 'scenes/department/AdjustedSection/components/ChangeIndicator/index.html' with percentage=items.unforeseeable.percentage amount=items.unforeseeable.amount %}
 
-            <p>Changes to planned spending between categories within this department.</p>
+            <p>Unforeseeable or unavoidable expenditure arising from events or circumstances that could not have been anticipated or
+            prevented.</p>
           </div>
 
           {% if items.special_appropriation %}
