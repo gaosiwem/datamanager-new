@@ -764,7 +764,7 @@ def dataset_category_list(request,category_slug,financial_year_id):
             {
                 "name": r.fileName,
                 "format": r.format,
-                "url": r.path
+                "url": r.file.path.replace("/app", "") if r.file else r.path,
             }
             for r in datasetResources
         ]
