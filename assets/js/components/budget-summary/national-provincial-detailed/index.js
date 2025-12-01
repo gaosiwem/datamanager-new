@@ -121,7 +121,7 @@ const palette = [
   const topValues = sortedEntries.map(([_, v]) => v);  
 
     new Chart(ctx3, {
-      type: "horizontalBar", // ✅ Chart.js 2.x uses 'horizontalBar' instead of indexAxis: 'y'
+      type: "horizontalBar",
       data: {
         labels: topLabels,
         datasets: [
@@ -136,6 +136,12 @@ const palette = [
       options: {
         responsive: true,
         maintainAspectRatio: false,
+
+        layout: {
+          // leave a little room so y-axis labels don't overlap gridlines
+          padding: { left: 10, right: 10, top: 10, bottom: 10 },
+        },
+
         scales: {
           xAxes: [
             {
@@ -148,21 +154,48 @@ const palette = [
                   if (value >= 1e3) return "R " + value / 1e3 + " Thousand";
                   return "R " + value.toLocaleString();
                 },
+                // padding moves tick labels away from the axis/gridlines
+                padding: 8,
               },
-              gridLines: { display: false },
-              scaleLabel: { display: false },
+              gridLines: {
+                display: true,
+                drawOnChartArea: true, // make sure lines are drawn across the chart area
+                drawTicks: true,
+                drawBorder: true,
+                offsetGridLines: false, // important: align gridlines with tick positions
+                color: "#e0e0e0",
+                lineWidth: 1,
+              },
+              scaleLabel: {
+                display: true,
+                fontSize: 12,
+              },
             },
           ],
+
           yAxes: [
             {
               ticks: {
                 autoSkip: false,
+                // move y labels a bit to avoid overlapping the left border
+                padding: 6,
               },
-              gridLines: { display: false },
-              scaleLabel: { display: false },
+              gridLines: {
+                display: true,
+                drawOnChartArea: true, // horizontal gridlines across chart area
+                drawTicks: true,
+                offsetGridLines: false,
+                color: "#f5f5f5",
+                lineWidth: 1,
+              },
+              scaleLabel: {
+                display: true,
+                fontSize: 12,
+              },
             },
           ],
         },
+
         tooltips: {
           callbacks: {
             label: function(tooltipItem) {
@@ -179,13 +212,16 @@ const palette = [
             },
           },
         },
+
         legend: { display: false },
+
         animation: {
           duration: 800,
           easing: "easeOutQuart",
         },
       },
     });
+
 
 
     const ctx4 = document.getElementById("yearlyDataChart").getContext("2d");
@@ -237,7 +273,7 @@ const palette = [
           ],
           xAxes: [
             {
-              gridLines: { display: false, drawBorder: true },
+              gridLines: { display: true, drawBorder: true },
             },
           ],
         },

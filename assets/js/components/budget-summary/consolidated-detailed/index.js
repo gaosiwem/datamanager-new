@@ -81,7 +81,15 @@ function drawBarGraph(dataset, ctx) {
                 return "R " + value.toLocaleString();
               },
             },
-            gridLines: { display: false },
+            gridLines: {
+              display: true,
+              drawOnChartArea: true, // make sure lines are drawn across the chart area
+              drawTicks: true,
+              drawBorder: true,
+              offsetGridLines: false, // important: align gridlines with tick positions
+              color: "#e0e0e0",
+              lineWidth: 1,
+            },
             scaleLabel: { display: false },
           },
         ],
@@ -90,8 +98,18 @@ function drawBarGraph(dataset, ctx) {
             ticks: {
               autoSkip: false,
             },
-            gridLines: { display: false },
-            scaleLabel: { display: false },
+            gridLines: {
+              display: true,
+              drawOnChartArea: true, // horizontal gridlines across chart area
+              drawTicks: true,
+              offsetGridLines: false,
+              color: "#f5f5f5",
+              lineWidth: 1,
+            },
+            scaleLabel: {
+              display: true,
+              fontSize: 12,
+            },
           },
         ],
       },
