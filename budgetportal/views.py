@@ -1511,18 +1511,21 @@ def national_spending_details(request, financial_year_id, department):
         ]
 
         # ==========Line Graph 
-        line = BudgetVSActualNationalData.objects.filter(
-            department=department_name
-        )
-   
-        yearly_data = list(
-            line.values("financialYear")
+        line = (
+            BudgetVSActualNationalData.objects
+            .filter(department=department_name, budgetPhase='Main appropriation')
+            .values("financialYear")
             .annotate(year_total=Sum("value"))
             .order_by("financialYear")
         )
 
-        for item in yearly_data:
-            item["year_total"] = float(item["year_total"])
+        yearly_data = [
+            {
+                "financialYear": item["financialYear"],
+                "year_total": float(item["year_total"])
+            }
+            for item in line
+        ]
 
         total_budget = qs.aggregate(total=Sum("value"))["total"] or Decimal(0)
         total_budget_float = float(total_budget)
@@ -1543,8 +1546,6 @@ def national_spending_details(request, financial_year_id, department):
             "national_budget_summary": json.dumps(national_budget_summary),
             "navbar": MainMenuItem.objects.prefetch_related("children").all(),
         }
-
-        print("context1: ", context)
 
         return render(request, "budgetsummary/national_provincial_focus_detail.html", context)
 
@@ -1775,8 +1776,7 @@ def budget_summary(request, financial_year_id= None):
                 },
             }
         )
-
-    print("context: ", context)
+    
     return render(request, "budget-summary.html", context)
 
 
