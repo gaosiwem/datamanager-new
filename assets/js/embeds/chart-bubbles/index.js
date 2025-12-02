@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function() {
       // html tooltip showing text on mouseover
       elements
         .append("title")
-        .text((d) => `${d[2]} R${parseInt(d[1]).toLocaleString()}`);
+        .text((d) => `${d[2]} ${formatValues(d[1])}`);
 
       bubbles = elements
         .append("circle")
@@ -158,6 +158,20 @@ document.addEventListener("DOMContentLoaded", function() {
   //function display(data) {
   myBubbleChart("#public-entities", data);
   //}
+
+  function formatValues(value) {
+    if (value >= 1e12) {
+      return `R ${(value / 1e12).toFixed(2).toLocaleString()} trillion`; // Trillions
+    } else if (value >= 1e9) {
+      return `R ${(value / 1e9).toFixed(2).toLocaleString()} billion`; // Billions
+    } else if (value >= 1e6) {
+      return `R ${(value / 1e6).toFixed(2).toLocaleString()} million`; // million
+    } else if (value >= 1e3) {
+      return `R ${(value / 1e3).toFixed(2).toLocaleString()} thousand`; // thousand
+    } else {
+      return "R " + value.toLocaleString(); // Default formatting
+    }
+  }
 
   // load data
   //d3.data('nodes-data.csv').then(display);

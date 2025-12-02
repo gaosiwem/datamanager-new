@@ -170,18 +170,18 @@ def save_imported_public_entities(obj_id):
 
                         # print('before the save')
 
-                        selectedPublicEntity, created = PublicEntity.objects.update_or_create(
+                        selectedPublicEntity, created = PublicEntity.objects.get_or_create(
                             name=entity_name,
                             department=selectedDepartment,
                             government=selectedGovernment,
                             defaults={
                                 "pfma": pfma,
                                 "functiongroup1": function_group1,
-                                "financialYear": financial_year,
-                                "amount": amount,
+                                # "financialYear": financial_year,
+                                # "amount": amount,
                                 "slug": slugify(entity_name),
                             },
-                            budgetPhase=budget_phase
+                            # budgetPhase=budget_phase
                         )
 
                         # print('Passed the save')
