@@ -233,12 +233,12 @@ def public_entity_page(request, financial_year_id, sphere_slug, government_slug,
     # 3. TOTAL FOR THIS ENTITY'S DEPARTMENT (same year)
     # ---------------------------------------------------------
     department_amount = (
-        PublicEntityExpenditure.objects
+        ENEData.objects
         .filter(
-            public_entity__department=selected_public_entity.department,
+            department=selected_public_entity.department.name,
             financialYear=start_year
         )
-        .aggregate(total=Sum("amount"))
+        .aggregate(total=Sum("value"))
         .get("total") or 0
     )
 
