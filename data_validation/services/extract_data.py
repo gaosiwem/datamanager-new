@@ -101,6 +101,7 @@ def get_internal_data(financialYear, document_type):
             }
 
         return result
+    
 
     # EPRE
     queryset = EPREData.objects.filter(

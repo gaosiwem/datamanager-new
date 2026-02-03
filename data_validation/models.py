@@ -4,7 +4,6 @@ from budgetportal.models.government import FinancialYear
 
 # Create your models here.
 
-
 class ValidationRun(models.Model):
     # document_type = models.CharField(max_length=255)
     document_type = models.CharField(

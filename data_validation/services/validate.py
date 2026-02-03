@@ -5,8 +5,7 @@ from django.db import transaction
 
 from data_validation.services.extract_data import get_internal_data
 
-# def run_validation(validation_run, external_data):
-#     try:
+# def run_validation(validation_run, external_data):#     try:
 #         # 1. Get internal data (now returns a dict, not a JSON string)
 #         internal_data = get_internal_data(
 #             financialYear=validation_run.financial_year,
@@ -57,7 +56,6 @@ from data_validation.services.extract_data import get_internal_data
 
 #     except Exception as e:
 #         print("Validation error:", str(e))
-
 
 from decimal import Decimal
 from django.db import transaction

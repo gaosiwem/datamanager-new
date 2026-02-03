@@ -29,7 +29,6 @@ class ValidationRunAdmin(admin.ModelAdmin):
             obj.save(update_fields=["status"])
             self.message_user(request, str(e), messages.ERROR)
 
-
 @admin.register(ValidationResult)
 class ValidationResultAdmin(admin.ModelAdmin):
     list_display = (
