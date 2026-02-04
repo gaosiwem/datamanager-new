@@ -692,9 +692,7 @@ def department_page(
 
     for public_entity in PublicEntity.objects.filter(
         department__slug=department_slug, 
-        government=department.government, 
-        publicentityexpenditure__financialYear=selected_year,
-        publicentityexpenditure__budget_phase='Main appropriation'
+        government=department.government
     ):
         context["public_entities"].append(
             {
