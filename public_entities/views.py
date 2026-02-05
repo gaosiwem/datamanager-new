@@ -4,7 +4,9 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import ListView
-from httplib2 import Response
+from rest_framework.response import Response
+from django.db.models.functions import Coalesce, Cast
+from collections import Counter
 
 from budgetportal.models import ENEData, FinancialYear, MainMenuItem
 from public_entities.models import PublicEntity, PublicEntityExpenditure
@@ -17,7 +19,18 @@ from django.contrib.postgres.search import SearchQuery
 from django.db.models import Count, Q
 from drf_excel.mixins import XLSXFileMixin
 from django.http import StreamingHttpResponse
-from django.db.models import Sum
+
+from django.db.models import (
+    DecimalField,
+    OuterRef,
+    Subquery,
+    Sum,
+    Case,
+    When,
+    IntegerField,
+    F,
+    CharField,
+)
 
 import xlsx_streaming
 
@@ -43,9 +56,7 @@ XLSX_COLUMNS = [
     "name",
     "pfma",
     "functiongroup1",
-    "financialYear",
     "amount"
-
 ]
 
 
@@ -79,116 +90,6 @@ def format_values(value):
     else:
         return f"{format_number(value)}"
 
-# def public_entity_page(
-#     request, financial_year_id, sphere_slug, government_slug, public_entity_slug
-# ):
-    
-#     start_year = financial_year_id.split("-")[0]
-
-#     # Get public entity by public_entity_slug
-#     selected_public_entity = PublicEntity.objects.filter(
-#         slug=public_entity_slug,
-#         financialYear=start_year
-#     ).first()
-#     selected_year = get_object_or_404(FinancialYear, slug=financial_year_id)
-
-#     # Total up public entityies amount
-#     total_amount = 0
-#     for government in (
-#         selected_year.spheres.filter(slug="national").first().governments.all()
-#     ):
-#         for public_entity in government.public_entities.all():
-#             total_amount += public_entity.amount
-
-#     # Total up public entities in same department
-#     total_department_amount = 0
-#     department_public_entities = []
-#     chart_data = []
-    
-#     print('Departments:', selected_public_entity.department)
-#     print('financialYear:', start_year)
-
-#     department_opublic_entities = PublicEntity.objects.filter(department=selected_public_entity.department,  financialYear=start_year)
-#     department_data = ENEData.objects.filter(
-#         department=selected_public_entity.department.name, financialYear=start_year)
-
-#     for dept_total in department_data:
-#         total_department_amount += dept_total.value
-
-#     print('department entities:', len(department_opublic_entities))
-
-#     for department_public_entity in department_opublic_entities:
-        
-#         # total_department_amount += department_public_entity.amount
-#         # print("amount:", total_department_amount)
-#         department_public_entities.append(department_public_entity)
-#         # if department_public_entity is selected_public_entity then color_group = 2 else 1
-#         colour_group = 2 if department_public_entity == selected_public_entity else 1
-#         chart_data.append(
-#             [
-#                 colour_group,
-#                 simplejson.dumps(
-#                     department_public_entity.amount, use_decimal=True),
-#                 department_public_entity.name,
-#                 simplejson.dumps(department_public_entity.id),
-#                 department_public_entity.slug,
-#                 financial_year_id
-#             ]
-#         )
-
-#     # Get public entity expenditure
-#     public_entity_expenditure = PublicEntityExpenditure.objects.filter(
-#         public_entity=selected_public_entity
-#     )
-
-#     # Public entity amount percentage of total department amount
-#     percentage_of_total_department_amount = (
-#         selected_public_entity.amount / total_department_amount
-#     ) * 100
-
-#     # Public entity amount percentage of total amount
-#     percentage_of_total_amount = (
-#         selected_public_entity.amount / total_amount) * 100
-
-#     context = {
-#         "public_entity_id": selected_public_entity.id,
-#         "intro": selected_public_entity.intro,
-#         "name": selected_public_entity.name,
-#         "department": selected_public_entity.department.name,
-#         "department_slug": selected_public_entity.department.slug,
-#         "slug": str(selected_public_entity.slug),
-#         "selected_financial_year": selected_year.slug,
-#         "selected_tab": "public_entities",
-#         "title": "%s expenditure %s  - vulekamali"
-#         % (selected_public_entity.name, selected_year.slug),
-#         "description": "%s public entity: Expenditure data for the %s financial year %s"
-#         % (
-#             selected_public_entity.name,
-#             selected_year.slug,
-#             COMMON_DESCRIPTION_ENDING,
-#         ),
-#         "public_entity": selected_public_entity,
-#         "public_entity_amount": format_values(selected_public_entity.amount),
-#         "total_amount": format_values(total_amount),
-#         "total_department_amount": format_values(total_department_amount),
-#         "percentage_of_total_amount": percentage_of_total_amount,
-#         "percentage_of_total_department_amount": percentage_of_total_department_amount,
-#         "department_public_entities": department_public_entities,
-#         "chart_data": chart_data,
-#         "public_entity_expenditure": public_entity_expenditure,
-#     }
-#     context["navbar"] = MainMenuItem.objects.prefetch_related("children").all()
-#     context["latest_year"] = FinancialYear.get_latest_year().slug
-#     context["global_values"] = read_object_from_yaml(
-#         str(settings.ROOT_DIR.path("_data/global_values.yaml"))
-#     )
-#     context["admin_url"] = reverse(
-#         "admin:budgetportal_department_change", args=(selected_public_entity.pk,)
-#     )
-
-#     return render(request, "public_entity.html", context)
-
-
 def public_entity_page(request, financial_year_id, sphere_slug, government_slug, public_entity_slug):
 
     # Extract fiscal year (e.g. "2025-26" → "2025")
@@ -204,8 +105,6 @@ def public_entity_page(request, financial_year_id, sphere_slug, government_slug,
         .distinct()
         .first()
     )
-
-    print('Selected Public Entity:', selected_public_entity)
 
     selected_year = get_object_or_404(FinancialYear, slug=financial_year_id)
 
@@ -459,64 +358,198 @@ def get_filtered_queryset(queryset, search_text="", filters=None):
     return filtered_queryset
 
 
+class TenPerPagePagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = None
+
+
 class PublicEntityListView(generics.ListAPIView):
     serializer_class = PublicEntitiesSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = TenPerPagePagination
 
-    def get_queryset(self):
+    SORT_ALLOWLIST = {"id", "name", "department", "functiongroup1", "amount"}
+
+    def _start_year(self) -> int:
         financial_year_id = self.kwargs.get("financial_year_id")
-        start_year = financial_year_id.split("-")[0]
+        return int(financial_year_id.split("-")[0])
 
-        expenditures = (
+    def _pe_ids_sq(self, start_year: int):
+        return (
             PublicEntityExpenditure.objects
             .filter(financialYear=start_year)
-            .select_related(
-                "public_entity",
-                "public_entity__department",
-                "public_entity__government",
-                "public_entity__government__sphere"
+            .values("public_entity_id")
+            .distinct()
+        )
+
+    def _amount_sq(self, start_year: int):
+        return (
+            PublicEntityExpenditure.objects
+            .filter(public_entity_id=OuterRef("pk"), financialYear=start_year)
+            .values("public_entity_id")
+            .annotate(total=Sum("amount"))
+            .values("total")[:1]
+        )
+
+    def _get_sort(self, request):
+        sort = (request.GET.get("sort") or "name").strip()
+        direction = (request.GET.get("dir") or "asc").strip().lower()
+        if sort not in self.SORT_ALLOWLIST:
+            sort = "name"
+        if direction not in ("asc", "desc"):
+            direction = "asc"
+        return sort, direction
+
+    def get_queryset(self):
+        start_year = self._start_year()
+        return (
+            PublicEntity.objects
+            .filter(pk__in=Subquery(self._pe_ids_sq(start_year)))
+            .select_related("department", "government", "government__sphere")
+            .order_by("id")
+        )
+
+    def _build_facets_manual(self, base_qs):
+        # IMPORTANT: base_qs must have NO annotations
+        rows = base_qs.values_list("department__name", "functiongroup1")
+
+        dept_counter = Counter()
+        fg_counter = Counter()
+
+        for dept_name, fg in rows:
+            if dept_name:
+                dept_counter[dept_name] += 1
+            if fg:
+                fg_counter[fg] += 1
+
+        return {
+            "department_name": [
+                {"department__name": k, "count": v} for k, v in dept_counter.most_common()
+            ],
+            "functiongroup1": [
+                {"functiongroup1": k, "count": v} for k, v in fg_counter.most_common()
+            ],
+        }
+
+    def list(self, request, *args, **kwargs):
+        start_year = self._start_year()
+        sort, direction = self._get_sort(request)
+        sign = "-" if direction == "desc" else ""
+
+        # 1) base queryset (NO amount annotation)
+        base_qs = (
+            PublicEntity.objects
+            .filter(pk__in=Subquery(self._pe_ids_sq(start_year)))
+            .select_related("department", "government", "government__sphere")
+        )
+
+        # apply search + filters (exclude sort/dir/page)
+        search_text = request.GET.get("q", "")
+        filters = {
+            k: v for k, v in request.GET.items()
+            if k not in ("q", "sort", "dir", "page") and v is not None and str(v).strip() != ""
+        }
+        base_qs = get_filtered_queryset(base_qs, search_text, filters)
+
+        # 2) facets from FULL filtered base_qs (before pagination)
+        facets = self._build_facets_manual(base_qs)
+
+        # 3) count
+        total_count = base_qs.count()
+
+        # 4) build globally ordered ID list (lightweight)
+        if sort == "amount":
+            amount_sq = self._amount_sq(start_year)
+            id_qs = (
+                base_qs.only("id")
+                .annotate(
+                    amount=Coalesce(
+                        Subquery(amount_sq, output_field=DecimalField(
+                            max_digits=20, decimal_places=2)),
+                        Decimal("0"),
+                    )
+                )
+                .order_by(f"{sign}amount", "id")
+                .values_list("id", flat=True)
+            )
+        elif sort == "department":
+            id_qs = (
+                base_qs.only("id")
+                .annotate(_dept=Cast(F("department__name"), output_field=CharField()))
+                .order_by(f"{sign}_dept", "id")
+                .values_list("id", flat=True)
+            )
+        elif sort == "functiongroup1":
+            id_qs = (
+                base_qs.only("id")
+                .annotate(_fg=Cast(F("functiongroup1"), output_field=CharField()))
+                .order_by(f"{sign}_fg", "id")
+                .values_list("id", flat=True)
+            )
+        elif sort == "name":
+            id_qs = (
+                base_qs.only("id")
+                .annotate(_name=Cast(F("name"), output_field=CharField()))
+                .order_by(f"{sign}_name", "id")
+                .values_list("id", flat=True)
+            )
+        else:
+            id_qs = base_qs.only("id").order_by(
+                f"{sign}id").values_list("id", flat=True)
+
+        # 5) manual page slice
+        page_size = 10
+        page_number = int(request.GET.get("page") or 1)
+        page_number = max(page_number, 1)
+        start = (page_number - 1) * page_size
+        end = start + page_size
+        page_ids = list(id_qs[start:end])
+
+        # 6) fetch page items with amount annotation
+        amount_sq = self._amount_sq(start_year)
+        items_qs = (
+            PublicEntity.objects
+            .filter(id__in=page_ids)
+            .select_related("department", "government", "government__sphere")
+            .annotate(
+                amount=Coalesce(
+                    Subquery(amount_sq, output_field=DecimalField(
+                        max_digits=20, decimal_places=2)),
+                    Decimal("0"),
+                )
             )
         )
 
-        public_entity_ids = expenditures.values_list(
-            "public_entity_id", flat=True
+        order_case = Case(
+            *[When(pk=pk, then=pos) for pos, pk in enumerate(page_ids)],
+            output_field=IntegerField(),
         )
+        items_qs = items_qs.order_by(order_case)
 
-        return PublicEntity.objects.filter(id__in=public_entity_ids)
+        serializer = self.get_serializer(items_qs, many=True)
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
+        # 7) build next/previous links
+        base_url = request.build_absolute_uri().split("?")[0]
+        q = request.GET.copy()
 
-        search_text = self.request.GET.get("q", "")
-        filters = {k: v for k, v in request.GET.items() if k != "q"}
+        next_url = None
+        if end < total_count:
+            q["page"] = str(page_number + 1)
+            next_url = f"{base_url}?{q.urlencode()}"
 
-        queryset = get_filtered_queryset(queryset, search_text, filters)
+        prev_url = None
+        if page_number > 1:
+            q["page"] = str(page_number - 1)
+            prev_url = f"{base_url}?{q.urlencode()}"
 
-        facets = self.get_facets(queryset)
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response({
+        return Response({
+            "count": total_count,
+            "next": next_url,
+            "previous": prev_url,
+            "results": {
                 "items": serializer.data,
                 "facets": facets,
-            })
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({
-            "items": serializer.data,
-            "facets": facets,
+            }
         })
-
-    def get_facets(self, qs):
-        def facet_query(field):
-            return qs.values(field).annotate(count=Count(field)).order_by()
-
-        return {
-            "department_name": facet_query("department__name"),
-            "functiongroup1": facet_query("functiongroup1"),
-        }
-
 
 class PublicEntityXLSXListView(XLSXFileMixin, generics.ListAPIView):
     pagination_class = None
@@ -524,34 +557,101 @@ class PublicEntityXLSXListView(XLSXFileMixin, generics.ListAPIView):
     filename = "public-entities.xlsx"
     queryset = PublicEntity.objects.all()
 
-    def get_queryset(self):
-        queryset = PublicEntity.objects.all()
-        financial_year_id = self.kwargs.get("financial_year_id")
+    SORT_ALLOWLIST = {"id", "name", "department", "functiongroup1", "amount"}
 
-        if financial_year_id:
-            start_year = financial_year_id.split("-")[0]
-            queryset = queryset.filter(
-                financialYear=start_year).order_by("-amount")
-        return queryset
+    def _start_year(self) -> int:
+        financial_year_id = self.kwargs.get("financial_year_id")
+        return int(financial_year_id.split("-")[0])
+
+    def _pe_ids_sq(self, start_year: int):
+        return (
+            PublicEntityExpenditure.objects
+            .filter(financialYear=start_year)
+            .values("public_entity_id")
+            .distinct()
+        )
+
+    def _amount_sq(self, start_year: int):
+        return (
+            PublicEntityExpenditure.objects
+            .filter(public_entity_id=OuterRef("pk"), financialYear=start_year)
+            .values("public_entity_id")
+            .annotate(total=Sum("amount"))
+            .values("total")[:1]
+        )
+
+    def _get_sort(self, request):
+        sort = (request.GET.get("sort") or "name").strip()
+        direction = (request.GET.get("dir") or "asc").strip().lower()
+        if sort not in self.SORT_ALLOWLIST:
+            sort = "name"
+        if direction not in ("asc", "desc"):
+            direction = "asc"
+        return sort, direction
+
+    def get_queryset(self):
+        start_year = self._start_year()
+        pe_ids_sq = self._pe_ids_sq(start_year)
+        amount_sq = self._amount_sq(start_year)
+
+        # Base: no join to expenditure table, no duplicates, no distinct needed
+        qs = (
+            PublicEntity.objects
+            .filter(pk__in=Subquery(pe_ids_sq))
+            .select_related(
+                "department",
+                "department__government",
+                "department__government__sphere",
+            )
+            .annotate(
+                amount=Coalesce(
+                    Subquery(amount_sq, output_field=DecimalField(
+                        max_digits=20, decimal_places=2)),
+                    Decimal("0"),
+                )
+            )
+        )
+
+        return qs
 
     def list(self, request, *args, **kwargs):
+        qs = self.filter_queryset(self.get_queryset())
 
-        queryset = self.filter_queryset(self.get_queryset())
+        search_text = request.GET.get("q", "")
+        filters = {k: v for k, v in request.GET.items(
+        ) if k not in ("q", "sort", "dir", "page")}
 
-        search_text = self.request.GET.get("q", "")
+        qs = get_filtered_queryset(qs, search_text, filters)
 
-        filters = {k: v for k, v in request.GET.items() if k != "q"}
-        excel_data = get_filtered_queryset(queryset, search_text, filters)
+        # Sorting for export (SQL Server safe via casts for text-like fields)
+        sort, direction = self._get_sort(request)
+        sign = "-" if direction == "desc" else ""
 
+        if sort == "amount":
+            qs = qs.order_by(f"{sign}amount", "id")
+        elif sort == "department":
+            qs = qs.annotate(_dept=Cast(
+                F("department__name"), output_field=CharField())).order_by(f"{sign}_dept", "id")
+        elif sort == "functiongroup1":
+            qs = qs.annotate(_fg=Cast(
+                F("functiongroup1"), output_field=CharField())).order_by(f"{sign}_fg", "id")
+        elif sort == "name":
+            qs = qs.annotate(_name=Cast(F("name"), output_field=CharField())).order_by(
+                f"{sign}_name", "id")
+        else:
+            qs = qs.order_by(f"{sign}id")
+
+        # Stream export
         with open(self.template_filename, "rb") as template:
             stream = xlsx_streaming.stream_queryset_as_xlsx(
-                self.filter_queryset(excel_data).values_list(*XLSX_COLUMNS),
+                qs.values_list(*XLSX_COLUMNS),
                 xlsx_template=template,
-                batch_size=50,
+                batch_size=200,
             )
+
         response = StreamingHttpResponse(
             stream,
-            content_type="application/vnd.xlsxformats-officedocument.spreadsheetml.sheet",
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
         response["Content-Disposition"] = f"attachment; filename={self.filename}"
         return response
