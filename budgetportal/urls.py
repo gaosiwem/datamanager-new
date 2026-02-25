@@ -87,6 +87,7 @@ urlpatterns = [
 
     url(r"^performance/", include("performance.urls")),
     url(r"^public-entities/", include("public_entities.urls")),
+    url(r"^data_validation/", include("data_validation.urls")),
     
     # Provincial Infrastructure projects
     url(r"^provincial-infrastructure/", include("provincial_infrastructure.urls")),

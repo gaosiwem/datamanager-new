@@ -5,7 +5,8 @@ from import_export.widgets import ForeignKeyWidget
 from tablib import Databook
 from tablib import Dataset
 
-from budgetportal.models import AENEData, DatasetCategory, DatasetUpload, ENEData, ConsolidationData, EPREData, BudgetVSActualNationalData, BudgetVSActualProvincialData,VoteDocumentUpload, Department, VoteDocument, FinancialYear, Sphere, Government
+import budgetportal
+from budgetportal.models import AENEData, DatasetCategory, DatasetUpload, ENEData, ConsolidationData, EPREData, BudgetVSActualNationalData, BudgetVSActualProvincialData, Organisation, VoteDocumentUpload, Department, VoteDocument, FinancialYear, Sphere, Government, Dataset, DatasetResource
 from budgetportal.dataset_uploading import preprocess													
 
 ENE_HEADERS = [
@@ -21,6 +22,7 @@ ENE_HEADERS = [
     "EconomicClassification4",
     "EconomicClassification5",
     "FunctionGroup1",
+    "BudgetYear",
     "FinancialYear",
     "BudgetPhase",
     "Value"
@@ -122,7 +124,7 @@ def import_dataset(obj_id):
                 "subprogNumber", "subprogramme", "economicClassification1",
                 "economicClassification2", "economicClassification3",
                 "economicClassification4", "economicClassification5",
-                "functionGroup1", "financialYear", "budgetPhase", "value"
+                "functionGroup1", "budgetYear", "financialYear", "budgetPhase", "value"
             ],
         },
         "AENE": {
@@ -208,22 +210,96 @@ def import_dataset(obj_id):
         for item in preprocessed_dataset
     ]
 
-    model_class.objects.bulk_create(objects_to_create)
+    financialYear = obj.financialYear.slug.split("-")[0]  # Extract year from slug like "2023-24"
 
-    # Prepare dataset for import-export validation
-    dataset_import = Dataset()
-    if preprocessed_dataset:
-        dataset_import.headers = preprocessed_dataset[0].keys()
-        for row in preprocessed_dataset:
-            dataset_import.append(row.values())
+    model_class.objects.filter(budgetYear=financialYear).delete()
 
-    # Use correct resource dynamically
-    resource = resource_class()
-    result = resource.import_data(dataset_import, dry_run=True)
+    # model_class.objects.bulk_create(objects_to_create)
+
+    # # Prepare dataset for import-export validation
+    # dataset_import = Dataset()
+    # if preprocessed_dataset:
+    #     dataset_import.headers = preprocessed_dataset[0].keys()
+    #     for row in preprocessed_dataset:
+    #         dataset_import.append(row.values())
+
+    # # Use correct resource dynamically
+    # resource = resource_class()
+    # result = resource.import_data(dataset_import, dry_run=True)
     
-    if result.has_errors():
-        print("Import errors found:", result.invalid_rows)
-        return result
+    # if result.has_errors():
+    #     print("Import errors found:", result.invalid_rows)
+    #     return result
+
+    organisation = Organisation.objects.get(id=1)
+    
+
+    if obj.type in ["ENE", "AENE", "Consolidation", "Budget-vs-Actual-National"]:
+        sphere = Sphere.objects.get(name="National", financial_year=obj.financialYear)
+    else:
+        sphere = Sphere.objects.get(name="Provincial", financial_year=obj.financialYear)
+
+    if obj.type == 'ENE':
+        title = 'Estimates of National Expenditure'
+        category = DatasetCategory.objects.get(title=title) 
+        formatted_title = f"{title} {obj.financialYear.slug}"
+        desciption = formatted_title
+        short_description = formatted_title
+    elif obj.type == 'AENE': 
+        title = 'Adjusted Estimates of National Expenditure'
+        category = DatasetCategory.objects.get(title=title)
+        formatted_title = f"{title} {obj.financialYear.slug}"
+        desciption = formatted_title
+        short_description = formatted_title
+    elif obj.type == 'Consolidation': 
+        title = 'Consolidated Expenditure'
+        category = DatasetCategory.objects.get(title=title) 
+        formatted_title = f"{title} {obj.financialYear.slug}"
+        desciption = formatted_title
+        short_description = formatted_title
+    elif obj.type == 'EPRE': 
+        title = 'Estimates of Provincial Revenue and Expenditure'
+        category = DatasetCategory.objects.get(title=title)
+        formatted_title = f"{title} {obj.financialYear.slug}"
+        desciption = formatted_title
+        short_description = formatted_title
+    elif obj.type == 'Budget-vs-Actual-National':
+        title = 'Budgeted vs Actual National Expenditure'
+        category = DatasetCategory.objects.get(title=title)
+        formatted_title = f"{title} {obj.financialYear.slug}"
+        desciption = formatted_title
+        short_description = formatted_title
+    elif obj.type == 'Budget-vs-Actual-Provincial':
+        title = 'Budgeted and Actual Provincial Expenditure'
+        category = DatasetCategory.objects.get(title=title)
+        formatted_title = f"{title} {financialYear.slug}"
+        desciption = formatted_title
+        short_description = formatted_title
+        category = DatasetCategory.objects.get(title='Budgeted and Actual Provincial Expenditure')
+
+    new_dataset = Dataset.objects.create(
+        title=formatted_title,
+        short_description=short_description,
+        description=desciption,
+        organisation=organisation,
+        visibility=True,
+        financial_year=obj.financialYear,
+        sphere=sphere,
+        # government_functions=gov_fn,  # can be None
+        # dimensions=dimension,         # can be None
+        province="South Africa",
+        dataset_category=category,    # optional if you want explicit
+    )
+
+    DatasetResource.objects.create(
+        fileName=title,
+        description=formatted_title,
+        # path=obj.file.path,
+        format="XLSX",
+        dataset=new_dataset,
+        file=obj.file
+    )
+
 
     return resource.import_data(dataset_import, dry_run=False)
 
@@ -514,6 +590,7 @@ class ENEResource(resources.ModelResource):
     economicClassification5 = Field(column_name="EconomicClassification5")
     functionGroup1 = Field(column_name="FunctionGroup1")
     financialYear = Field(column_name="FinancialYear")
+    budgetYear = Field(column_name="BudgetYear")
     budgetPhase = Field(column_name="BudgetPhase")
     value = Field(column_name="Value")    
 

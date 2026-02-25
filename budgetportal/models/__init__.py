@@ -1068,7 +1068,7 @@ class DatasetResource(models.Model):
 
 class DatasetUpload(models.Model):    
     user = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True)
-    file = models.FileField(upload_to=datasets_file_path)
+    file = models.FileField(upload_to=resources_file_path)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
     type = models.CharField(
@@ -1082,6 +1082,10 @@ class DatasetUpload(models.Model):
             ("Consolidation", "Consolidation"),
         ),
     )
+    
+    financialYear = models.ForeignKey(
+        FinancialYear, on_delete=models.CASCADE, related_name="datasetUpload", default=1
+    ) 
 
 class ENEData(models.Model):
     voteNumber = models.IntegerField()
@@ -1096,6 +1100,8 @@ class ENEData(models.Model):
     economicClassification4 = models.CharField(max_length=1024)
     economicClassification5 = models.CharField(max_length=1024)
     functionGroup1 = models.CharField(max_length=1024)
+    budgetYear = models.CharField(
+        max_length=10, default=None, blank=True, null=True)
     financialYear = models.CharField(max_length=1024)
     budgetPhase = models.CharField(max_length=1024)
     value = models.DecimalField(
@@ -1116,6 +1122,8 @@ class AENEData(models.Model):
     economicClassification5 = models.CharField(max_length=1024)
     financialYear = models.CharField(max_length=1024)
     budgetPhase = models.CharField(max_length=1024)
+    budgetYear = models.CharField(
+        max_length=10, default=None, blank=True, null=True)
     amountKind = models.CharField(max_length=1024)
     value = models.DecimalField(
         max_digits=15, decimal_places=2, default=0)
@@ -1126,6 +1134,8 @@ class ConsolidationData(models.Model):
     economicClassification2 = models.CharField(max_length=400)
     economicClassification3 = models.CharField(max_length=400)    
     financialYear = models.CharField(max_length=400)
+    budgetYear = models.CharField(
+        max_length=10, default=None, blank=True, null=True)
     value = models.DecimalField(
         max_digits=15, decimal_places=2, default=0)
 
@@ -1145,6 +1155,8 @@ class EPREData(models.Model):
     economicClassification5 = models.CharField(max_length=400)
     functionGroup1 = models.CharField(max_length=400)
     functionGroup2 = models.CharField(max_length=400)
+    budgetYear = models.CharField(
+        max_length=10, default=None, blank=True, null=True)
     financialYear = models.CharField(max_length=400)
     budgetPhase = models.CharField(max_length=400)
     value = models.DecimalField(
@@ -1165,6 +1177,8 @@ class BudgetVSActualNationalData(models.Model):
     economicClassification4 = models.CharField(max_length=400)
     economicClassification5 = models.CharField(max_length=400)
     functionGroup1 = models.CharField(max_length=400)
+    budgetYear = models.CharField(
+        max_length=10, default=None, blank=True, null=True)
     financialYear = models.CharField(max_length=400)
     budgetPhase = models.CharField(max_length=400)
     amountKind = models.CharField(max_length=400)
@@ -1186,6 +1200,8 @@ class BudgetVSActualProvincialData(models.Model):
     economicClassification4 = models.CharField(max_length=400)
     economicClassification5 = models.CharField(max_length=400)
     functionGroup1 = models.CharField(max_length=400)
+    budgetYear = models.CharField(
+        max_length=10, default=None, blank=True, null=True)
     financialYear = models.CharField(max_length=400)
     budgetPhase = models.CharField(max_length=400)
     amountKind = models.CharField(max_length=400)
