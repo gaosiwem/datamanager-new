@@ -114,18 +114,10 @@ function drawBarGraph(dataset, ctx) {
         ],
       },
       tooltips: {
+        ...getSharedTooltipTheme(),
         callbacks: {
           label: function(tooltipItem) {
-            var value = tooltipItem.xLabel;
-            if (value >= 1e12)
-              return "R " + (value / 1e12).toFixed(2) + " Trillion";
-            if (value >= 1e9)
-              return "R " + (value / 1e9).toFixed(2) + " Billion";
-            if (value >= 1e6)
-              return "R " + (value / 1e6).toFixed(2) + " Million";
-            if (value >= 1e3)
-              return "R " + (value / 1e3).toFixed(2) + " Thousand";
-            return "R " + value.toLocaleString();
+            return formatTooltipCurrency(tooltipItem.xLabel);
           },
         },
       },
@@ -198,18 +190,10 @@ function drawLineChart(){
           },
 
           tooltips: {
+            ...getSharedTooltipTheme(),
             callbacks: {
               label: function(tooltipItem, data) {
-                var value = tooltipItem.yLabel;
-                if (value >= 1e12)
-                  return "R " + (value / 1e12).toFixed(2) + " Trillion";
-                if (value >= 1e9)
-                  return "R " + (value / 1e9).toFixed(2) + " Billion";
-                if (value >= 1e6)
-                  return "R " + (value / 1e6).toFixed(2) + " Million";
-                if (value >= 1e3)
-                  return "R " + (value / 1e3).toFixed(2) + " Thousand";
-                return "R " + value.toLocaleString();
+                return formatTooltipCurrency(tooltipItem.yLabel);
               },
             },
           },
@@ -320,6 +304,87 @@ function formatYAxis(value) {
   } else {
     return "R" + value.toLocaleString();
   }
+}
+
+function formatTooltipCurrency(value) {
+  const numericValue = Number(value);
+  const absoluteValue = Math.abs(numericValue);
+
+  if (!Number.isFinite(numericValue)) {
+    return value;
+  }
+
+  if (absoluteValue >= 1e12) {
+    return `R ${Math.round(numericValue / 1e12).toLocaleString()} trillion`;
+  }
+
+  if (absoluteValue >= 1e9) {
+    return `R ${Math.round(numericValue / 1e9).toLocaleString()} billion`;
+  }
+
+  if (absoluteValue >= 1e6) {
+    return `R ${Math.round(numericValue / 1e6).toLocaleString()} million`;
+  }
+
+  if (absoluteValue >= 1e3) {
+    return `R ${Math.round(numericValue / 1e3).toLocaleString()} thousand`;
+  }
+
+  return `R ${Math.round(numericValue).toLocaleString()}`;
+}
+
+function getSharedTooltipTheme() {
+  return {
+    enabled: false,
+    custom: createDepartmentTooltip,
+    backgroundColor: "#fff",
+    titleFontColor: "#3f3f3f",
+    bodyFontColor: "#3f3f3f",
+    borderColor: "#d2d2d2",
+    borderWidth: 1,
+    xPadding: 12,
+    yPadding: 10,
+    caretPadding: 10,
+    cornerRadius: 10,
+    displayColors: false,
+    titleMarginBottom: 2,
+    bodySpacing: 2,
+    titleFontFamily: "Roboto, sans-serif",
+    bodyFontFamily: "Roboto, sans-serif",
+    titleFontStyle: "bold",
+    bodyFontStyle: "normal",
+  };
+}
+
+function createDepartmentTooltip(tooltipModel) {
+  const chart = this._chart;
+  const canvas = chart.canvas;
+  let tooltipEl = document.getElementById(`${canvas.id}-tooltip`);
+
+  if (!tooltipEl) {
+    tooltipEl = document.createElement("div");
+    tooltipEl.id = `${canvas.id}-tooltip`;
+    tooltipEl.className = "tooltip DepartmentGraphTooltip BudgetSummaryDetailTooltip";
+    canvas.parentNode.appendChild(tooltipEl);
+  }
+
+  if (tooltipModel.opacity === 0) {
+    tooltipEl.style.display = "none";
+    return;
+  }
+
+  const title = tooltipModel.title && tooltipModel.title.length
+    ? `<strong>${tooltipModel.title.join(" ")}</strong>`
+    : "";
+  const body = tooltipModel.body
+    ? tooltipModel.body.map((item) => item.lines.join("<br>")).join("<br>")
+    : "";
+  const position = canvas.getBoundingClientRect();
+
+  tooltipEl.innerHTML = title && body ? `${title}<br>${body}` : title || body;
+  tooltipEl.style.display = "block";
+  tooltipEl.style.left = `${position.left + window.pageXOffset + tooltipModel.caretX + 10}px`;
+  tooltipEl.style.top = `${position.top + window.pageYOffset + tooltipModel.caretY - 10}px`;
 }
 
 // ✅ Tooltip Formatter
