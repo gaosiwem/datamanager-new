@@ -6,7 +6,7 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block auth_intro %}
-{% with redirect_target=redirect_field_value|default:request.GET.next|default:'' %}
+{% with redirect_target=redirect_field_value|default:'' %}
 {% with is_admin_login=redirect_target|is_admin_login_target %}
 <p class="AuthEyebrow">{% if is_admin_login %}Staff access{% else %}Vulekamali account{% endif %}</p>
 <h1 class="Page-mainHeading">{% if is_admin_login %}{% trans "Admin sign in" %}{% else %}{% trans "Welcome back" %}{% endif %}</h1>
@@ -28,7 +28,7 @@
 
 {% block content %}
 {% get_providers as socialaccount_providers %}
-{% with redirect_target=redirect_field_value|default:request.GET.next|default:'' %}
+{% with redirect_target=redirect_field_value|default:'' %}
 {% with is_admin_login=redirect_target|is_admin_login_target %}
 <div class="Card">
   <div class="Card-content">
