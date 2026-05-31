@@ -32,7 +32,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
-    "bfj": "^9.1.2",
+    "bfj": "^7.0.2",
     "browserslist": "^2.4.0",
     "classlist-polyfill": "^1.2.0",
     "clean-webpack-plugin": "^0.1.17",
@@ -157,5 +157,10 @@
         "transforms": "./assets/js/webflow/import.js"
       }
     ]
+  },
+   "resolutions": {
+    "bfj": "7.0.2",
+    "glob": "8.1.0",
+    "minimatch": "6.1.6"
   }
 }

@@ -188,22 +188,16 @@ const buildHeading = (year, tab, count, updateTab) => {
 
 
 export default function LandingLayout({ items = {}, year, error, updateTab }) {
-  const { videos, glossary, departments, contributed, datasets } = items || {};
+  const {
+    videos,
+    glossary,
+    departments = { count: 0, items: [], otherYears: [] },
+    datasets = { count: 0, items: [], otherYears: [] },
+  } = items || {};
 
   return (
     <div>
       <StaticContent {...{ videos, glossary }} />
-
-      <div className="u-marginBottom20">
-        {buildHeading(year, 'contributed', contributed.count, updateTab)}
-        <Section
-          type="grey"
-          items={contributed.items || []}
-          count={contributed.count}
-          tab="contributed"
-          otherYears={[]}
-        />
-      </div>
 
       <div className="u-marginBottom20">
         {buildHeading(year, 'departments', departments.count, updateTab)}

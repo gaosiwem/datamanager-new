@@ -1,156 +1,258 @@
+document.addEventListener("DOMContentLoaded", function() {
+  const PHASE_METADATA = {
+    "Main appropriation": {
+      rank: 1,
+      className: "main-appropriation",
+      seriesType: "planned",
+    },
+    "Adjusted appropriation": {
+      rank: 2,
+      className: "adjusted-appropriation",
+      seriesType: "planned",
+    },
+    "Audited Outcome": {
+      rank: 3,
+      className: "audited-outcome",
+      seriesType: "historical",
+    },
+  };
+  const historyData = document.getElementById("historyBar");
+  const historyChart = d3.select("#historyBarGraph");
+  const tooltip = d3.select("#historyBarTooltip");
+  const phaseList = document.getElementById("expenditurePhaseList");
+  const chartCard = document.querySelector(".ExpenditureChartCard");
+  let resizeTimeout;
+  let chartData = [];
 
-let tooltip;
-document.addEventListener("DOMContentLoaded", function () {
-    let historyData = document.getElementById("historyBar");
-    let dataset;
+  if (!historyData || !chartCard || historyChart.empty()) {
+    return;
+  }
 
-    if (historyData) {
-        try {
-            dataset = JSON.parse(historyData.textContent);               
-
-            dataset.children = dataset.children.map(d => {
-                let year = parseInt(d.Name || d.name); // Convert year to an integer
-                return {
-                    year: formatFinancialYear(year), // Convert year to "YYYY-YY" format
-                    value: d.Count || d.value,
-                    budgetPhase: d.BudgetPhase
-                };
-            });                
-
-            dataset.children.forEach(d => {
-                d.formatted_value = formatValue(d.value); // Format values
-            });                
-
-            populateBudgetPhase(dataset.children)
-
-            // Set dimensions
-            const margin = { top: 30, right: 50, bottom: 50, left: 80 },
-                width = 700 - margin.left - margin.right,
-                height = 400 - margin.top - margin.bottom;
-
-            // Create the SVG container
-            const svg = d3.select("#historyBarGraph")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-            // Create scales
-            const xScale = d3.scaleBand()
-                .domain(dataset.children.map(d => d.year))
-                .range([0, width])
-                .padding(0.5); 
-
-            const yScale = d3.scaleLinear()
-                .domain([0, d3.max(dataset.children, d => d.value) * 1.1])
-                .nice()
-                .range([height, 0]);
-
-            // Add X axis
-            svg.append("g")
-                .attr("class", "axis x-axis")
-                .attr("transform", `translate(0, ${height})`)
-                .call(d3.axisBottom(xScale));
-
-            // Add Y axis with correct "B" for billions
-            svg.append("g")
-                .attr("class", "axis y-axis")
-                .call(d3.axisLeft(yScale).tickFormat(d => formatYAxis(d)));
-
-            // Tooltip
-            const tooltip = d3.select(".tooltip");
-
-            // Create bars
-            svg
-              .selectAll(".barChart")
-              .data(dataset.children)
-              .enter()
-              .append("rect")
-              .attr("class", "barChart")
-              .attr("x", (d) => xScale(d.year))
-              .attr("y", (d) => yScale(d.value))
-              .attr("width", xScale.bandwidth())
-              .attr("height", (d) => height - yScale(d.value))
-              .attr("fill", "steelblue")
-              .on("mouseover", function(event, d) {
-
-                const [relX, relY] = d3.pointer(event, svg.node());
-                const svgRect = svg.node().getBoundingClientRect();
-
-                // Calculate absolute position on the page (viewport position + scroll offset).
-                // This is robust even if event.pageX/Y or clientX/Y are unreliable directly.
-                // const xPos = svgRect.left + relX + window.scrollX;
-                // const yPos = svgRect.top + relY + window.scrollY;
-                // Show tooltip on mouseover
-                tooltip
-                  .style("display", "block")
-                  .html(
-                    `<strong>${event.budgetPhase}</strong><br>Value: ${event.value}<br>Year: ${event.year}`
-                  ) // Format value in tooltip
-                  .style("left", `${d3.event.pageX + 10}px`)
-                  .style("top", `${d3.event.pageY - 10}px`);
-              })
-              .on("mouseout", () => {
-                // Hide tooltip on mouseout
-                tooltip.style("display", "none");
-              });
-
-        } catch (error) {
-            console.error("JSON Parse Error:", error);
-            dataset = { name: "root", children: [{ name: "No Data", value: 0 }] };
-        }
-    } else {
-        console.error("Treemap data not found!");
-        dataset = { name: "root", children: [{ name: "No Data", value: 0 }] };
-    }
-});
-
-// ✅ Custom Y-axis Formatter (Shows "B" for Billions)
-function formatYAxis(value) {
-        if (value >= 1e12) {
-            return `R ${(value / 1e12).toFixed(1).toLocaleString()} trillion`; // Trillions
-        } else if (value >= 1e9) {
-            return `R ${(value / 1e9).toFixed(1).toLocaleString()} billion`; // Billions
-        } else if (value >= 1e6) {
-            return `R ${(value / 1e6).toFixed(1).toLocaleString()} million`; // million
-        } else if (value >= 1e3) {
-            return `R ${(value / 1e3).toFixed(1).toLocaleString()} thousand`; // thousand
-        } else {
-            return "R" + value.toLocaleString(); // Default formatting
-        }
+  function formatFinancialYear(year) {
+    if (!year || isNaN(year)) {
+      return year;
     }
 
-// ✅ Tooltip Formatter
-function formatValue(value) {
-    return formatYAxis(value);
-}
-
-//Function to Format Year as "YYYY-YY"
-function formatFinancialYear(year) {
-    if(!year || isNaN(year)) return year;
     return `${year}-${(year + 1).toString().slice(-2)}`;
-}
+  }
 
-function populateBudgetPhase(dataset) {
-    const tableBody = document.querySelector("#expenditureTable tbody");
+  function formatCurrencyValue(value) {
+    const numericValue = Number(value);
+    const absoluteValue = Math.abs(numericValue);
 
-    // Loop through items.real and create table rows
-    dataset.forEach(item => {
-        const row = document.createElement("tr");
+    if (absoluteValue >= 1e12) return `R ${Math.round(numericValue / 1e12).toLocaleString()} trillion`;
+    if (absoluteValue >= 1e9) return `R ${Math.round(numericValue / 1e9).toLocaleString()} billion`;
+    if (absoluteValue >= 1e6) return `R ${Math.round(numericValue / 1e6).toLocaleString()} million`;
+    if (absoluteValue >= 1e3) return `R ${Math.round(numericValue / 1e3).toLocaleString()} thousand`;
+    return `R ${Math.round(numericValue).toLocaleString()}`;
+  }
 
-        // Create financial year cell
-        const yearCell = document.createElement("td");
-        yearCell.classList.add("ExpenditureSection-cell");
-        yearCell.textContent = item.year;
-        row.appendChild(yearCell);
+  function formatGraphCurrency(value) {
+    return formatCurrencyValue(value);
+  }
 
-        // Create phase cell
-        const phaseCell = document.createElement("td");
-        phaseCell.classList.add("ExpenditureSection-cell");
-        phaseCell.textContent = item.budgetPhase;
-        row.appendChild(phaseCell);
+  function getPhaseMetadata(budgetPhase) {
+    return (
+      PHASE_METADATA[budgetPhase] || {
+        rank: 99,
+        className: String(budgetPhase || "unknown")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, ""),
+        seriesType: "historical",
+      }
+    );
+  }
 
-        // Append row to table body
-        tableBody.appendChild(row);
+  function normaliseDataset(rawDataset) {
+    return (rawDataset.children || [])
+      .map((item) => {
+        const year = parseInt(item.Name || item.name, 10);
+        const budgetPhase = item.BudgetPhase || item.budgetPhase || "";
+        const phaseMetadata = getPhaseMetadata(budgetPhase);
+        const seriesType = item.SeriesType || phaseMetadata.seriesType;
+        const value = Number(item.Count || item.value || 0);
+
+        return {
+          year,
+          phaseRank: phaseMetadata.rank,
+          phaseClassName: phaseMetadata.className,
+          yearLabel: formatFinancialYear(year),
+          value,
+          budgetPhase,
+          seriesType,
+          formattedValue: formatCurrencyValue(value),
+          compactValue: formatGraphCurrency(value),
+        };
+      })
+      .filter((item) => item.year && item.value >= 0)
+      .sort((left, right) => {
+        if (left.year !== right.year) {
+          return left.year - right.year;
+        }
+
+        return left.phaseRank - right.phaseRank;
+      });
+  }
+
+  function populatePhaseList(data) {
+    if (!phaseList) {
+      return;
+    }
+
+    phaseList.innerHTML = "";
+
+    data.forEach((item) => {
+      const phaseItem = document.createElement("div");
+      phaseItem.className = `ExpenditurePhaseItem ExpenditurePhaseItem--${item.phaseClassName}`;
+
+      const yearNode = document.createElement("span");
+      yearNode.className = "ExpenditurePhaseYear";
+      yearNode.textContent = item.yearLabel;
+
+      const phaseNode = document.createElement("span");
+      phaseNode.className = "ExpenditurePhaseLabel";
+      phaseNode.textContent = item.budgetPhase;
+
+      phaseItem.appendChild(yearNode);
+      phaseItem.appendChild(phaseNode);
+      phaseList.appendChild(phaseItem);
     });
-}
+  }
+
+  function renderEmptyState(message, hint) {
+    const width = Math.max(chartCard.clientWidth - 32, 320);
+    const height = 280;
+
+    historyChart.selectAll("*").remove();
+    historyChart
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("width", width)
+      .attr("height", height)
+      .attr("preserveAspectRatio", "xMidYMid meet");
+
+    historyChart
+      .append("text")
+      .attr("class", "ExpenditureEmptyState")
+      .attr("x", width / 2)
+      .attr("y", height / 2 - 10)
+      .attr("text-anchor", "middle")
+      .text(message);
+
+    historyChart
+      .append("text")
+      .attr("class", "ExpenditureEmptyHint")
+      .attr("x", width / 2)
+      .attr("y", height / 2 + 18)
+      .attr("text-anchor", "middle")
+      .text(hint);
+  }
+
+  function renderChart(data) {
+    if (!data.length) {
+      renderEmptyState("No expenditure data available", "Please try again later.");
+      return;
+    }
+
+    const width = Math.max(chartCard.clientWidth - 32, 320);
+    const height = width >= 960 ? 420 : width >= 700 ? 380 : 340;
+    const margin = {
+      top: 24,
+      right: width >= 700 ? 20 : 14,
+      bottom: 56,
+      left: width >= 700 ? 124 : 104,
+    };
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+
+    historyChart.selectAll("*").remove();
+    historyChart
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("width", width)
+      .attr("height", height)
+      .attr("preserveAspectRatio", "xMidYMid meet");
+
+    const svg = historyChart
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    const xScale = d3
+      .scaleBand()
+      .domain(data.map((item) => item.yearLabel))
+      .range([0, innerWidth])
+      .padding(width >= 700 ? 0.38 : 0.28);
+
+    const yScale = d3
+      .scaleLinear()
+      .domain([0, (d3.max(data, (item) => item.value) || 0) * 1.12])
+      .nice()
+      .range([innerHeight, 0]);
+
+    svg
+      .append("g")
+      .attr("class", "ExpenditureGrid")
+      .call(
+        d3
+          .axisLeft(yScale)
+          .ticks(width >= 700 ? 5 : 4)
+          .tickSize(-innerWidth)
+          .tickFormat("")
+      );
+
+    svg
+      .append("g")
+      .attr("class", "ExpenditureAxis ExpenditureAxis--y")
+      .call(
+        d3.axisLeft(yScale).ticks(width >= 700 ? 5 : 4).tickFormat((value) => formatGraphCurrency(value))
+      );
+
+    svg
+      .append("g")
+      .attr("class", "ExpenditureAxis ExpenditureAxis--x")
+      .attr("transform", `translate(0, ${innerHeight})`)
+      .call(d3.axisBottom(xScale));
+
+    const bars = svg
+      .selectAll(".ExpenditureBar")
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("class", (item) => `ExpenditureBar ExpenditureBar--${item.phaseClassName}`)
+      .attr("x", (item) => xScale(item.yearLabel))
+      .attr("y", (item) => yScale(item.value))
+      .attr("width", xScale.bandwidth())
+      .attr("height", (item) => innerHeight - yScale(item.value))
+      .attr("rx", 10)
+      .attr("ry", 10)
+      .on("mouseover", function(item) {
+        tooltip
+          .style("display", "block")
+          .html(
+            `<strong>${item.yearLabel}</strong><br>${item.budgetPhase}<br>${item.formattedValue}`
+          )
+          .style("left", `${d3.event.pageX + 12}px`)
+          .style("top", `${d3.event.pageY - 12}px`);
+      })
+      .on("mouseout", function() {
+        tooltip.style("display", "none");
+      });
+
+    bars.raise();
+  }
+
+  try {
+    chartData = normaliseDataset(JSON.parse(historyData.textContent));
+    populatePhaseList(chartData);
+    renderChart(chartData);
+  } catch (error) {
+    console.error("Historical expenditure chart parse error:", error);
+    renderEmptyState("Unable to load chart", "Please try again in a moment.");
+  }
+
+  window.addEventListener("resize", function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+      renderChart(chartData);
+    }, 150);
+  });
+});

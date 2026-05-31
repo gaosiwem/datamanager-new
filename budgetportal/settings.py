@@ -32,8 +32,14 @@ USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
 DJANGO_CSRF_TRUSTED_ORIGINS = "https://vulekamali.gov.za/"
 
-ALLOWED_HOSTS = ["127.0.0.1", "10.131.171.115",
-                 "localhost", "vulekamali.gov.za"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "10.131.171.115",
+    "localhost",
+    "app",
+    "host.docker.internal",
+    "vulekamali.gov.za",
+]
 # ALLOWED_HOSTS = ["*"]
 
 
@@ -80,7 +86,31 @@ INSTALLED_APPS = [
     "rest_framework",
     "adminsortable",
     "ckeditor",
+    "haystack",
 ]
+
+MARKDOWNIFY_WHITELIST_TAGS = [
+    "a",
+    "blockquote",
+    "br",
+    "em",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "hr",
+    "li",
+    "ol",
+    "p",
+    "strong",
+    "ul",
+]
+
+MARKDOWNIFY_WHITELIST_ATTRS = {
+    "a": ["href", "title", "rel", "target"],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -207,13 +237,11 @@ DATABASES = {
         'NAME': 'budgetportal',
         'USER': 'sa',
         'PASSWORD': '1StrongPwd!!',
-        'HOST': 'datamanager-new-sqlserver-1',
+        'HOST': os.environ.get('DB_HOST', 'sqlserver'),
         'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-            'Encrypt': 'yes',  # Enable encryption
-            'TrustServerCertificate': 'no',  # Require valid certificate
-            'ssl_ca': '/var/opt/mssql/mssql.pem',  # Path to the certificate
+            'driver': 'ODBC Driver 18 for SQL Server',
+            "extra_params": "TrustServerCertificate=yes;Encrypt=no"
         },
     }
 }

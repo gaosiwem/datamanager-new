@@ -12,7 +12,8 @@
   }
 
   &.is-open {
-    max-height: 100%;
+    max-height: none;
+    overflow: visible;
   }
 }
 

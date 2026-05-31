@@ -2,22 +2,24 @@ import React from 'react';
 import getLandingResults from './getLandingResults.js';
 import getFacetResults from './getFacetResults.js';
 import SearchPage from './../presentation/SearchPage.jsx';
-import getCkanUrl from './../../../../utilities/config/siteConfig.js';
 
+const VALID_TABS = ['all', 'departments', 'datasets'];
+
+const normaliseTab = view => (VALID_TABS.includes(view) ? view : 'all');
 
 export default class SearchPageContainer extends React.Component {
   constructor(props) {
     super(props);
     const { view } = this.props;
+    const tab = normaliseTab(view || 'all');
 
     this.state = {
-      tab: view || 'all',
+      tab,
       items: {},
       loading: true,
       error: false,
       loadingPage: false,
       page: 1,
-      ckanUrl: getCkanUrl(),
     };
 
     this.static = {
@@ -32,24 +34,29 @@ export default class SearchPageContainer extends React.Component {
 
   componentWillMount() {
     const { search: phrase, view = 'all', year } = this.props;
+    const tab = normaliseTab(view);
 
     this.setState({
       loading: true,
-      tab: view,
+      tab,
+      error: false,
     });
 
-    if (view === 'all') {
-      const callbackWrap = () => getLandingResults(this.state.ckanUrl, phrase, year);
-      return this.getNewResults(phrase, view, callbackWrap);
-    }
-
-    const callbackWrap = () => getFacetResults(this.state.ckanUrl, phrase, view, 0, year);
-    return this.getNewResults(phrase, view, callbackWrap);
+    return this.getNewResults(() => this.getTabResults(phrase, tab, year));
   }
 
 
-  getNewResults(phrase, newTab, callback) {
-    if (this.static.currentFetch && this.static.currentFetch.token.active) {
+  getTabResults(phrase, tab, year, start = 0) {
+    if (tab === 'all') {
+      return getLandingResults(phrase, year);
+    }
+
+    return getFacetResults(phrase, tab, start, year);
+  }
+
+
+  getNewResults(callback) {
+    if (this.static.currentFetch && !this.static.currentFetch.token.cancelled) {
       this.static.currentFetch.token.cancel();
     }
 
@@ -58,6 +65,7 @@ export default class SearchPageContainer extends React.Component {
     this.static.currentFetch.request
       .then(items => this.setState({
         items,
+        error: false,
         loading: false,
       }))
       .catch((err) => {
@@ -74,27 +82,28 @@ export default class SearchPageContainer extends React.Component {
     const { tab, page, items } = this.state;
     const { search: phrase, year } = this.props;
 
-    if (this.static.currentFetch && this.static.currentFetch.token.active) {
+    if (this.static.currentFetch && !this.static.currentFetch.token.cancelled) {
       this.static.currentFetch.token.cancel();
     }
 
-    this.static.currentFetch = getFacetResults(this.state.ckanUrl, phrase, tab, page * 5, year);
+    this.static.currentFetch = this.getTabResults(phrase, tab, year, page * 5);
 
     this.static.currentFetch.request
       .then((data) => {
-        const newTab = {
-          ...items,
+        const mergedTab = {
+          ...items[tab],
           items: [
-            ...items[tab].items,
-            ...data[tab].items,
+            ...(items[tab].items || []),
+            ...(data[tab].items || []),
           ],
         };
 
         this.setState({
           page: page + 1,
           items: {
-            [tab]: newTab,
-            count: items.count,
+            ...items,
+            [tab]: mergedTab,
+            count: data.count,
           },
         });
       })
@@ -110,27 +119,23 @@ export default class SearchPageContainer extends React.Component {
 
   updateTab(newTab, scroll) {
     const { search: phrase, year, root } = this.props;
-    const { tab } = this.state;
+    const nextTab = normaliseTab(newTab);
 
     this.setState({
-      tab: newTab,
+      tab: nextTab,
       loading: true,
       page: 1,
       items: null,
+      error: false,
     });
 
     if (scroll) {
       root.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    history.replaceState({}, '', `/${year}/search-result?search=${encodeURI(phrase)}&view=${newTab}`);
+    const baseUrl = `/${year}/search-result?search=${encodeURI(phrase)}`;
+    history.replaceState({}, '', nextTab === 'all' ? baseUrl : `${baseUrl}&view=${nextTab}`);
 
-    if (newTab === 'all') {
-      const callbackWrap = () => getLandingResults(this.state.ckanUrl, phrase, year);
-      return this.getNewResults(phrase, newTab, callbackWrap);
-    }
-
-    const callbackWrap = () => getFacetResults(this.state.ckanUrl, phrase, newTab, 0, year);
-    return this.getNewResults(phrase, newTab, callbackWrap);
+    return this.getNewResults(() => this.getTabResults(phrase, nextTab, year));
   }
 
 

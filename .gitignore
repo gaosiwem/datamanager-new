@@ -36,3 +36,12 @@ dbdump
 .env
 /*.csv
 *.sql
+*.png
+*.md
+/media/resources/*.xlsx
+/media/resources/*.csv
+/media/datasets/*.csv
+/media/datasets/*.xlsx
+*.lock
+*.yml
+Dockerfile

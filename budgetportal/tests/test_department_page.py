@@ -147,6 +147,30 @@ class DepartmentPageTestCase(TestCase):
         self.assertContains(response, "Data not available")
         self.assertNotContains(response, self.dataset_year_note)
 
+    def test_science_technology_and_innovation_redirects_to_current_slug(self):
+        south_africa = Government.objects.get(
+            sphere__financial_year__slug="2018-19",
+            sphere__slug="national",
+            slug="south-africa",
+        )
+        Department.objects.create(
+            government=south_africa,
+            name="Science and Innovation",
+            vote_number=35,
+            intro="",
+        )
+
+        c = Client()
+        response = c.get(
+            "/2018-19/national/departments/Science-Technology-and-Innovation/"
+        )
+
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(
+            response["Location"],
+            "/2018-19/national/departments/science-and-innovation",
+        )
+
     def test_budget_dataset_available(self):
         # mock get dataset to return mock dataset which includes opn_spending _api mocks
         mock_dataset = MagicMock()

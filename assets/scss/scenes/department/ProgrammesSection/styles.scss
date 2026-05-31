@@ -13,11 +13,11 @@
   padding-bottom: 1rem;
 
   @media screen and (min-width: 1000px) {
-    width: 43%;
-    padding-right: 1rem;
+    width: 38%;
+    padding-right: 1.25rem;
 
     &--right {
-      width: 50%;
+      width: 58%;
     }
   }
 
@@ -48,7 +48,7 @@
 }
 
 @media only screen and (max-width: 991px) {
-  .treemapContainer {
+  .ProgrammesSection .treemapContainer {
       position: relative;
       left: 70px;
     }
@@ -56,7 +56,7 @@
 
 @media only screen and (max-width: 767px) {
 
-  .treemapContainer {
+  .ProgrammesSection .treemapContainer {
     position:relative;
     left: 1px;
   }

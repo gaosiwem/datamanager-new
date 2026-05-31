@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.test import TestCase
+from budgetportal.models import InfraProject
+from django.test import SimpleTestCase
 
-# Create your tests here.
+from provincial_infrastructure.views import InfraProjectSearchView
+
+
+class InfraProjectSearchViewTestCase(SimpleTestCase):
+    def test_search_view_is_scoped_to_infrastructure_projects(self):
+        self.assertEqual(InfraProjectSearchView.index_models, [InfraProject])

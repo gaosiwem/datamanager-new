@@ -1,9 +1,11 @@
 import os
+from tempfile import NamedTemporaryFile
 
 from allauth.account.models import EmailAddress
 from budgetportal.models import Department, FinancialYear, Government, Sphere
 from budgetportal.tests.helpers import BaseSeleniumTestCase
 from django.contrib.auth.models import User
+from openpyxl import Workbook
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -43,8 +45,53 @@ class AdminDepartmentUploadTest(BaseSeleniumTestCase):
 
         super(AdminDepartmentUploadTest, self).setUp()
 
-    def test_upload_csv_for_national_sphere(self):
-        filename = "budgetportal/tests/test_data/test_management_commands_national_departments.csv"
+    def create_departments_xlsx(self):
+        workbook = Workbook()
+        worksheet = workbook.active
+        worksheet.append(
+            [
+                "government",
+                "department_name",
+                "vote_number",
+                "is_vote_primary",
+                "combined",
+                "website_url",
+            ]
+        )
+        worksheet.append(
+            [
+                "South Africa",
+                "The Presidency",
+                1,
+                True,
+                (
+                    "Facilitate a common programme towards\n"
+                    "To serve the president in the execution of his"
+                ),
+                "www.thepresidency.gov.za",
+            ]
+        )
+        worksheet.append(
+            [
+                "South Africa",
+                "Parliament",
+                2,
+                True,
+                (
+                    "Provide the support services required by Parliament\n"
+                    "These are aligned to Parliament's strategic objectives"
+                ),
+                "www.parliament.gov.za",
+            ]
+        )
+
+        xlsx_file = NamedTemporaryFile(delete=False, suffix=".xlsx")
+        xlsx_file.close()
+        workbook.save(xlsx_file.name)
+        return xlsx_file.name
+
+    def test_upload_excel_for_national_sphere(self):
+        filename = self.create_departments_xlsx()
 
         selenium = self.selenium
 
@@ -67,22 +114,25 @@ class AdminDepartmentUploadTest(BaseSeleniumTestCase):
         file_import = selenium.find_element_by_id("id_import_file")
         sphere_select = Select(selenium.find_element_by_id("id_sphere"))
 
-        file_import.send_keys(os.path.abspath(filename))
-        sphere_select.select_by_value(str(self.national_sphere.id))
+        try:
+            file_import.send_keys(os.path.abspath(filename))
+            sphere_select.select_by_value(str(self.national_sphere.id))
 
-        selenium.find_element_by_css_selector('input[type="submit"]').click()
+            selenium.find_element_by_css_selector('input[type="submit"]').click()
 
-        timeout = 2
-        WebDriverWait(selenium, timeout).until(
-            lambda driver: selenium.find_element_by_name("confirm")
-        )
+            timeout = 2
+            WebDriverWait(selenium, timeout).until(
+                lambda driver: selenium.find_element_by_name("confirm")
+            )
 
-        selenium.find_element_by_name("confirm").click()
+            selenium.find_element_by_name("confirm").click()
 
-        timeout = 2
-        WebDriverWait(selenium, timeout).until(
-            lambda driver: selenium.find_element_by_class_name("success")
-        )
+            timeout = 2
+            WebDriverWait(selenium, timeout).until(
+                lambda driver: selenium.find_element_by_class_name("success")
+            )
+        finally:
+            os.unlink(filename)
 
         # Check that the departments were created
 

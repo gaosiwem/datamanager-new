@@ -1,119 +1,195 @@
 .treemapWrapper {
-  display: flex; /* Use flexbox to align items horizontally */
-  justify-content: space-around; /* Evenly space treemaps */
-  align-items: flex-start; /* Align treemaps at the top */
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
   flex-wrap: wrap;
+  width: 100%;
+  min-width: 0;
 }
 
 .treemapContainer {
-  -ms-flex: 1 1 0%;
-  flex: 1;
-    /* Allow equal distribution of space */
-  min-width: 300px;
-  /* Minimum width before containers wrap */
-  height: 500px;
-
-  overflow: hidden;
-  /* Ensures SVG content stays within bounds */
+  flex: 1 1 360px;
+  min-width: 0;
+  min-height: 600px;
   display: flex;
-
-  -ms-flex-direction: column;
   flex-direction: column;
+  gap: 12px;
+  padding: 6px 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
 
-  /* Center contents horizontally */
-  padding-bottom: 10px;
-  /* Align text within the container to the start */
+.treemapContainer + .treemapContainer {
+  border-left: 1px solid #d2d2d2;
+  padding-left: 24px;
 }
 
 .treemapContainer label {
   font-family: Roboto, sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  background: #000; 
-  color:#fff; 
-  width: fit-content; 
-  padding: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: #3f3f3f;
+  color: #fff;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
 }
 
- /* Styles for the programme/sub-programme name paragraph */
- .treemapContainer p:nth-child(2) {
-   font-family: Roboto, sans-serif;
-   font-size: 12px;
-   margin: 0;
-   /* Remove default paragraph margins */
-   padding: 2px 0;
-   /* Small vertical padding */
- }
+.treemapPanelHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
 
- /* Styles for the programme/sub-programme amount paragraph */
- .treemapContainer p:nth-child(3) {
-   font-family: Roboto, sans-serif;
-   font-size: 14px;
-   font-weight: bold;
-   margin: 0;
-   /* Remove default paragraph margins */
-   padding-bottom: 5px;
-   /* Space below the amount */
- }
+.treemapSummary {
+  background: #f5f5f5;
+  border: solid 1px #d2d2d2;
+  border-radius: 16px;
+  padding: 12px 14px;
+}
 
- /* Styles for the div that will contain the D3.js generated SVG */
- .treemap {
-   width: 100%;
+.treemapSummaryEyebrow {
+  margin: 0;
+  color: #979797;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.treemapSummaryName {
+  margin: 0.35rem 0 0;
+  color: #3f3f3f;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.treemapSummaryValue {
+  margin: 0.25rem 0 0;
+  color: #3f3f3f;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.treemap {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 380px;
+  flex: 1 1 auto;
+  position: relative;
+  border: solid 1px #d2d2d2;
+  border-radius: 18px;
+  background: #fbfbfb;
+  overflow: hidden;
   cursor: pointer;
-   /* Make the SVG container fill its parent's width */
-   height: calc(100% - 100px);
-   /* Adjust height to accommodate label and paragraphs above */
-   position: relative;
-   /* Essential for positioning the tooltip relative to this container */
- }
+}
 
- /* Styles for the D3.js generated tooltip */
- #tooltip {
+.treemap svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
+}
 
-   position: absolute;
-   text-align: center;
-   padding: 8px;
-   font: 12px sans-serif;
-   background: rgba(0, 0, 0, 0.9);
-   /* Semi-transparent dark background */
-   color: white;
-   /* White text for contrast */
-   border: 0px;
-   border-radius: 4px;
-   pointer-events: none;
-   /* Crucial: allows mouse events to pass through to elements beneath */
-   z-index: 1000;
-   /* Ensures tooltip appears on top of other elements */
-   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-   display: none;
-   /* Hidden by default, shown on mouseover */
- }
+#treemap-tooltip {
+  position: absolute;
+  text-align: left;
+  padding: 10px 12px;
+  font: 12px Roboto, sans-serif;
+  background: #fff;
+  color: #3f3f3f;
+  border: solid 1px #d2d2d2;
+  border-top: 4px solid #7bb344;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: none;
+}
 
- /* Styles for D3.js treemap rectangles */
- .node {
-   cursor: pointer;
-   /* Indicates interactivity */
-   stroke: #fff;
-   /* White border between treemap nodes */
-   stroke-width: 1px;
-   transition: fill 0.2s ease-in-out;
-   /* Smooth color transition on hover */
- }
+.node {
+  cursor: pointer;
+  stroke: #fff;
+  stroke-width: 2px;
+  transition: opacity 0.2s ease-in-out, stroke-width 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
 
- .node:hover {
-   filter: brightness(1.2);
-   /* Slightly brighter on hover for visual feedback */
- }
+.node:hover {
+  filter: brightness(1.05);
+}
 
- /* Styles for text labels inside treemap rectangles */
- .node text {
-   pointer-events: none;
-   /* Prevents text from blocking mouse events on the rect */
-   font-weight: bold;
-   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-   /* Adds a subtle shadow for better readability */
-   text-anchor: middle;
-   /* Ensures text aligns correctly when centered */
-   dominant-baseline: central;
-   /* Centers text vertically within the box */
- }
+.node.is-active {
+  stroke-width: 3px;
+}
+
+.treemapLabel {
+  pointer-events: none;
+  fill: #fff;
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.treemapValue {
+  font-weight: 500;
+}
+
+.treemapEmptyState {
+  fill: #4a4a4a;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.treemapEmptyStateHint {
+  fill: #979797;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+}
+
+@media screen and (max-width: 900px) {
+  .treemapWrapper {
+    gap: 18px;
+  }
+
+  .treemapContainer {
+    min-height: 520px;
+    padding: 0;
+  }
+
+  .treemapContainer + .treemapContainer {
+    border-left: 0;
+    border-top: 1px solid #d2d2d2;
+    padding-left: 0;
+    padding-top: 18px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .treemapWrapper {
+    gap: 14px;
+  }
+
+  .treemapContainer {
+    flex-basis: 100%;
+    min-height: 440px;
+  }
+
+  .treemap {
+    min-height: 320px;
+    border-radius: 12px;
+  }
+
+  .treemapSummary {
+    border-radius: 12px;
+    padding: 10px 12px;
+  }
+}

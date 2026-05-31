@@ -159,10 +159,14 @@ class DepartmentResource(resources.ModelResource):
             self.sphere = kwargs["sphere"]
             self.fields["government"].widget.set_sphere(self.sphere)
 
+    def before_import_row(self, row, **kwargs):
+        if row.get("combined") and not row.get("intro"):
+            row["intro"] = row["combined"]
+
 
 class DepartmentImportForm(ImportForm):
     """
-    Form class to use to upload a CSV file to import departments.
+    Form class to use to upload an Excel file to import departments.
     """
 
     sphere = forms.ModelChoiceField(

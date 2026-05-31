@@ -1,60 +1,185 @@
 .bubbleChartMainContainer {
   display: flex;
-  gap: 20px;
+  gap: 28px;
   flex-direction: column;
+  width: 100%;
+  padding: 0.5rem 0 1rem;
 }
 
 .bubbleChartMainContainer label {
-    font-family: Roboto, sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-    background: #000; 
-    color:#fff; 
-    width: 75%; 
-    padding: 3px;
-    width: fit-content;
-  }
+  font-family: Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: #3f3f3f;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  width: fit-content;
+}
 
-  .bubbleChartLegend {
-    font-size: 13px;
-    padding-top:10px; 
-    margin-left:30px;
-    width: 100%;
-  }
+.bubbleChartLegendContainer {
+  padding: 18px;
+  height: auto;
+  width: 100%;
+  background: #fff;
+  border: solid 1px #d2d2d2;
+  border-radius: 20px;
+}
 
-  .bubbleChartContainer p:nth-child(2) {
-    font-family: Roboto, sans-serif;
-    font-size: 13px;
-    font-weight: bold;
-  }
-  
-  .bubbleChartContainer p:nth-child(4) {
-    font-family: Roboto, sans-serif;
-    font-size: 13px;
-    font-weight: bold;
-  }
+.bubbleChartLegendIntro {
+  margin: 0.35rem 0 0;
+  color: #979797;
+  font-size: 13px;
+  line-height: 1.5;
+}
 
-  .bubbleChartLegendContainer {
-    padding-right: 50px;
-    height: auto;
-  }
+.bubbleChartLegendPrompt {
+  margin: 12px 0 0;
+  color: #3f3f3f;
+  font-size: 14px;
+  font-weight: 700;
+}
 
-  #bubble_graph_svg {
-    position: relative;
-    right: 10%;
-    top: 40px;
-  }
+.bubbleChartLegend {
+  padding-top: 14px;
+  margin-left: 0;
+  width: 100%;
+}
 
-    @media only screen and (max-width: 991px) {
-      #bubble_graph_svg {
-        position: relative;
-        left: 70px;
-      }
-    }
-  
-    @media only screen and (max-width: 767px) {
-  
-      #bubble_graph_svg {
-        position: relative;
-        left: -194px;
-      } }
+.bubbleChartSelectWrap {
+  position: relative;
+  width: 100%;
+  margin-top: 0.85rem;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid #4a4a4a;
+    border-bottom: 2px solid #4a4a4a;
+    transform: translateY(-65%) rotate(45deg);
+    pointer-events: none;
+  }
+}
+
+.bubbleChartSelect {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #fff;
+  border: solid 1px #d2d2d2;
+  border-radius: 10px;
+  padding: 12px 42px 12px 14px;
+  color: #3f3f3f;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.bubbleChartSelect:focus {
+  outline: none;
+  border-color: #7bb344;
+  box-shadow: 0 0 0 3px rgba(123, 179, 68, 0.18);
+}
+
+.bubbleChartContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.bubbleChartContainer label {
+  margin-bottom: 0.15rem;
+}
+
+.bubbleChartContainer p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.bubbleChartSummary {
+  background: #f5f5f5;
+  border: solid 1px #d2d2d2;
+  border-radius: 20px;
+  padding: 18px 20px;
+}
+
+.bubbleChartSummaryGroup + .bubbleChartSummaryGroup {
+  margin-top: 1.6rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #d9d9d9;
+}
+
+.bubbleChartSummaryGroup {
+  display: block;
+}
+
+.bubbleChartSummaryEyebrow {
+  color: #979797;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bubbleChartSummaryProgramme {
+  margin-top: 0.45rem !important;
+  color: #3f3f3f;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.bubbleChartSummaryName {
+  margin-top: 0.45rem !important;
+  color: #3f3f3f;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.bubbleChartSummaryValue {
+  margin-top: 0.55rem !important;
+  color: #3f3f3f;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.bubbleChartHint {
+  color: #4a4a4a;
+  font-size: 13px;
+  margin-top: 0.25rem !important;
+}
+
+#bubble_graph_svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-top: 8px;
+  position: static;
+  background: #fff;
+  border: solid 1px #d2d2d2;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.bubbleChartMainContainer #tooltip {
+  text-align: left;
+  padding: 10px 12px;
+  font: 12px Roboto, sans-serif;
+  background: #fff;
+  color: #3f3f3f;
+  border: solid 1px #d2d2d2;
+  border-top: 4px solid #ee9f31;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

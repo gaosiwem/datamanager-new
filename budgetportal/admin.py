@@ -1,18 +1,27 @@
 import logging
 from io import StringIO
+from urllib.parse import urlencode
 
 
 from adminsortable.admin import SortableAdmin, SortableTabularInline
 from budgetportal import models
 from budgetportal.bulk_upload import bulk_upload_view
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.generic import TemplateView
 from import_export.admin import ImportMixin
-from import_export.formats.base_formats import CSV, XLSX
+from import_export.formats.base_formats import XLSX
 from django.db import transaction, IntegrityError
+
+try:
+    from django.utils.http import url_has_allowed_host_and_scheme
+except ImportError:
+    from django.utils.http import is_safe_url as url_has_allowed_host_and_scheme
 
 
 import os
@@ -34,7 +43,32 @@ from .import_export_admin import (
 )
 
 logger = logging.getLogger(__name__)
-admin.site.login = login_required(admin.site.login)
+
+
+def redirect_admin_login_to_account(request, extra_context=None):
+    redirect_to = request.GET.get(REDIRECT_FIELD_NAME) or reverse("admin:index")
+    if not url_has_allowed_host_and_scheme(
+        redirect_to,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        redirect_to = reverse("admin:index")
+
+    if request.user.is_authenticated:
+        if request.user.is_active and request.user.is_staff:
+            return redirect(redirect_to)
+
+        messages.error(
+            request,
+            "Your account is signed in but does not have permission to access the admin area.",
+        )
+        return redirect("/")
+
+    query = urlencode({REDIRECT_FIELD_NAME: redirect_to})
+    return redirect(f"{reverse('account_login')}?{query}")
+
+
+admin.site.login = redirect_admin_login_to_account
 
 
 class FinancialYearAdmin(admin.ModelAdmin):
@@ -69,7 +103,7 @@ class DepartmentAdmin(ImportMixin, admin.ModelAdmin):
     # Resource class to be used by the django-import-export package
     resource_class = DepartmentResource
     # File formats that can be used to import departments
-    formats = [CSV]
+    formats = [XLSX]
 
     def get_import_form(self):
         """
@@ -343,14 +377,7 @@ def validate_report_type(full_text, obj_id):
 
 
 def save_imported_dataset(obj_id):
-
-    # import_dataset(obj_id)
-
-    async_task(
-        import_dataset(obj_id),
-        obj_id=obj_id,
-        task_name="Import dataset",
-    )   
+    return import_dataset(obj_id)
 
 def save_vote_documents(obj_id):
 

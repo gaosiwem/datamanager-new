@@ -29,88 +29,85 @@
     
     <h4>Total Allocation ({{ financial_year }}): {{ total_budget }}</h4>
 
-    <div class="ProgrammesSection-container">
-        <div class="ProgrammesSection-item">
-            <h4 class="Title Title--section">Expenditure Distribution by Function Group</h4>
-            <div class="ProgrammesSection-share u-marginTop10 u-marginBottom15">
-                <div data-component="Share" data-anchor="programmes" data-color="{{ color }}"></div>
+    <div class="BudgetSummaryDetailGraphList">
+        <section class="BudgetSummaryDetailGraph">
+            <div class="BudgetSummaryDetailGraphHeader">
+                <h4 class="Title Title--section">Expenditure distribution by function group</h4>
+
+                <div class="ProgrammesSection-share u-marginTop10 u-marginBottom15">
+                    <div data-component="Share" data-anchor="programmes" data-color="{{ color }}"></div>
+                </div>
+
+                <p>The pie chart shows how total expenditure is distributed across different
+                    <strong>function groups</strong>. Each slice represents a major functional area of government
+                    spending and helps compare priorities for this financial year.</p>
             </div>
 
-            <div class="col-md-6">               
-            
-                <p>The pie chart shows how total expenditures in is distributed across different <strong>Function
-                        Groups</strong>.
-                <ul>
-                    <li>Each slice represents a major functional area of government spending
-                    </li>
-                    <li>The chart helps stakeholders see which functional areas consume the most resources.</li>
-                    <li>It is useful for comparing priorities and understanding government focus in a particular financial year.
-                    </li>
-                </ul>
-                </p>
-            </div>
-        </div>
-        
-        <div class="ProgrammesSection-item ProgrammesSection-item--right">
             <div class="Page-content">
-                <div class="Card">
-                    <div style="height: 400px; width: 100%;">
-                        <canvas id="functionGroupChart"></canvas>
+                <div class="Card BudgetSummaryDetailChartCard">
+                    <div class="BudgetSummaryDetailChartPanel">
+                        <div class="treemapPanelHeader">
+                            <label>FUNCTION GROUPS</label>
+                        </div>
+                        <div class="BudgetSummaryDetailChart BudgetSummaryDetailChart--pie">
+                            <canvas id="functionGroupChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="ProgrammesSection-item">
-            <h4 class="Title Title--section">Top spending by EconomicClassification3</h4>
-            <div class="ProgrammesSection-share u-marginTop10 u-marginBottom15">
-                <div data-component="Share" data-anchor="programmes" data-color="{{ color }}"></div>
+        </section>
+
+        <section class="BudgetSummaryDetailGraph">
+            <div class="BudgetSummaryDetailGraphHeader">
+                <h4 class="Title Title--section">Top spending by EconomicClassification3</h4>
+
+                <div class="ProgrammesSection-share u-marginTop10 u-marginBottom15">
+                    <div data-component="Share" data-anchor="programmes" data-color="{{ color }}"></div>
+                </div>
+
+                <p>The bar chart shows the largest spending categories by
+                    <strong>EconomicClassification3</strong>.</p>
             </div>
-        
-            <div class="col-md-6">
-        
-                <p>The bar chart shows what are the most spenders <strong>EconomicClassification3
-                        </strong>.
-                </p>
-            </div>
-        </div>
-        <div class="ProgrammesSection-item ProgrammesSection-item--right">
+
             <div class="Page-content">
-                <div class="Card">
-                    <div class="col-md-6">
-                        <div style="height: 400px; width: 100%;">
+                <div class="Card BudgetSummaryDetailChartCard">
+                    <div class="BudgetSummaryDetailChartPanel">
+                        <div class="treemapPanelHeader">
+                            <label>TOP SPENDING</label>
+                        </div>
+                        <div class="BudgetSummaryDetailChart">
                             <canvas id="topSpendingChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div class="ProgrammesSection-item">
-            <h4 class="Title Title--section">Yearly spending</h4>
-            <div class="ProgrammesSection-share u-marginTop10 u-marginBottom15">
-                <div data-component="Share" data-anchor="programmes" data-color="{{ color }}"></div>
+        <section class="BudgetSummaryDetailGraph">
+            <div class="BudgetSummaryDetailGraphHeader">
+                <h4 class="Title Title--section">Yearly spending</h4>
+
+                <div class="ProgrammesSection-share u-marginTop10 u-marginBottom15">
+                    <div data-component="Share" data-anchor="programmes" data-color="{{ color }}"></div>
+                </div>
+
+                <p>This shows how spending changes over time for each EconomicClassification3 category.
+                    It helps identify trends and patterns in expenditure across different years.</p>
             </div>
-        
-            <div class="col-md-6">
-                <h4>Yearly spending</h4>
-        
-                <p>This shows how spending changes over time for each EconomicClassification3 category
-                    It helps to identify trends and patterns in expenditure across different years.
-                </p>
-            </div>
-        </div>
-            <div class="ProgrammesSection-item ProgrammesSection-item--right">
-                <div class="Page-content">
-                    <div class="Card">
-                        <div class="col-md-6">
-                                <div style="height: 400px; width: 100%;">
-                                    <canvas id="yearlyDataChart"></canvas>
-                                </div>
+
+            <div class="Page-content">
+                <div class="Card BudgetSummaryDetailChartCard">
+                    <div class="BudgetSummaryDetailChartPanel">
+                        <div class="treemapPanelHeader">
+                            <label>YEARLY SPENDING</label>
+                        </div>
+                        <div class="BudgetSummaryDetailChart">
+                            <canvas id="yearlyDataChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-        
+        </section>
     </div>
     <script id="national-budget-summary-data" type="application/json">{{ national_budget_summary|safe }}</script>
 </div>

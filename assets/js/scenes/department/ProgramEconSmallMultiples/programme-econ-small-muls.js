@@ -1,41 +1,42 @@
-let tooltip;
-
 document.addEventListener("DOMContentLoaded", function() {
   const economicClassificationDropdown = document.getElementById(
     "economic-classification-dropdown"
   );
   const programmeDropdown = document.getElementById("programme-dropdown");
-  const horizontalBarChart = d3.select("#horizontalBarChart");
-  const tooltip = d3.select(".tooltip");
+  const chartSvg = d3.select("#horizontalBarChart");
+  const tooltip = d3.select("#programme-econ-tooltip");
+  const chartStage = document.querySelector(".programmeEconChartStage");
+  const selectedProgramme = document.getElementById(
+    "programme-econ-selected-programme"
+  );
+  const selectedClassification = document.getElementById(
+    "programme-econ-selected-classification"
+  );
 
-  // Constants for chart dimensions and styling
-  const CHART_BAR_HEIGHT = 35;
-  const CHART_MARGIN = { top: 30, right: 20, bottom: 30, left: 280 };
-  const CHART_WIDTH = 600;
-  const LABEL_TEXT_THRESHOLD = 80; // For bar label color logic
+  let resizeTimeout;
 
-  /**
-   * Parses the current URL to extract financial year, type, department, and province.
-   * @returns {object} An object containing financialYear, type, department, and province.
-   */
+  if (
+    !economicClassificationDropdown ||
+    !programmeDropdown ||
+    !chartStage ||
+    !selectedProgramme ||
+    !selectedClassification
+  ) {
+    return;
+  }
+
   function getUrlParts() {
     const currentUrl = new URL(window.location.href);
     const parts = currentUrl.pathname.split("/").filter(Boolean);
 
     const financialYear = parts[0];
     const type = parts[1];
-    // Determine department and province based on type (national or provincial)
     const department = type === "national" ? parts[3] : parts[4];
     const province = type === "national" ? "" : parts[2];
 
-    return { financialYear, type, department, province };
+    return { financialYear, department, province };
   }
 
-  /**
-   * Formats a numeric value into a human-readable currency string (e.g., R 1.2 billion).
-   * @param {number} value - The numeric value to format.
-   * @returns {string} The formatted currency string.
-   */
   function formatCurrencyValue(value) {
     if (value >= 1e12) return `R ${(value / 1e12).toFixed(1)} trillion`;
     if (value >= 1e9) return `R ${(value / 1e9).toFixed(1)} billion`;
@@ -44,160 +45,268 @@ document.addEventListener("DOMContentLoaded", function() {
     return `R ${value.toLocaleString()}`;
   }
 
-  /**
-   * Wraps text labels for D3 axis to fit within a specified width.
-   * @param {d3.Selection} text - The D3 selection of text elements to wrap.
-   * @param {number} width - The maximum width for the text.
-   */
-  function wrapText(text, width) {
-    text.each(function() {
+  function truncateText(text, maxWidth) {
+    if (!text) {
+      return "";
+    }
+
+    const averageCharacterWidth = 7;
+    const maxCharacters = Math.max(Math.floor(maxWidth / averageCharacterWidth), 1);
+
+    if (text.length <= maxCharacters) {
+      return text;
+    }
+
+    return `${text.substring(0, Math.max(maxCharacters - 3, 1))}...`;
+  }
+
+  function wrapAxisTextToTwoLines(textSelection, width) {
+    textSelection.each(function() {
       const textElement = d3.select(this);
-      const words = textElement
-        .text()
-        .split(/\s+/)
-        .reverse();
-      let word;
-      let line = [];
-      let lineNumber = 0;
-      const lineHeight = 1.1; // ems
+      const originalText = textElement.text();
+      const words = originalText.split(/\s+/).filter(Boolean);
+      const x = textElement.attr("x") || 0;
       const y = textElement.attr("y");
       const dy = parseFloat(textElement.attr("dy") || 0);
+      const lineHeight = 1.05;
+      let line = [];
+      let lineNumber = 0;
       let tspan = textElement
         .text(null)
         .append("tspan")
-        .attr("x", 0)
+        .attr("x", x)
         .attr("y", y)
-        .attr("dy", dy + "em");
+        .attr("dy", `${dy}em`);
 
-      while ((word = words.pop())) {
+      words.forEach((word, index) => {
         line.push(word);
         tspan.text(line.join(" "));
+
         if (tspan.node().getComputedTextLength() > width) {
           line.pop();
+
+          if (lineNumber === 1) {
+            const remainingWords = [word].concat(words.slice(index + 1));
+            const currentText = line.length ? line.join(" ") : word;
+            tspan.text(
+              truncateText(
+                `${currentText} ${remainingWords.join(" ")}`.trim(),
+                width
+              )
+            );
+            return;
+          }
+
           tspan.text(line.join(" "));
           line = [word];
+          lineNumber += 1;
           tspan = textElement
             .append("tspan")
-            .attr("x", 0)
+            .attr("x", x)
             .attr("y", y)
-            .attr("dy", ++lineNumber * lineHeight + dy + "em")
+            .attr("dy", `${lineNumber * lineHeight + dy}em`)
             .text(word);
         }
-      }
+      });
     });
   }
 
-  /**
-   * Renders or updates the horizontal bar chart using D3.
-   * @param {object} dataset - The data to visualize, expected to have a 'children' array.
-   */
+  function updateSummary(programme, classification) {
+    selectedProgramme.textContent = programme || "No programme selected";
+    selectedClassification.textContent =
+      classification || "No classification selected";
+  }
+
+  function getChartMetrics(itemCount) {
+    const width = Math.max(chartStage.clientWidth || 720, 320);
+    const leftMargin = width >= 820 ? 292 : width >= 640 ? 238 : 176;
+    const rightMargin = width >= 640 ? 26 : 18;
+    const margin = { top: 20, right: rightMargin, bottom: 24, left: leftMargin };
+    const plotOffset = width >= 760 ? 42 : 32;
+    const innerWidth = Math.max(width - margin.left - margin.right, 120);
+    const barHeight = width >= 820 ? 42 : 38;
+    const height = Math.max(itemCount * barHeight, 220);
+
+    return { width, height, margin, innerWidth, barHeight, plotOffset };
+  }
+
+  function renderEmptyState(message, hint) {
+    chartSvg.selectAll("*").remove();
+
+    const { width, height } = getChartMetrics(1);
+
+    chartSvg
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("width", width)
+      .attr("height", height)
+      .attr("preserveAspectRatio", "xMidYMid meet");
+
+    chartSvg
+      .append("text")
+      .attr("class", "programmeEconEmptyState")
+      .attr("x", width / 2)
+      .attr("y", height / 2 - 10)
+      .attr("text-anchor", "middle")
+      .text(message);
+
+    chartSvg
+      .append("text")
+      .attr("class", "programmeEconEmptyHint")
+      .attr("x", width / 2)
+      .attr("y", height / 2 + 18)
+      .attr("text-anchor", "middle")
+      .text(hint);
+  }
+
   function renderChart(dataset) {
-    horizontalBarChart.selectAll("*").remove(); // Clear previous chart elements
+    chartSvg.selectAll("*").remove();
 
-    const numBars = dataset.children.length;
-    const height = Math.max(numBars * CHART_BAR_HEIGHT, 200);
-    const maxBarWidth = CHART_WIDTH - CHART_MARGIN.left - CHART_MARGIN.right;
+    const data = dataset.children
+      .map((item) => ({
+        name: item.name,
+        value: Number(item.value || 0),
+        formattedValue: formatCurrencyValue(Number(item.value || 0)),
+      }))
+      .sort((left, right) => right.value - left.value);
 
-    const svg = horizontalBarChart
-      .attr("width", CHART_WIDTH)
-      .attr("height", height + CHART_MARGIN.top + CHART_MARGIN.bottom)
-      .append("g")
-      .attr(
-        "transform",
-        `translate(${CHART_MARGIN.left}, ${CHART_MARGIN.top})`
+    if (!data.length) {
+      renderEmptyState(
+        "No data available",
+        "Try another programme or economic classification."
       );
+      return;
+    }
 
-    // Prepare data: extract subprogrammes and format values
-    const subprogrammes = dataset.children.map((d) => d.name);
-    dataset.children.forEach((d) => {
-      d.formatted_value = formatCurrencyValue(d.value);
-    });
+    const { width, height, margin, innerWidth, plotOffset } = getChartMetrics(
+      data.length
+    );
+
+    chartSvg
+      .attr("viewBox", `0 0 ${width} ${height + margin.top + margin.bottom}`)
+      .attr("width", width)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("preserveAspectRatio", "xMidYMid meet");
+
+    const svg = chartSvg
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     const xScale = d3
       .scaleLinear()
-      .domain([0, d3.max(dataset.children, (d) => d.value)])
-      .range([0, maxBarWidth]);
+      .domain([0, d3.max(data, (item) => item.value) || 0])
+      .nice()
+      .range([0, innerWidth - plotOffset]);
+
+    const plotArea = svg
+      .append("g")
+      .attr("transform", `translate(${plotOffset}, 0)`);
 
     const yScale = d3
       .scaleBand()
-      .domain(subprogrammes)
+      .domain(data.map((item) => item.name))
       .range([0, height])
-      .padding(0.1);
+      .padding(0.18);
 
-    // Append Y-axis
+    plotArea
+      .append("g")
+      .attr("class", "programmeEconGrid")
+      .call(
+        d3
+          .axisBottom(xScale)
+          .ticks(width >= 760 ? 5 : 3)
+          .tickSize(height)
+          .tickFormat("")
+      )
+      .attr("transform", "translate(0,0)");
+
     svg
       .append("g")
-      .call(d3.axisLeft(yScale))
-      .attr("class", "axis-label")
+      .attr("class", "programmeEconAxis")
+      .call(
+        d3
+          .axisLeft(yScale)
+          .tickSize(0)
+          .tickPadding(width >= 760 ? 18 : 12)
+      )
       .selectAll("text")
-      .call(wrapText, CHART_MARGIN.left - 50); // Adjusted wrap width
+      .attr("x", width >= 760 ? -28 : -18)
+      .style("font-size", width >= 760 ? "12px" : "11px")
+      .style("font-weight", "500")
+      .style("dominant-baseline", "middle")
+      .call(wrapAxisTextToTwoLines, margin.left - 56)
+      .append("title")
+      .text((item) => item);
 
-    // Append bars
-    svg
-      .selectAll(".horizontalBar")
-      .data(dataset.children)
+    const bars = plotArea
+      .selectAll(".programmeEconBar")
+      .data(data)
       .enter()
       .append("rect")
-      .attr("class", "horizontalBarChart") // Consider renaming to "horizontalBar" for consistency
-      .attr("y", (d) => yScale(d.name))
-      .attr("width", (d) => xScale(d.value))
+      .attr("class", "programmeEconBar")
+      .attr("x", 0)
+      .attr("y", (item) => yScale(item.name))
+      .attr("width", (item) => xScale(item.value))
       .attr("height", yScale.bandwidth())
-      .on("mouseover", function(event, d) {
-        const [relX, relY] = d3.pointer(event, svg.node());
-        const svgRect = svg.node().getBoundingClientRect();
-
-        // Calculate absolute position on the page (viewport position + scroll offset).
-        // This is robust even if event.pageX/Y or clientX/Y are unreliable directly.
-        // const xPos = svgRect.left + relX + window.scrollX;
-        // const yPos = svgRect.top + relY + window.scrollY;
-        // Show tooltip on mouseover
+      .attr("rx", 8)
+      .attr("ry", 8)
+      .on("mouseover", function(item) {
+        d3.select(this).attr("fill", "#557c2f");
         tooltip
           .style("display", "block")
-          .html(`<strong>${event.name}</strong><br>Value: ${event.value}`) // Format value in tooltip
+          .html(`<strong>${item.name}</strong><br>${item.formattedValue}`)
           .style("left", `${d3.event.pageX + 10}px`)
           .style("top", `${d3.event.pageY - 10}px`);
       })
-      .on("mouseout", () => {
-        // Hide tooltip on mouseout
+      .on("mouseout", function() {
+        d3.select(this).attr("fill", "#7bb344");
         tooltip.style("display", "none");
       });
 
-    // Append value labels on bars
-    svg
-      .selectAll(".bar-label")
-      .data(dataset.children)
+    plotArea
+      .selectAll(".programmeEconValueLabel")
+      .data(data)
       .enter()
       .append("text")
-      .attr("class", "bar-label")
-      .attr("x", (d) => {
-        const barCurrentWidth = xScale(d.value);
-        return barCurrentWidth < LABEL_TEXT_THRESHOLD
-          ? barCurrentWidth + 8
-          : barCurrentWidth - 8;
+      .attr("class", "programmeEconValueLabel")
+      .attr("x", (item) => {
+        const barWidth = xScale(item.value);
+        const estimatedLabelWidth = item.formattedValue.length * 6.5;
+        return barWidth < estimatedLabelWidth + 16
+          ? barWidth + 8
+          : barWidth - 8;
       })
-      .attr("y", (d) => yScale(d.name) + yScale.bandwidth() / 2)
+      .attr("y", (item) => yScale(item.name) + yScale.bandwidth() / 2)
       .attr("dy", ".35em")
-      .attr("text-anchor", (d) =>
-        xScale(d.value) < LABEL_TEXT_THRESHOLD ? "start" : "end"
+      .attr("text-anchor", (item) =>
+        xScale(item.value) < item.formattedValue.length * 6.5 + 16
+          ? "start"
+          : "end"
       )
-      .text((d) => d.formatted_value)
-      .style("fill", (d) =>
-        xScale(d.value) < LABEL_TEXT_THRESHOLD ? "black" : "white"
+      .style("fill", (item) =>
+        xScale(item.value) < item.formattedValue.length * 6.5 + 16
+          ? "#3f3f3f"
+          : "#ffffff"
       )
-      .style("font-size", "11px");
+      .text((item) => item.formattedValue);
+
+    bars.raise();
+    svg.selectAll(".programmeEconValueLabel").raise();
   }
 
-  /**
-   * Fetches data for the chart based on selected filters and renders it.
-   * Displays a "No data" message if the dataset is empty.
-   */
   function fetchDataAndRenderChart() {
-    horizontalBarChart.selectAll("*").remove(); // Clear previous chart
     const { financialYear, department, province } = getUrlParts();
-
-    // Get the current selected values from the dropdowns
     const selectedEcon = economicClassificationDropdown.value;
     const selectedProg = programmeDropdown.value;
+    const selectedProgrammeText =
+      programmeDropdown.options[programmeDropdown.selectedIndex] &&
+      programmeDropdown.options[programmeDropdown.selectedIndex].text;
+    const selectedClassificationText =
+      economicClassificationDropdown.options[
+        economicClassificationDropdown.selectedIndex
+      ] &&
+      economicClassificationDropdown.options[
+        economicClassificationDropdown.selectedIndex
+      ].text;
 
     const apiUrl = `/get_horizontal_bar_data?econ=${encodeURIComponent(
       selectedEcon
@@ -211,37 +320,34 @@ document.addEventListener("DOMContentLoaded", function() {
 
     d3.json(apiUrl)
       .then((dataset) => {
-        if (dataset && dataset.children && dataset.children.length > 0) {
+        const count =
+          dataset && dataset.children && Array.isArray(dataset.children)
+            ? dataset.children.length
+            : 0;
+
+        updateSummary(selectedProgrammeText, selectedClassificationText);
+
+        if (count > 0) {
           renderChart(dataset);
         } else {
-          horizontalBarChart
-            .append("text")
-            .attr("x", CHART_WIDTH / 2)
-            .attr("y", 100)
-            .attr("text-anchor", "middle")
-            .text("No data available for the selected filters.");
+          renderEmptyState(
+            "No data available",
+            "Try another programme or economic classification."
+          );
         }
       })
       .catch((error) => {
         console.error("Error fetching chart data:", error);
-        horizontalBarChart
-          .append("text")
-          .attr("x", CHART_WIDTH / 2)
-          .attr("y", 100)
-          .attr("text-anchor", "middle")
-          .text("Error loading data. Please try again.");
+        updateSummary(selectedProgrammeText, selectedClassificationText);
+        renderEmptyState(
+          "Error loading data",
+          "Please try again in a moment."
+        );
       });
   }
 
-  /**
-   * Populates a given dropdown element with options fetched from a URL.
-   * Sets the first item as selected by default.
-   * @param {string} url - The URL to fetch dropdown data from.
-   * @param {HTMLElement} dropdownElement - The dropdown element to populate.
-   * @returns {Promise<void>} A promise that resolves when the dropdown is populated.
-   */
   function populateDropdown(url, dropdownElement) {
-    return fetch(url) // Return the promise from fetch
+    return fetch(url)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -251,16 +357,11 @@ document.addEventListener("DOMContentLoaded", function() {
       .then((data) => {
         const items = typeof data === "string" ? JSON.parse(data) : data;
 
-        if (!items || !Array.isArray(items) || items.length === 0) {
-          console.warn(
-            `No valid data received for dropdown at ${url}. Dropdown will remain empty.`
-          );
-          dropdownElement.innerHTML = ""; // Ensure no stale options
+        dropdownElement.innerHTML = "";
+
+        if (!items || !Array.isArray(items) || !items.length) {
           return;
         }
-
-        // Clear existing options
-        dropdownElement.innerHTML = "";
 
         items.forEach((item) => {
           const option = document.createElement("option");
@@ -269,32 +370,26 @@ document.addEventListener("DOMContentLoaded", function() {
           dropdownElement.appendChild(option);
         });
 
-        // Set the first item as selected
         if (dropdownElement.options.length > 0) {
           dropdownElement.value = dropdownElement.options[0].value;
         }
-      })
-      .catch((error) => {
-        console.error(`Error populating dropdown from ${url}:`, error);
-        dropdownElement.innerHTML =
-          '<option value="">Error loading...</option>'; // Provide feedback
-        // Re-throw the error so subsequent .then() or .catch() blocks can handle it
-        throw error;
       });
   }
 
-  // Initialize the application
   function initialize() {
-    // Add event listeners for dropdown changes
+    const { financialYear, department, province } = getUrlParts();
+
     economicClassificationDropdown.addEventListener(
       "change",
       fetchDataAndRenderChart
     );
     programmeDropdown.addEventListener("change", fetchDataAndRenderChart);
 
-    const { financialYear, department, province } = getUrlParts();
+    window.addEventListener("resize", function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(fetchDataAndRenderChart, 150);
+    });
 
-    // Populate economic classification dropdown
     populateDropdown(
       `/get_economicClassification/?financialYear=${encodeURIComponent(
         financialYear
@@ -303,14 +398,8 @@ document.addEventListener("DOMContentLoaded", function() {
       )}&province=${encodeURIComponent(province)}`,
       economicClassificationDropdown
     )
-      .then(() => {
-        // After the economic classification dropdown is populated,
-        // populate the programme dropdown.
-        // Note: If programme dropdown's initial content depends on the
-        // selected economic classification, you might need to pass
-        // economicClassificationDropdown.value here.
-        // For now, keeping it as an empty econ filter as in the original.
-        return populateDropdown(
+      .then(() =>
+        populateDropdown(
           `/get_programmes?financialYear=${encodeURIComponent(
             financialYear
           )}&department=${encodeURIComponent(
@@ -319,42 +408,17 @@ document.addEventListener("DOMContentLoaded", function() {
             province
           )}`,
           programmeDropdown
-        );
-      })
-      .then(() => {
-        // After both dropdowns are populated and their first items are selected,
-        // fetch and render initial chart data.
-        fetchDataAndRenderChart();
-      })
+        )
+      )
+      .then(fetchDataAndRenderChart)
       .catch((error) => {
         console.error("Initialization failed:", error);
-        // Handle overall initialization errors, e.g., show a message to the user
-        horizontalBarChart
-          .append("text")
-          .attr("x", CHART_WIDTH / 2)
-          .attr("y", 100)
-          .attr("text-anchor", "middle")
-          .text("Failed to initialize. Please check console for details.");
+        renderEmptyState(
+          "Failed to initialize",
+          "Please refresh the page and try again."
+        );
       });
   }
 
-  //     // Utility: Format value for display
-    function formatValue(value) {
-        if (value >= 1e12) return `R ${(value / 1e12).toFixed(1)} trillion`;
-        if (value >= 1e9) return `R ${(value / 1e9).toFixed(1)} billion`;
-        if (value >= 1e6) return `R ${(value / 1e6).toFixed(1)} million`;
-        if (value >= 1e3) return `R ${(value / 1e3).toFixed(1)} thousand`;
-        return `R ${value.toLocaleString()}`;
-    }
-
-  // Call initialize when the DOM is ready
   initialize();
 });
-
-
-
-
-
-
-
-

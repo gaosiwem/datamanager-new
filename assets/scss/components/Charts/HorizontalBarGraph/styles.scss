@@ -1,61 +1,191 @@
-.horizontalBarChart {
-    fill: gray;
-}
-/* Ensure the container takes full width and adjusts based on content */
-.dropdown-container {
-    display: flex;
-    flex-direction: row;
-    gap: 15px; /* Space between dropdown items */
-    width: 100%;
+.programmeEconCard {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  padding: 0.25rem 0 0.5rem;
 }
 
-/* Align label and select element properly */
-.dropdown-item {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Align items to the start of the container */
+.programmeEconControls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
-/* Ensure select boxes fill available space */
-.PseudoSelect select {
-    width: 100%; /* Make sure select fills the container */
-    padding: 8px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+.programmeEconFilter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* Optional: Adding some styles for the wrapper elements for better UI */
-.DeptControls-itemWrap {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+.programmeEconFilter label,
+.programmeEconChartBlock label {
+  font-family: Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: #3f3f3f;
+  color: #fff;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
 }
 
-/* For dropdown elements, make sure select boxes have a consistent width */
-.PseudoSelect {
-    width: 100%;
+.programmeEconSelectWrap {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid #4a4a4a;
+    border-bottom: 2px solid #4a4a4a;
+    transform: translateY(-65%) rotate(45deg);
+    pointer-events: none;
+  }
 }
 
-.horizontalBarGraph {
-    width: auto;
-    padding-top: 20px;
-    display: flex;
-    flex-direction: column;
+.programmeEconSelect {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #fff;
+  border: solid 1px #d2d2d2;
+  border-radius: 10px;
+  padding: 12px 42px 12px 14px;
+  color: #3f3f3f;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #7bb344;
+    box-shadow: 0 0 0 3px rgba(123, 179, 68, 0.18);
+  }
 }
 
-.horizontalBarGraph label {
-    font-family: Roboto, sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-    background: #000;
-    color: #fff;
-    width: 75%;
-    padding: 3px;
-    width: fit-content;
+.programmeEconSummary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
-.horizontalBarGraph svg {
-    width: auto;
-    height: auto;
+.programmeEconSummaryItem {
+  background: #f5f5f5;
+  border: solid 1px #d2d2d2;
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.programmeEconSummaryEyebrow {
+  margin: 0;
+  color: #979797;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.programmeEconSummaryValue {
+  margin: 0.45rem 0 0;
+  color: #3f3f3f;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.programmeEconChartBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.programmeEconChartStage {
+  width: 100%;
+  min-height: 380px;
+  position: relative;
+  background: #fff;
+  border: solid 1px #d2d2d2;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+#horizontalBarChart {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.programmeEconBar {
+  fill: #7bb344;
+}
+
+.programmeEconAxis text,
+.programmeEconValueLabel {
+  fill: #3f3f3f;
+  font-family: Roboto, sans-serif;
+}
+
+.programmeEconAxis path,
+.programmeEconAxis line {
+  stroke: #d2d2d2;
+}
+
+.programmeEconGrid line {
+  stroke: #ececec;
+}
+
+.programmeEconGrid path {
+  stroke: none;
+}
+
+.programmeEconValueLabel {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.programmeEconEmptyState {
+  fill: #4a4a4a;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.programmeEconEmptyHint {
+  fill: #979797;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+}
+
+#programme-econ-tooltip {
+  position: absolute;
+  text-align: left;
+  padding: 10px 12px;
+  font: 12px Roboto, sans-serif;
+  background: #fff;
+  color: #3f3f3f;
+  border: solid 1px #d2d2d2;
+  border-top: 4px solid #7bb344;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: none;
+}
+
+@media screen and (max-width: 900px) {
+  .programmeEconControls,
+  .programmeEconSummary {
+    grid-template-columns: 1fr;
+  }
+
+  .programmeEconChartStage {
+    min-height: 340px;
+  }
 }

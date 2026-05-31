@@ -239,6 +239,42 @@ class BasicPagesTestCase(TestCase):
             '<div data-component="SearchResult" data-year="2019-20" data-root></div>',
         )
 
+    def test_search_page_for_newer_year(self):
+        """Search results should not depend on Wagtail content for each year"""
+        FinancialYear.objects.create(slug="2026-27", published=True)
+        national = Sphere.objects.create(
+            financial_year=FinancialYear.objects.get(slug="2026-27"), name="National"
+        )
+        provincial = Sphere.objects.create(
+            financial_year=FinancialYear.objects.get(slug="2026-27"), name="Provincial"
+        )
+        south_africa = Government.objects.create(sphere=national, name="South Africa")
+        fake_cape = Government.objects.create(sphere=provincial, name="Fake Cape")
+        Department.objects.create(
+            government=south_africa, name="The Presidency", vote_number=1, intro=""
+        )
+        Department.objects.create(
+            government=fake_cape, name="Fake Health", vote_number=1, intro=""
+        )
+
+        c = Client()
+        response = c.get(
+            "/2026-27/search-result/?search_type=full-search&search_string=&search=ENE"
+        )
+
+        self.assertContains(response, "<title>Search Results - vulekamali</title>")
+        self.assertContains(
+            response,
+            '<div data-component="SearchResult" data-year="2026-27" data-root></div>',
+        )
+
+    def test_search_page_redirects_to_latest_year_when_year_is_missing(self):
+        c = Client()
+        response = c.get("/search-result/?search=ENE")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "/2019-20/search-result/?search=ENE")
+
     def test_focus_page(self):
         """Test that it loads and that some text is present"""
         c = Client()

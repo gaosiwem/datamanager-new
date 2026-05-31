@@ -1,159 +1,298 @@
-
-let tooltip;
 document.addEventListener("DOMContentLoaded", function () {
-    let chartData = document.getElementById("budgetActualData");
-    let dataset;
+    const PHASE_METADATA = {
+        "Main appropriation": { rank: 1, color: "#ad3c64" },
+        "Adjusted appropriation": { rank: 2, color: "#ee9f31" },
+        "Final Appropriation": { rank: 3, color: "#ee9f31" },
+        "Audit Outcome": { rank: 4, color: "#7bb344" },
+        "Audited Outcome": { rank: 5, color: "#7bb344" },
+    };
+
+    const chartDataNode = document.getElementById("budgetActualData");
+    const svgId = "budgetActualChart";
+    const legendId = "legend";
+    const tooltipSelector = ".ExpenditurePhaseSection-item--right .tooltip";
+    const chartNode = d3.select(`#${svgId}`).node();
+    const chartCard = chartNode ? chartNode.closest(".ExpenditureChartCard") : null;
+    const chartContainer = chartNode ? chartNode.parentElement : null;
+    let lastMeasuredWidth = 0;
+
+    if (!chartDataNode || !chartNode || !chartCard || !chartContainer) {
+        return;
+    }
+
+    function formatFinancialYear(yearValue) {
+        const year = parseInt(yearValue, 10);
+
+        if (Number.isNaN(year)) {
+            return String(yearValue || "");
+        }
+
+        return `${year}-${(year + 1).toString().slice(-2)}`;
+    }
+
+    function formatValue(value) {
+        const numericValue = Number(value);
+        const absoluteValue = Math.abs(numericValue);
+
+        if (absoluteValue >= 1e12) {
+            return `R ${Math.round(numericValue / 1e12).toLocaleString()} trillion`;
+        }
+
+        if (absoluteValue >= 1e9) {
+            return `R ${Math.round(numericValue / 1e9).toLocaleString()} billion`;
+        }
+
+        if (absoluteValue >= 1e6) {
+            return `R ${Math.round(numericValue / 1e6).toLocaleString()} million`;
+        }
+
+        if (absoluteValue >= 1e3) {
+            return `R ${Math.round(numericValue / 1e3).toLocaleString()} thousand`;
+        }
+
+        return `R ${Math.round(numericValue).toLocaleString()}`;
+    }
+
+    function formatGraphValue(value) {
+        return formatValue(value);
+    }
+
+    function normalisePhase(phase) {
+        return String(phase || "").trim();
+    }
+
+    function getPhaseMeta(phase) {
+        return PHASE_METADATA[phase] || { rank: 99, color: "#7d7d7d" };
+    }
+
+    function renderEmptyState(message, hint) {
+        const width = getChartWidth();
+        const height = 280;
+        const svg = d3.select(`#${svgId}`);
+
+        svg.selectAll("*").remove();
+        svg
+            .attr("viewBox", `0 0 ${width} ${height}`)
+            .attr("width", width)
+            .attr("height", height)
+            .attr("preserveAspectRatio", "xMidYMid meet");
+
+        svg.append("text")
+            .attr("class", "ExpenditureEmptyState")
+            .attr("x", width / 2)
+            .attr("y", height / 2 - 10)
+            .attr("text-anchor", "middle")
+            .text(message);
+
+        svg.append("text")
+            .attr("class", "ExpenditureEmptyHint")
+            .attr("x", width / 2)
+            .attr("y", height / 2 + 18)
+            .attr("text-anchor", "middle")
+            .text(hint);
+    }
+
+    function getChartWidth() {
+        const containerWidth = chartContainer.getBoundingClientRect().width;
+        const cardWidth = Math.max(chartCard.getBoundingClientRect().width - 32, 0);
+        const measuredWidth = Math.max(containerWidth, cardWidth);
+
+        return Math.max(Math.round(measuredWidth), 320);
+    }
+
+    function normaliseDataset(rawDataset) {
+        return (rawDataset.children || [])
+            .map((item, index) => {
+                const rawYear = item.name || item.Name;
+                const year = parseInt(rawYear, 10);
+                const value = Number(item.value || item.Count || 0);
+                const budgetPhase = normalisePhase(item.budgetPhase || item.BudgetPhase);
+                const phaseMeta = getPhaseMeta(budgetPhase);
+
+                return {
+                    key: `${rawYear}-${budgetPhase}-${index}`,
+                    year: Number.isNaN(year) ? null : year,
+                    yearLabel: formatFinancialYear(rawYear),
+                    value,
+                    budgetPhase,
+                    phaseRank: phaseMeta.rank,
+                    phaseColor: phaseMeta.color,
+                    formattedValue: formatValue(value),
+                    compactValue: formatGraphValue(value),
+                };
+            })
+            .filter((item) => item.value >= 0)
+            .sort((left, right) => {
+                if (left.year !== right.year) {
+                    return (left.year || 0) - (right.year || 0);
+                }
+
+                return left.phaseRank - right.phaseRank;
+            });
+    }
+
+    function renderLegend(phases) {
+        const legend = d3.select(`#${legendId}`)
+            .html("")
+            .attr("class", "ExpenditureChartLegend");
+
+        phases.forEach((phase) => {
+            const legendItem = legend.append("div").attr("class", "ExpenditureLegendItem");
+
+            legendItem.append("div")
+                .attr("class", "ExpenditureLegendSwatch")
+                .style("background-color", getPhaseMeta(phase).color);
+
+            legendItem.append("span").text(phase);
+        });
+    }
+
+    function createChart(data) {
+        if (!data.length) {
+            renderEmptyState("No expenditure data available", "Please try again later.");
+            return;
+        }
+
+        const svg = d3.select(`#${svgId}`);
+        const tooltip = d3.select(tooltipSelector);
+        const phases = [...new Set(data.map((item) => item.budgetPhase))]
+            .sort((left, right) => getPhaseMeta(left).rank - getPhaseMeta(right).rank);
+        const axisLabels = {};
+
+        data.forEach((item) => {
+            axisLabels[item.key] = item.yearLabel;
+        });
+
+        const width = getChartWidth();
+        const height = width >= 960 ? 420 : width >= 700 ? 380 : 340;
+        const margin = {
+            top: 24,
+            right: width >= 700 ? 20 : 14,
+            bottom: 56,
+            left: width >= 700 ? 124 : 104,
+        };
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
+        svg.selectAll("*").remove();
+        svg
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", `0 0 ${width} ${height}`)
+            .attr("preserveAspectRatio", "xMidYMid meet");
+
+        const xScale = d3.scaleBand()
+            .domain(data.map((item) => item.key))
+            .range([0, innerWidth])
+            .padding(width >= 700 ? 0.38 : 0.28);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, (d3.max(data, (item) => item.value) || 0) * 1.12])
+            .nice()
+            .range([innerHeight, 0]);
+
+        const chartGroup = svg.append("g")
+            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+        chartGroup.append("g")
+            .attr("class", "ExpenditureGrid")
+            .call(
+                d3.axisLeft(yScale)
+                    .ticks(width >= 700 ? 5 : 4)
+                    .tickSize(-innerWidth)
+                    .tickFormat("")
+            );
+
+        chartGroup.append("g")
+            .attr("class", "ExpenditureAxis ExpenditureAxis--y")
+            .call(
+                d3.axisLeft(yScale)
+                    .ticks(width >= 700 ? 5 : 4)
+                    .tickFormat((value) => formatGraphValue(value))
+            );
+
+        chartGroup.append("g")
+            .attr("class", "ExpenditureAxis ExpenditureAxis--x")
+            .attr("transform", `translate(0, ${innerHeight})`)
+            .call(d3.axisBottom(xScale).tickFormat((key) => axisLabels[key]));
+
+        const bars = chartGroup.selectAll(".ExpenditureBar")
+            .data(data)
+            .enter()
+            .append("rect")
+            .attr("class", "ExpenditureBar")
+            .style("cursor", "pointer")
+            .attr("fill", (item) => item.phaseColor)
+            .attr("x", (item) => xScale(item.key))
+            .attr("y", (item) => yScale(item.value))
+            .attr("width", xScale.bandwidth())
+            .attr("height", (item) => innerHeight - yScale(item.value))
+            .attr("rx", 10)
+            .attr("ry", 10)
+            .on("mouseover", function (item) {
+                const chartBounds = chartContainer.getBoundingClientRect();
+                const pointerEvent = d3.event;
+                const left = pointerEvent.clientX - chartBounds.left + 12;
+                const top = pointerEvent.clientY - chartBounds.top - 12;
+
+                tooltip
+                    .style("display", "block")
+                    .html(
+                        `<strong>${item.yearLabel}</strong><br>${item.budgetPhase}<br>${item.formattedValue}`
+                    )
+                    .style("left", `${left}px`)
+                    .style("top", `${top}px`);
+            })
+            .on("mousemove", function () {
+                const chartBounds = chartContainer.getBoundingClientRect();
+                const pointerEvent = d3.event;
+                const left = pointerEvent.clientX - chartBounds.left + 12;
+                const top = pointerEvent.clientY - chartBounds.top - 12;
+
+                tooltip
+                    .style("left", `${left}px`)
+                    .style("top", `${top}px`);
+            })
+            .on("mouseout", function () {
+                tooltip.style("display", "none");
+            });
+
+        bars.raise();
+        renderLegend(phases);
+    }
 
     try {
-        dataset = JSON.parse(chartData.textContent);
-        if (!dataset) {
-            throw new Error("Invalid data structure");
+        const dataset = JSON.parse(chartDataNode.textContent);
+        const chartData = normaliseDataset(dataset);
+
+        function scheduleChartRender() {
+            const nextWidth = getChartWidth();
+
+            if (d3.select(`#${svgId}`).attr("width") && nextWidth === lastMeasuredWidth) {
+                return;
+            }
+
+            lastMeasuredWidth = nextWidth;
+            createChart(chartData);
+            window.requestAnimationFrame(function () {
+                createChart(chartData);
+            });
+            window.setTimeout(function () {
+                createChart(chartData);
+            }, 180);
+            window.setTimeout(function () {
+                createChart(chartData);
+            }, 420);
         }
 
-        const svgId = `budgetActualChart`;
-        const legendId = `legend`;
+        scheduleChartRender();
+        window.addEventListener("resize", scheduleChartRender);
 
-        const categories = [...new Set(dataset.children.map(d => d.name))];
-        const subcategories = [...new Set(dataset.children.map(d => d.budgetPhase.trim()))];
-
-        dataset.children.forEach(d => {
-                d.formatted_value = formatValue(d.value); // Format values
-            });
-
-        const colorScale = d3.scaleOrdinal()
-            .domain(subcategories)
-            .range(["#F2DAE0","#E4B5C0", "#D392A1","#C46D83"]);
-
-        function createChart() {
-            const width = window.innerWidth * 0.45 // Adjusted for two charts
-            const height = window.innerHeight * 0.6;
-            const margin = { top: 50, right: 50, bottom: 60, left: 100 };
-
-            d3.select(`#${svgId}`).selectAll("*").remove();
-
-            const svg = d3.select(`#${svgId}`)
-                .attr("width", width)
-                .attr("height", height);
-
-            // 🔹 Uniform spacing between groupings and bars
-            const x0 = d3.scaleBand()
-                .domain(categories)
-                .range([margin.left, width - margin.right])
-                .padding(0.15); // 🔹 Keeps consistent spacing
-
-            const x1 = d3.scaleBand()
-                .domain(subcategories)
-                .range([0, x0.bandwidth()])
-                .padding(0.1); // 🔹 Ensures consistent subcategory bar width
-
-            const y = d3.scaleLinear()
-                .domain([0, d3.max(dataset.children, d => d.value)])
-                .nice()
-                .range([height - margin.bottom, margin.top]);
-
-            const chartGroup = svg.append("g");
-
-            // ✅ X Axis
-            chartGroup.append("g")
-                .attr("transform", `translate(0, ${height - margin.bottom})`)
-                .call(d3.axisBottom(x0))
-                .attr("class", "axis-label");
-
-            // ✅ Y Axis with "B" for billions
-
-            chartGroup.append("g")
-                .attr("transform", `translate(${margin.left}, 0)`)
-                .call(d3.axisLeft(y).tickFormat(d => formatYAxis(d)))
-                .attr("class", "axis-label");
-
-            const tooltip = d3.select(".tooltip");
-
-            // ✅ Create grouped bars (ensuring uniform formatting)
-            const categoryGroups = chartGroup.selectAll(".category-group")
-                .data(categories)
-                .enter().append("g")
-                .attr("transform", d => `translate(${x0(d)},0)`);
-
-            categoryGroups
-              .selectAll(".bar")
-              .data((d) => dataset.children.filter((item) => item.name === d))
-              .enter()
-              .append("rect")
-              .attr("class", "bar")
-              .attr("x", (d) => x1(d.budgetPhase.trim()))
-              .attr("y", (d) => y(d.value))
-              .attr("width", x1.bandwidth())
-              .attr("height", (d) => height - margin.bottom - y(d.value))
-              .attr("fill", (d) => colorScale(d.budgetPhase.trim()))
-              .on("mouseover", function(event, d) {
-                const [relX, relY] = d3.pointer(event, svg.node());
-                const svgRect = svg.node().getBoundingClientRect();
-
-                // Calculate absolute position on the page (viewport position + scroll offset).
-                // This is robust even if event.pageX/Y or clientX/Y are unreliable directly.
-                // const xPos = svgRect.left + relX + window.scrollX;
-                // const yPos = svgRect.top + relY + window.scrollY;
-                // Show tooltip on mouseover
-                tooltip
-                  .style("display", "block")
-                  .html(
-                    `<strong>${event.budgetPhase}</strong><br>Value: ${event.value}<br>Year: ${event.name}`
-                  ) // Format value in tooltip
-                  .style("left", `${d3.event.pageX + 10}px`)
-                  .style("top", `${d3.event.pageY - 10}px`);
-              })
-              .on("mouseout", () => {
-                // Hide tooltip on mouseout
-                tooltip.style("display", "none");
-              });
-
-                
-            // ✅ Updated legend
-            const legendContainer = d3.select(`#${legendId}`).html("");
-
-            subcategories.forEach(sub => {
-                const legendItem = legendContainer.append("div").attr("class", "legend");
-                legendItem.append("div")
-                    .attr("class", "legend-box")
-                    .style("background-color", colorScale(sub));
-                legendItem.append("span").text(sub);
-            });
+        if (window.ResizeObserver) {
+            new ResizeObserver(scheduleChartRender).observe(chartCard);
         }
-
-        createChart();
-        window.addEventListener("resize", createChart);
-    }
-    catch (error) {
-        console.error("JSON Parse Error:", error);
+    } catch (error) {
+        console.error("Budget actual chart parse error:", error);
+        renderEmptyState("Unable to load chart", "Please try again in a moment.");
     }
 });
-
-// ✅ Custom Y-axis Formatter (Shows "B" for Billions)
-function formatValue(value) {
-    if (value >= 1e12) {
-        return `R ${(value / 1e12).toFixed(1).toLocaleString()} trillion`; // Trillions
-    } else if (value >= 1e9) {
-        return `R ${(value / 1e9).toFixed(1).toLocaleString()} billion`; // Billions
-    } else if (value >= 1e6) {
-        return `R ${(value / 1e6).toFixed(1).toLocaleString()} million`; // million
-    } else if (value >= 1e3) {
-        return `R ${(value / 1e3).toFixed(1).toLocaleString()} thousand`; // thousand
-    } else {
-        return 'R ' + value.toLocaleString(); // Default formatting
-    }
-}
-
-        // ✅ Custom Y-axis Formatter (Shows "B" for Billions)
-function formatYAxis(value) {
-    if (value >= 1e12) {
-        return `R ${(value / 1e12).toFixed(1).toLocaleString()} trillion`; // Trillions
-    } else if (value >= 1e9) {
-        return `R ${(value / 1e9).toFixed(1).toLocaleString()} billion`; // Billions
-    } else if (value >= 1e6) {
-        return `R ${(value / 1e6).toFixed(1).toLocaleString()} million`; // million
-    } else if (value >= 1e3) {
-        return `R ${(value / 1e3).toFixed(1).toLocaleString()} thousand`; // thousand
-    } else {
-        return "R" + value.toLocaleString(); // Default formatting
-    }
-}

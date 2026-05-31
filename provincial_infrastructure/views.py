@@ -137,8 +137,9 @@ class InfraProjectSearchView(
     # `index_models` is an optional list of which models you would like to include
     # in the search result. You might have several models indexed, and this provides
     # a way to filter out those of no interest for this particular view.
-    # (Translates to `SearchQuerySet().models(*index_models)` behind the scenes.
-    # index_models = [Location]
+    # Keep this API scoped to infrastructure projects even if other Haystack
+    # indexes are registered elsewhere in the portal.
+    index_models = [models.InfraProject]
     
     serializer_class = InfraProjectSerializer
     csv_serializer_class = InfraProjectCSVSerializer
@@ -158,7 +159,6 @@ class InfraProjectSearchView(
 
         csv_download_params = self._get_csv_query_params(request.query_params)
         response = super().list(request, *args, **kwargs)
-        print(response)
         if isinstance(response.data, dict):
             response.data["csv_download_url"] = reverse(
                 "infrastructure-project-api-csv"
