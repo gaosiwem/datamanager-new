@@ -1,77 +1,100 @@
-
 {% load define_action %}
-<!-- <div
-        id="js-initBudgetSummary"
->
-    <div id="national-treemap"
-         class="national-treemap"
-         data-webapp="consolidated-treemap"
-         data-year="{{ latest_year }}">
-    </div>
 
-    <div id="national-treemap"
-         class="national-treemap"
-         data-webapp="national-treemap"
-         data-year="{{ latest_year }}">
-    </div>
+<div class="BudgetSummaryTreemapList">
+    <section
+        class="BudgetSummaryTreemap"
+        data-budget-summary-treemap
+        data-data-id="consolidationData"
+        data-label="FUNCTION GROUP"
+        data-default-name="All function groups"
+        data-empty-name="No function group data available"
+    >
+        <div class="BudgetSummaryTreemapHeader">
+            <h2 class="Title Title--section">Consolidated Budget Summary</h2>
+            <p class="BudgetSummaryTreemapTotal">{{ consolidated_spending_total|safe }}</p>
+        </div>
 
-    <div id="provincial-treemap"
-         class="national-treemap"
-         data-webapp="provincial-treemap"
-         data-year="{{ latest_provincial_year }}">
-    </div>
-</div> -->
+        <div class="Card">
+            <div class="treemapWrapper">
+                <div class="treemapContainer">
+                    <div class="treemapPanelHeader">
+                        <label>FUNCTION GROUP</label>
+                    </div>
+                    <div class="treemapSummary">
+                        <p class="treemapSummaryEyebrow">Budget summary</p>
+                        <p class="treemapSummaryName" data-role="summary-name">All function groups</p>
+                        <p class="treemapSummaryValue" data-role="summary-value">R 0</p>
+                    </div>
+                    <div class="treemap" data-role="treemap"></div>
+                </div>
+            </div>
+            <div class="tooltip DepartmentGraphTooltip BudgetSummaryTreemapTooltip" data-role="tooltip"></div>
+        </div>
+    </section>
 
-<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; padding: 20px;">
-     <div style="width: 80%; max-width: 1000px;">
-          <div>
-               <h2>Consolidated Budget Summary</h2>
-               <p style="font-weight: bold; font-size: 18px;">{{ consolidated_spending_total |safe }}</p>
-          </div>
-          <div class="chart-container" id="chart-consolidation"></div>
-     </div>
-     <div style="width: 80%; max-width: 1000px;">
-          <div>
-               <h2>National Budget Summary</h2>
-               <p style="font-weight: bold; font-size: 18px;">{{ national_budget_spending_total |safe }}</p>
-          </div>
-          <div class="chart-container" id="chart-national-budget"></div>
-     </div>
-     <div style="width: 80%; max-width: 1000px;">
-          <div>
-               <h2>Provincial Budget Summary</h2>
-               <p style="font-weight: bold; font-size: 18px;">{{ provincial_budget_spending_total |safe }}</p>
-          </div>
-          <div class="chart-container" id="chart-provincial-budget"></div>
-     </div>
+    <section
+        class="BudgetSummaryTreemap"
+        data-budget-summary-treemap
+        data-data-id="nationalBudgetData"
+        data-label="DEPARTMENT"
+        data-default-name="All departments"
+        data-empty-name="No department data available"
+    >
+        <div class="BudgetSummaryTreemapHeader">
+            <h2 class="Title Title--section">National Budget Summary</h2>
+            <p class="BudgetSummaryTreemapTotal">{{ national_budget_spending_total|safe }}</p>
+        </div>
+
+        <div class="Card">
+            <div class="treemapWrapper">
+                <div class="treemapContainer">
+                    <div class="treemapPanelHeader">
+                        <label>DEPARTMENT</label>
+                    </div>
+                    <div class="treemapSummary">
+                        <p class="treemapSummaryEyebrow">Budget summary</p>
+                        <p class="treemapSummaryName" data-role="summary-name">All departments</p>
+                        <p class="treemapSummaryValue" data-role="summary-value">R 0</p>
+                    </div>
+                    <div class="treemap" data-role="treemap"></div>
+                </div>
+            </div>
+            <div class="tooltip DepartmentGraphTooltip BudgetSummaryTreemapTooltip" data-role="tooltip"></div>
+        </div>
+    </section>
+
+    <section
+        class="BudgetSummaryTreemap"
+        data-budget-summary-treemap
+        data-data-id="provincialBudgetData"
+        data-label="PROVINCE"
+        data-default-name="All provinces"
+        data-empty-name="No province data available"
+    >
+        <div class="BudgetSummaryTreemapHeader">
+            <h2 class="Title Title--section">Provincial Budget Summary</h2>
+            <p class="BudgetSummaryTreemapTotal">{{ provincial_budget_spending_total|safe }}</p>
+        </div>
+
+        <div class="Card">
+            <div class="treemapWrapper">
+                <div class="treemapContainer">
+                    <div class="treemapPanelHeader">
+                        <label>PROVINCE</label>
+                    </div>
+                    <div class="treemapSummary">
+                        <p class="treemapSummaryEyebrow">Budget summary</p>
+                        <p class="treemapSummaryName" data-role="summary-name">All provinces</p>
+                        <p class="treemapSummaryValue" data-role="summary-value">R 0</p>
+                    </div>
+                    <div class="treemap" data-role="treemap"></div>
+                </div>
+            </div>
+            <div class="tooltip DepartmentGraphTooltip BudgetSummaryTreemapTooltip" data-role="tooltip"></div>
+        </div>
+    </section>
 </div>
 
-<div class="tooltip" id="tooltip"></div>         
-
-<script id="consolidationData" type="application/json">{{ consolidated_spending |safe }}</script>
-<script id="nationalBudgetData" type="application/json">{{ national_budget_spending |safe }}</script>
-<script id="provincialBudgetData" type="application/json">{{ provincial_budget_spending |safe }}</script>
-
-<style>
-    .chart-container {
-        width: 100%;
-        max-width: 1000px;
-        height: auto; 
-        background: #f4f4f4;
-        border-radius: 8px;
-    }
-
-    .tooltip {
-        position: absolute;
-        display: none;
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 12px;
-        pointer-events: none;
-    }
-</style>
-
-
-
+<script id="consolidationData" type="application/json">{{ consolidated_spending|safe }}</script>
+<script id="nationalBudgetData" type="application/json">{{ national_budget_spending|safe }}</script>
+<script id="provincialBudgetData" type="application/json">{{ provincial_budget_spending|safe }}</script>

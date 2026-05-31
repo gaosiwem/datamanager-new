@@ -66,18 +66,33 @@
                      <div class="bubbleChartMainContainer">
                         <div class="bubbleChartLegendContainer">
                             <label>PROGRAMME</label>
-                            <div class="bubbleChartLegend" id="programme-legend"></div>
+                            <p class="bubbleChartLegendPrompt">Choose a programme</p>
+                            <p class="bubbleChartLegendIntro">Explore how the budget is distributed across spending items.</p>
+                            <div class="bubbleChartLegend">
+                                <div class="bubbleChartSelectWrap">
+                                    <select id="bubble-programme-select" class="bubbleChartSelect"></select>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="bubbleChartContainer">
                             <label>ECONOMIC CLASSIFICATION</label>
-                            <p id="selected-econ-programme"></p>
-                            <p id="selected-econ"></p>
-                            <p id="selected-econ-value"></p>
-                            <svg id="bubble_graph_svg" width="600" height="500"></svg>                            
+                            <div class="bubbleChartSummary">
+                                <div class="bubbleChartSummaryGroup">
+                                    <p class="bubbleChartSummaryEyebrow">Selected programme</p>
+                                    <p id="selected-econ-programme" class="bubbleChartSummaryProgramme"></p>
+                                </div>
+                                <div class="bubbleChartSummaryGroup">
+                                    <p class="bubbleChartSummaryEyebrow">Selected spending item</p>
+                                    <p id="selected-econ" class="bubbleChartSummaryName"></p>
+                                    <p id="selected-econ-value" class="bubbleChartSummaryValue"></p>
+                                </div>
+                            </div>
+                            <p class="bubbleChartHint">Bubble size shows relative budget value. Select a bubble for more detail.</p>
+                            <svg id="bubble_graph_svg"></svg>
                         </div>
 
-                        <div class="tooltip" id="tooltip"></div>
+                        <div class="tooltip DepartmentGraphTooltip" id="tooltip"></div>
 
                     <script id="bubble_graph" type="application/json">{{ bubble_graph|safe }}</script>
                     <!-- <div class="legend"> Budget (Main appropriation) {{ selected_financial_year }}</div> -->

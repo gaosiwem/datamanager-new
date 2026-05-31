@@ -14,7 +14,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 from django.conf.urls.static import static
 
 
-from . import views
+from . import search_api, views
 
 CACHE_MINUTES_SECS = 60 * 5  # minutes
 
@@ -80,14 +80,34 @@ urlpatterns = [
         name="latest-department-list",
     ),
     url(
+        r"^search-result/?$",
+        views.latest_search_result_redirect,
+        name="latest-search-result",
+    ),
+    url(
         r"^(?P<financial_year_id>\d{4}-\d{2})/departments$",
         cache_page(CACHE_MINUTES_SECS)(views.department_list),
         name="department-list",
     ),
+    url(
+        r"^(?P<financial_year_id>\d{4}-\d{2})/search-result/?$",
+        cache_page(CACHE_MINUTES_SECS)(views.search_result_page),
+        name="search-result",
+    ),
+    url(
+        r"^api/v1/search/?$",
+        cache_page(CACHE_MINUTES_SECS)(search_api.search_landing_api),
+        name="search-api",
+    ),
+    url(
+        r"^api/v1/search/facet/?$",
+        cache_page(CACHE_MINUTES_SECS)(search_api.search_facet_api),
+        name="search-facet-api",
+    ),
 
     url(r"^performance/", include("performance.urls")),
     url(r"^public-entities/", include("public_entities.urls")),
-    url(r"^data_validation/", include("data_validation.urls")),
+    # url(r"^data_validation/", include("data_validation.urls")),
     
     # Provincial Infrastructure projects
     url(r"^provincial-infrastructure/", include("provincial_infrastructure.urls")),

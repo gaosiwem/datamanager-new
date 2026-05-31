@@ -29,10 +29,14 @@ class GovernmentSerializer(ModelSerializer):
 
 class DepartmentSerializer(ModelSerializer):
     government = GovernmentSerializer()
+    url_path = serializers.SerializerMethodField()
 
     class Meta:
         model = Department
-        fields = ("government", "name")
+        fields = ("government", "name", "slug", "url_path")
+
+    def get_url_path(self, obj):
+        return "/%s" % obj.get_url_path().lstrip("/")
 
 
 class PublicEntitiesSerializer(ModelSerializer):

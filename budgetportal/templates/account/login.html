@@ -1,53 +1,129 @@
 {% extends "base_sso.html" %}
 
 {% load i18n %}
-{% load account socialaccount %}
+{% load account socialaccount auth_extras %}
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
+{% block auth_intro %}
+{% with redirect_target=redirect_field_value|default:request.GET.next|default:'' %}
+{% with is_admin_login=redirect_target|is_admin_login_target %}
+<p class="AuthEyebrow">{% if is_admin_login %}Staff access{% else %}Vulekamali account{% endif %}</p>
+<h1 class="Page-mainHeading">{% if is_admin_login %}{% trans "Admin sign in" %}{% else %}{% trans "Welcome back" %}{% endif %}</h1>
+<p class="Page-subHeading">
+  {% if is_admin_login %}
+  Sign in with your approved staff account to access the admin workspace behind the portal.
+  {% else %}
+  Sign in to continue with your Vulekamali account and related tools.
+  {% endif %}
+</p>
+<ul class="AuthIntroList">
+  <li>Portal-aligned branding and clear sign-in actions.</li>
+  <li>Single sign-on and password login in one reliable place.</li>
+  <li>Clean redirects back to the tool you were trying to reach.</li>
+</ul>
+{% endwith %}
+{% endwith %}
+{% endblock %}
+
 {% block content %}
-
-<h1 class="Title">{% trans "Log in" %}</h1>
-
-<div class="Card u-marginAuto u-marginBottom20">
-
+{% get_providers as socialaccount_providers %}
+{% with redirect_target=redirect_field_value|default:request.GET.next|default:'' %}
+{% with is_admin_login=redirect_target|is_admin_login_target %}
+<div class="Card">
   <div class="Card-content">
-    <h2 class="Card-title u-marginBottom20">Log in with social media</h2>
-    {% include "socialaccount/snippets/provider_list.html" with process="login" %}  
-  </div>
+    <p class="AuthEyebrow">{% if is_admin_login %}{% trans "Administration" %}{% else %}{% trans "Account access" %}{% endif %}</p>
+    <h2 class="Card-title">{% if is_admin_login %}{% trans "Sign in to continue" %}{% else %}{% trans "Sign in" %}{% endif %}</h2>
+    <p class="AuthMeta">
+      {% if is_admin_login %}
+      Use your work credentials to continue to the administration tools.
+      {% else %}
+      Enter your account details below to continue.
+      {% endif %}
+    </p>
 
-  <div class="Card-content u-marginTop10">
-    <h2 class="Card-title u-marginBottom20">Log in with email</h2>
-    <form class="login" method="POST" action="{% url 'account_login' %}">
+    {% if form.non_field_errors %}
+    {{ form.non_field_errors }}
+    {% endif %}
+
+    <form class="AuthForm" method="POST" action="{% url 'account_login' %}">
       {% csrf_token %}
-      {{ form.as_p }}
+      {% for hidden in form.hidden_fields %}
+      {{ hidden }}
+      {% endfor %}
+
+      <div class="AuthField">
+        <label for="{{ form.login.id_for_label }}">
+          {% if is_admin_login %}{% trans "Email address" %}{% else %}{{ form.login.label }}{% endif %}
+        </label>
+        <input
+          type="text"
+          class="Input"
+          name="{{ form.login.html_name }}"
+          id="{{ form.login.id_for_label }}"
+          value="{{ form.login.value|default_if_none:'' }}"
+          autocomplete="username"
+          {% if form.login.field.required %}required{% endif %}
+        >
+        {{ form.login.errors }}
+      </div>
+
+      <div class="AuthField">
+        <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+        <input
+          type="password"
+          class="Input"
+          name="{{ form.password.html_name }}"
+          id="{{ form.password.id_for_label }}"
+          autocomplete="current-password"
+          {% if form.password.field.required %}required{% endif %}
+        >
+        {{ form.password.errors }}
+      </div>
+
+      {% if form.remember %}
+      <div class="AuthCheckbox">
+        <input
+          type="checkbox"
+          name="{{ form.remember.html_name }}"
+          id="{{ form.remember.id_for_label }}"
+          {% if form.remember.value %}checked{% endif %}
+        >
+        <label for="{{ form.remember.id_for_label }}">
+          {% trans "Keep me signed in on this device" %}
+        </label>
+      </div>
+      {% endif %}
 
       {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
       {% endif %}
 
-      <button class="Button is-secondary" type="submit">{% trans "Sign In" %}</button>
+      <button class="Button" type="submit">{% trans "Sign In" %}</button>
 
-      <a 
-        class="u-textAlignCenter u-displayBlock u-colorDarkGrey u-marginTop20"
-        href="{% url 'account_reset_password' %}"
-      >
-        {% trans "Forgot Password?" %}
-      </a>
-
-      <div class="u-marginTop20 u-marginBottom20">
-        <div class="Divider">
-          <div class="Divider-line"></div>
-          <div class="Divider-title">OR </div>
-          <div class="Divider-line"></div>
-        </div>
+      <div class="AuthLinks">
+        <a href="{% url 'account_reset_password' %}">
+          {% trans "Forgot your password?" %}
+        </a>
+        {% if signup_url and not is_admin_login %}
+        <a href="{{ signup_url }}">
+          {% trans "Create an account" %}
+        </a>
+        {% endif %}
       </div>
-
-      <a class="Button" href="{{ signup_url }}">Create account</a>
-
     </form>
+
+    {% if socialaccount_providers %}
+    <div class="AuthDivider">
+      <p class="AuthDividerText">{% trans "Single sign-on" %}</p>
+    </div>
+
+    <div class="AuthProviderList">
+      {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+    </div>
+    {% endif %}
   </div>
-
 </div>
-
+{% endwith %}
+{% endwith %}
 {% endblock %}

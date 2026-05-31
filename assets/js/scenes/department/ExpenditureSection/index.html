@@ -16,58 +16,299 @@
             </div>
 
             <p class="js-tooltips">
-                Budgeted and actual expenditure/allocations for a department can increase or decrease from year to year.
-                Changes in expenditure for a department can be because of changes in the activities of the department,
-                because of changes in priorities between departments, because of cost efficiencies or because of
-                increases in the price of goods and services due to inflation.
+                Budgeted and actual expenditure for a department can increase or decrease from year to year.
+                Changes in expenditure can follow shifts in departmental activities, priorities, efficiencies,
+                and the price of goods and services over time.
             </p>
 
             <p class="js-tooltips">
-                The chart shows the department’s actual expenditure for past years, and budgeted expenditure for the
-                current year and the upcoming three years of the medium-term expenditure framework (MTEF). By adjusting
-                these numbers to take inflation into account, it is possible to determine if a department’s expenditure
-                is really increasing or decreasing in real terms, as compared to the rest of the economy.
+                The chart shows the department's latest available historical expenditure for past years, and
+                planned expenditure for the current year and medium-term expenditure framework (MTEF) years.
             </p>
 
-            <p class="u-marginBottom15">
-                Previous financial years indicate actual expenditure while upcoming financial years indicate estimated
-                expenditure:
-
-            <table border="1" cellspacing="0" cellpadding="0" id="expenditureTable">
-                <tbody>
-                    <tr>
-                        <th class="ExpenditureSection-cell">Year</th>
-                        <th class="ExpenditureSection-cell">Phase</th>
-                    </tr>
-                </tbody>
-            </table>
+            <p class="ExpenditureSection-phaseLead">
+                The phase used for each year is shown below:
             </p>
+
+            <div class="ExpenditureSection-phaseList" id="expenditurePhaseList"></div>
 
             <ul class="LinksList">
                 {% include 'components/LinksList/item.html' with prefix="Source" text=source_text url=dataset type="dataset" %}
-
                 {% include 'components/LinksList/item.html' with text="Download this data for analysis (CSV)" url=csv type="download" %}
-
                 {% include 'components/LinksList/item.html' with text=guide_text url=guide type="guide" %}
-
                 {% include 'components/LinksList/item.html' with text=pdf_text url=pdf type="download" %}
-
                 {% include 'components/LinksList/item.html' with text=excel_text url=excel type="download" %}
             </ul>
         </div>
 
         <div class="ExpenditureSection-item ExpenditureSection-item--right">
-
             <div class="Page-content">
-                <div class="Card">
+                <div class="Card ExpenditureChartCard">
                     <svg id="historyBarGraph"></svg>
-                    <div class="tooltip"></div>
+                    <div class="tooltip DepartmentGraphTooltip" id="historyBarTooltip"></div>
 
                     <script id="historyBar" type="application/json">{{ historical_expenditure|safe }}</script>
+                    <script>
+                        window.addEventListener("load", function() {
+                            if (window.__expenditureSectionChartPatched) {
+                                return;
+                            }
+
+                            window.__expenditureSectionChartPatched = true;
+
+                            const PHASE_METADATA = {
+                                "Main appropriation": {
+                                    rank: 1,
+                                    color: "#ad3c64",
+                                    seriesType: "planned",
+                                },
+                                "Adjusted appropriation": {
+                                    rank: 2,
+                                    color: "#ee9f31",
+                                    seriesType: "planned",
+                                },
+                                "Audited Outcome": {
+                                    rank: 3,
+                                    color: "#7bb344",
+                                    seriesType: "historical",
+                                },
+                            };
+
+                            const historyData = document.getElementById("historyBar");
+                            const historyChart = d3.select("#historyBarGraph");
+                            const tooltip = d3.select("#historyBarTooltip");
+                            const phaseList = document.getElementById("expenditurePhaseList");
+                            const chartCard = document.querySelector(".ExpenditureChartCard");
+
+                            if (!historyData || !chartCard || historyChart.empty()) {
+                                return;
+                            }
+
+                            function formatFinancialYear(year) {
+                                if (!year || isNaN(year)) {
+                                    return year;
+                                }
+
+                                return `${year}-${(year + 1).toString().slice(-2)}`;
+                            }
+
+                            function formatCurrencyValue(value) {
+                                const numericValue = Number(value);
+                                const absoluteValue = Math.abs(numericValue);
+
+                                if (absoluteValue >= 1e12) return `R ${Math.round(numericValue / 1e12).toLocaleString()} trillion`;
+                                if (absoluteValue >= 1e9) return `R ${Math.round(numericValue / 1e9).toLocaleString()} billion`;
+                                if (absoluteValue >= 1e6) return `R ${Math.round(numericValue / 1e6).toLocaleString()} million`;
+                                if (absoluteValue >= 1e3) return `R ${Math.round(numericValue / 1e3).toLocaleString()} thousand`;
+                                return `R ${Math.round(numericValue).toLocaleString()}`;
+                            }
+
+                            function formatGraphCurrency(value) {
+                                return formatCurrencyValue(value);
+                            }
+
+                            function getPhaseMetadata(budgetPhase) {
+                                return PHASE_METADATA[budgetPhase] || {
+                                    rank: 99,
+                                    color: "#7d7d7d",
+                                    seriesType: "historical",
+                                };
+                            }
+
+                            function normaliseDataset(rawDataset) {
+                                return (rawDataset.children || [])
+                                    .map((item) => {
+                                        const year = parseInt(item.Name || item.name, 10);
+                                        const budgetPhase = item.BudgetPhase || item.budgetPhase || "";
+                                        const phaseMetadata = getPhaseMetadata(budgetPhase);
+                                        const value = Number(item.Count || item.value || 0);
+
+                                        return {
+                                            year,
+                                            yearLabel: formatFinancialYear(year),
+                                            value,
+                                            budgetPhase,
+                                            phaseRank: phaseMetadata.rank,
+                                            phaseColor: phaseMetadata.color,
+                                            seriesType: item.SeriesType || phaseMetadata.seriesType,
+                                            formattedValue: formatCurrencyValue(value),
+                                            compactValue: formatGraphCurrency(value),
+                                        };
+                                    })
+                                    .filter((item) => item.year && item.value >= 0)
+                                    .sort((left, right) => {
+                                        if (left.year !== right.year) {
+                                            return left.year - right.year;
+                                        }
+
+                                        return left.phaseRank - right.phaseRank;
+                                    });
+                            }
+
+                            function populatePhaseList(data) {
+                                if (!phaseList) {
+                                    return;
+                                }
+
+                                phaseList.innerHTML = "";
+
+                                data.forEach((item) => {
+                                    const phaseItem = document.createElement("div");
+                                    phaseItem.className = "ExpenditurePhaseItem";
+                                    phaseItem.style.borderLeft = `4px solid ${item.phaseColor}`;
+
+                                    const yearNode = document.createElement("span");
+                                    yearNode.className = "ExpenditurePhaseYear";
+                                    yearNode.textContent = item.yearLabel;
+
+                                    const phaseNode = document.createElement("span");
+                                    phaseNode.className = "ExpenditurePhaseLabel";
+                                    phaseNode.textContent = item.budgetPhase;
+
+                                    phaseItem.appendChild(yearNode);
+                                    phaseItem.appendChild(phaseNode);
+                                    phaseList.appendChild(phaseItem);
+                                });
+                            }
+
+                            function renderEmptyState(message, hint) {
+                                const width = Math.max(chartCard.clientWidth - 32, 320);
+                                const height = 280;
+
+                                historyChart.selectAll("*").remove();
+                                historyChart
+                                    .attr("viewBox", `0 0 ${width} ${height}`)
+                                    .attr("width", width)
+                                    .attr("height", height)
+                                    .attr("preserveAspectRatio", "xMidYMid meet");
+
+                                historyChart
+                                    .append("text")
+                                    .attr("class", "ExpenditureEmptyState")
+                                    .attr("x", width / 2)
+                                    .attr("y", height / 2 - 10)
+                                    .attr("text-anchor", "middle")
+                                    .text(message);
+
+                                historyChart
+                                    .append("text")
+                                    .attr("class", "ExpenditureEmptyHint")
+                                    .attr("x", width / 2)
+                                    .attr("y", height / 2 + 18)
+                                    .attr("text-anchor", "middle")
+                                    .text(hint);
+                            }
+
+                            function renderChart(data) {
+                                if (!data.length) {
+                                    renderEmptyState("No expenditure data available", "Please try again later.");
+                                    return;
+                                }
+
+                                const width = Math.max(chartCard.clientWidth - 32, 320);
+                                const height = width >= 960 ? 420 : width >= 700 ? 380 : 340;
+                                const margin = {
+                                    top: 24,
+                                    right: width >= 700 ? 20 : 14,
+                                    bottom: 56,
+                                    left: width >= 700 ? 124 : 104,
+                                };
+                                const innerWidth = width - margin.left - margin.right;
+                                const innerHeight = height - margin.top - margin.bottom;
+
+                                historyChart.selectAll("*").remove();
+                                historyChart
+                                    .attr("viewBox", `0 0 ${width} ${height}`)
+                                    .attr("width", width)
+                                    .attr("height", height)
+                                    .attr("preserveAspectRatio", "xMidYMid meet");
+
+                                const svg = historyChart
+                                    .append("g")
+                                    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+                                const xScale = d3
+                                    .scaleBand()
+                                    .domain(data.map((item) => item.yearLabel))
+                                    .range([0, innerWidth])
+                                    .padding(width >= 700 ? 0.38 : 0.28);
+
+                                const yScale = d3
+                                    .scaleLinear()
+                                    .domain([0, (d3.max(data, (item) => item.value) || 0) * 1.12])
+                                    .nice()
+                                    .range([innerHeight, 0]);
+
+                                svg
+                                    .append("g")
+                                    .attr("class", "ExpenditureGrid")
+                                    .call(
+                                        d3.axisLeft(yScale)
+                                            .ticks(width >= 700 ? 5 : 4)
+                                            .tickSize(-innerWidth)
+                                            .tickFormat("")
+                                    );
+
+                                svg
+                                    .append("g")
+                                    .attr("class", "ExpenditureAxis ExpenditureAxis--y")
+                                    .call(
+                                        d3.axisLeft(yScale)
+                                            .ticks(width >= 700 ? 5 : 4)
+                                            .tickFormat((value) => formatGraphCurrency(value))
+                                    );
+
+                                svg
+                                    .append("g")
+                                    .attr("class", "ExpenditureAxis ExpenditureAxis--x")
+                                    .attr("transform", `translate(0, ${innerHeight})`)
+                                    .call(d3.axisBottom(xScale));
+
+                                const bars = svg
+                                    .selectAll(".ExpenditureBar")
+                                    .data(data)
+                                    .enter()
+                                    .append("rect")
+                                    .attr("class", "ExpenditureBar")
+                                    .attr("fill", (item) => item.phaseColor)
+                                    .attr("x", (item) => xScale(item.yearLabel))
+                                    .attr("y", (item) => yScale(item.value))
+                                    .attr("width", xScale.bandwidth())
+                                    .attr("height", (item) => innerHeight - yScale(item.value))
+                                    .attr("rx", 10)
+                                    .attr("ry", 10)
+                                    .on("mouseover", function(item) {
+                                        tooltip
+                                            .style("display", "block")
+                                            .html(
+                                                `<strong>${item.yearLabel}</strong><br>${item.budgetPhase}<br>${item.formattedValue}`
+                                            )
+                                            .style("left", `${d3.event.pageX + 12}px`)
+                                            .style("top", `${d3.event.pageY - 12}px`);
+                                    })
+                                    .on("mouseout", function() {
+                                        tooltip.style("display", "none");
+                                    });
+
+                                bars.raise();
+                            }
+
+                            try {
+                                const chartData = normaliseDataset(JSON.parse(historyData.textContent));
+                                populatePhaseList(chartData);
+                                renderChart(chartData);
+
+                                window.addEventListener("resize", function() {
+                                    renderChart(chartData);
+                                });
+                            } catch (error) {
+                                console.error("Historical expenditure chart parse error:", error);
+                                renderEmptyState("Unable to load chart", "Please try again in a moment.");
+                            }
+                        });
+                    </script>
                 </div>
-            </div>           
+            </div>
+        </div>
     </div>
-
-
-
-    
+</div>

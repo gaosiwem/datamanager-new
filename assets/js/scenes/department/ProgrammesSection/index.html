@@ -52,21 +52,31 @@
                 <div class="Card">
                     <div class="treemapWrapper">
                         <div class="treemapContainer">
-                            <label>PROGRAMME</label>
-                            <p id="selectedProgramme">All Programmes</p>
-                            <p id="selectedProgrammeAmount">0</p>
+                            <div class="treemapPanelHeader">
+                                <label>PROGRAMME</label>
+                            </div>
+                            <div class="treemapSummary">
+                                <p class="treemapSummaryEyebrow">Selected programme</p>
+                                <p id="selectedProgramme" class="treemapSummaryName">All programmes</p>
+                                <p id="selectedProgrammeAmount" class="treemapSummaryValue">R 0</p>
+                            </div>
                             <div class="treemap" id="heatmap1"></div>
                         </div>
                     
                         <div class="treemapContainer">
-                            <label>SUB-PROGRAMME</label>
-                            <p id="selectedSubprogramme">None selected</p>
-                            <p id="selectedSubprogrammeAmount">0</p>
+                            <div class="treemapPanelHeader">
+                                <label>SUB-PROGRAMME</label>
+                            </div>
+                            <div class="treemapSummary">
+                                <p class="treemapSummaryEyebrow">Selected sub-programme</p>
+                                <p id="selectedSubprogramme" class="treemapSummaryName">All sub-programmes</p>
+                                <p id="selectedSubprogrammeAmount" class="treemapSummaryValue">R 0</p>
+                            </div>
                             <div class="treemap" id="heatmap2"></div>
                         </div>
                     </div>
                     
-                    <div class="tooltip" id="tooltip"></div>
+                    <div class="tooltip DepartmentGraphTooltip" id="treemap-tooltip"></div>
                     <!-- <div class="selected-info" id="selected-info">Click a box to see details</div> -->
                     
                     

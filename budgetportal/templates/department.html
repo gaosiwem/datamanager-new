@@ -69,6 +69,428 @@
 
 <div class="Page-content Page-content--dynamicYears">
     <div class="Page-contentInner Page-contentInner--department is-full">
+        <style>
+            .Page-contentInner--department .DepartmentGraphTooltip,
+            .Page-contentInner--department .tooltip,
+            .Page-contentInner--department #historyBarTooltip,
+            .Page-contentInner--department #treemap-tooltip,
+            .Page-contentInner--department #programme-econ-tooltip,
+            .Page-contentInner--department #tooltip {
+                position: absolute;
+                display: none;
+                min-width: 160px;
+                max-width: 240px;
+                padding: 10px 12px;
+                border: 1px solid #d9d9d9;
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.98);
+                box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+                color: #3f3f3f;
+                font: 12px/1.5 Roboto, sans-serif;
+                pointer-events: none;
+                white-space: normal;
+                z-index: 30;
+            }
+
+            .Page-contentInner--department .DepartmentGraphTooltip strong,
+            .Page-contentInner--department .tooltip strong,
+            .Page-contentInner--department #historyBarTooltip strong,
+            .Page-contentInner--department #treemap-tooltip strong,
+            .Page-contentInner--department #programme-econ-tooltip strong,
+            .Page-contentInner--department #tooltip strong {
+                display: inline;
+                margin-bottom: 0;
+                color: #1f1f1f;
+                font-weight: 700;
+            }
+
+            .Page-contentInner--department .DepartmentGraphTooltip-line {
+                margin-top: 2px;
+            }
+
+            .Page-contentInner--department .DepartmentGraphTooltip-line--value {
+                margin-top: 4px;
+            }
+        </style>
+        <script>
+            (function() {
+                const tooltipSelectors = [
+                    ".Page-contentInner--department #historyBarTooltip",
+                    ".Page-contentInner--department #treemap-tooltip",
+                    ".Page-contentInner--department #programme-econ-tooltip",
+                    ".Page-contentInner--department #tooltip",
+                    ".Page-contentInner--department .DepartmentGraphTooltip",
+                ];
+
+                function escapeTooltipHtml(text) {
+                    return String(text || "")
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/'/g, "&#39;");
+                }
+
+                function parseDepartmentCurrencyValue(rawValue) {
+                    const text = String(rawValue || "")
+                        .replace(/^Value:\s*/i, "")
+                        .replace(/^R\s*/i, "")
+                        .replace(/,/g, "")
+                        .trim();
+
+                    if (!text) {
+                        return null;
+                    }
+
+                    const match = text.match(/^(-?\d+(?:\.\d+)?)\s*(tn|trillion|bn|billion|m|million|k|thousand)?$/i);
+
+                    if (!match) {
+                        return null;
+                    }
+
+                    const amount = Number(match[1]);
+                    const unit = (match[2] || "").toLowerCase();
+
+                    if (!Number.isFinite(amount)) {
+                        return null;
+                    }
+
+                    if (unit === "tn" || unit === "trillion") {
+                        return amount * 1e12;
+                    }
+
+                    if (unit === "bn" || unit === "billion") {
+                        return amount * 1e9;
+                    }
+
+                    if (unit === "m" || unit === "million") {
+                        return amount * 1e6;
+                    }
+
+                    if (unit === "k" || unit === "thousand") {
+                        return amount * 1e3;
+                    }
+
+                    return amount;
+                }
+
+                function formatDepartmentCurrency(value) {
+                    const numericValue = Number(value);
+
+                    if (!Number.isFinite(numericValue)) {
+                        return value;
+                    }
+
+                    const absoluteValue = Math.abs(numericValue);
+
+                    if (absoluteValue >= 1e12) {
+                        return `R ${Math.round(numericValue / 1e12).toLocaleString()} trillion`;
+                    }
+
+                    if (absoluteValue >= 1e9) {
+                        return `R ${Math.round(numericValue / 1e9).toLocaleString()} billion`;
+                    }
+
+                    if (absoluteValue >= 1e6) {
+                        return `R ${Math.round(numericValue / 1e6).toLocaleString()} million`;
+                    }
+
+                    if (absoluteValue >= 1e3) {
+                        return `R ${Math.round(numericValue / 1e3).toLocaleString()} thousand`;
+                    }
+
+                    return `R ${Math.round(numericValue).toLocaleString()}`;
+                }
+
+                window.__formatDepartmentCurrency = formatDepartmentCurrency;
+
+                function formatTooltipLine(line) {
+                    const trimmedLine = String(line || "").replace(/\s+/g, " ").trim();
+                    const parsedValue = parseDepartmentCurrencyValue(trimmedLine);
+
+                    if (parsedValue !== null) {
+                        return formatDepartmentCurrency(parsedValue);
+                    }
+
+                    if (/^Value:\s*/i.test(trimmedLine)) {
+                        const valueOnly = parseDepartmentCurrencyValue(trimmedLine);
+                        return valueOnly !== null
+                            ? `Value: ${formatDepartmentCurrency(valueOnly)}`
+                            : trimmedLine;
+                    }
+
+                    return trimmedLine;
+                }
+
+                function normaliseCurrencyNodeText(node) {
+                    if (!node) {
+                        return;
+                    }
+
+                    const text = String(node.textContent || "").replace(/\s+/g, " ").trim();
+                    const parsedValue = parseDepartmentCurrencyValue(text);
+
+                    if (parsedValue === null) {
+                        return;
+                    }
+
+                    const nextText = formatDepartmentCurrency(parsedValue);
+
+                    if (nextText !== text) {
+                        node.textContent = nextText;
+                    }
+                }
+
+                function normaliseDepartmentGraphText() {
+                    const currencyNodeSelectors = [
+                        "#historyBarGraph .ExpenditureValueLabel",
+                        "#historyBarGraph .ExpenditureAxis--y .tick text",
+                        "#budgetActualChart .ExpenditureValueLabel",
+                        "#budgetActualChart .ExpenditureAxis--y .tick text",
+                        ".ExpenditureMultiplesSection svg .tick text",
+                        ".ExpenditureMultiplesSection svg text",
+                        "#horizontalBarChart .programmeEconValueLabel",
+                        "#selectedProgrammeAmount",
+                        "#selectedSubprogrammeAmount",
+                        "#selected-econ-value",
+                        ".bubbleChartSummaryValue",
+                        ".treemapSummaryValue",
+                    ];
+
+                    currencyNodeSelectors.forEach(function(selector) {
+                        document.querySelectorAll(selector).forEach(normaliseCurrencyNodeText);
+                    });
+                }
+
+                function normaliseTooltipHtml(html) {
+                    if (!html || html.indexOf("DepartmentGraphTooltip-line") >= 0) {
+                        return html;
+                    }
+
+                    const temp = document.createElement("div");
+                    temp.innerHTML = html;
+
+                    const lines = temp.innerHTML
+                        .replace(/<\/?strong>/gi, "")
+                        .split(/<br\s*\/?>/i)
+                        .map((line) => line.replace(/<[^>]+>/g, "").trim())
+                        .filter(Boolean);
+
+                    if (!lines.length) {
+                        return html;
+                    }
+
+                    const title = escapeTooltipHtml(lines.shift());
+                    const body = lines.map((line, index) => {
+                        const className = index === lines.length - 1
+                            ? "DepartmentGraphTooltip-line DepartmentGraphTooltip-line--value"
+                            : "DepartmentGraphTooltip-line";
+
+                        return `<div class="${className}">${escapeTooltipHtml(formatTooltipLine(line))}</div>`;
+                    });
+
+                    return `<strong>${title}</strong>${body.join("")}`;
+                }
+
+                function observeTooltipNode(node) {
+                    if (!node || node.__departmentTooltipObserved) {
+                        return;
+                    }
+
+                    node.__departmentTooltipObserved = true;
+
+                    const observer = new MutationObserver(function() {
+                        if (node.__departmentTooltipUpdating || !node.innerHTML) {
+                            return;
+                        }
+
+                        const nextHtml = normaliseTooltipHtml(node.innerHTML);
+
+                        if (nextHtml === node.innerHTML) {
+                            return;
+                        }
+
+                        node.__departmentTooltipUpdating = true;
+                        node.innerHTML = nextHtml;
+                        node.__departmentTooltipUpdating = false;
+                    });
+
+                    observer.observe(node, {
+                        childList: true,
+                        subtree: true,
+                        characterData: true,
+                    });
+
+                    if (node.innerHTML) {
+                        node.innerHTML = normaliseTooltipHtml(node.innerHTML);
+                    }
+                }
+
+                function patchDomTooltips() {
+                    tooltipSelectors.forEach(function(selector) {
+                        document.querySelectorAll(selector).forEach(observeTooltipNode);
+                    });
+                }
+
+                function buildChartTooltipCallback(existingCallback) {
+                    return function(tooltipItem, data) {
+                        const fallbackValue = tooltipItem && (tooltipItem.xLabel ?? tooltipItem.yLabel ?? tooltipItem.value);
+                        const baseValue = existingCallback
+                            ? existingCallback.call(this, tooltipItem, data)
+                            : formatTooltipCurrency(fallbackValue);
+
+                        if (Array.isArray(baseValue)) {
+                            return baseValue.map(formatTooltipLine);
+                        }
+
+                        return formatTooltipLine(baseValue);
+                    };
+                }
+
+                function patchChartInstance(chart) {
+                    if (!chart || chart.__departmentTooltipPatched) {
+                        return;
+                    }
+
+                    chart.__departmentTooltipPatched = true;
+
+                    chart.options = chart.options || {};
+                    chart.options.tooltips = chart.options.tooltips || {};
+                    chart.options.tooltips.backgroundColor = "rgba(255, 255, 255, 0.98)";
+                    chart.options.tooltips.titleFontColor = "#1f1f1f";
+                    chart.options.tooltips.bodyFontColor = "#3f3f3f";
+                    chart.options.tooltips.borderColor = "#d9d9d9";
+                    chart.options.tooltips.borderWidth = 1;
+                    chart.options.tooltips.xPadding = 12;
+                    chart.options.tooltips.yPadding = 10;
+                    chart.options.tooltips.caretPadding = 10;
+                    chart.options.tooltips.cornerRadius = 12;
+                    chart.options.tooltips.displayColors = false;
+                    chart.options.tooltips.titleMarginBottom = 2;
+                    chart.options.tooltips.bodySpacing = 2;
+                    chart.options.tooltips.titleFontFamily = "Roboto, sans-serif";
+                    chart.options.tooltips.bodyFontFamily = "Roboto, sans-serif";
+                    chart.options.tooltips.titleFontStyle = "bold";
+                    chart.options.tooltips.bodyFontStyle = "normal";
+                    chart.options.tooltips.callbacks = chart.options.tooltips.callbacks || {};
+                    chart.options.tooltips.callbacks.label = buildChartTooltipCallback(
+                        chart.options.tooltips.callbacks.label
+                    );
+
+                    if (typeof chart.update === "function") {
+                        chart.update(0);
+                    }
+                }
+
+                function patchExistingChartInstances() {
+                    if (!window.Chart || !Chart.instances) {
+                        return;
+                    }
+
+                    Object.keys(Chart.instances).forEach(function(key) {
+                        patchChartInstance(Chart.instances[key]);
+                    });
+                }
+
+                let normaliseTextTimeout = null;
+
+                function scheduleDepartmentGraphTextNormalisation() {
+                    if (normaliseTextTimeout) {
+                        window.clearTimeout(normaliseTextTimeout);
+                    }
+
+                    normaliseTextTimeout = window.setTimeout(function() {
+                        normaliseDepartmentGraphText();
+                    }, 40);
+                }
+
+                function observeDepartmentGraphText() {
+                    const root = document.querySelector(".Page-contentInner--department");
+
+                    if (!root || root.__departmentGraphTextObserved) {
+                        return;
+                    }
+
+                    root.__departmentGraphTextObserved = true;
+
+                    const observer = new MutationObserver(function() {
+                        scheduleDepartmentGraphTextNormalisation();
+                        patchDomTooltips();
+                    });
+
+                    observer.observe(root, {
+                        childList: true,
+                        subtree: true,
+                        characterData: true,
+                    });
+                }
+
+                function applyDepartmentChartTooltipTheme() {
+                    if (!window.Chart || !Chart.defaults || !Chart.defaults.global || !Chart.defaults.global.tooltips) {
+                        return false;
+                    }
+
+                    if (window.__departmentChartTooltipThemePatched) {
+                        return true;
+                    }
+
+                    window.__departmentChartTooltipThemePatched = true;
+
+                    Object.assign(Chart.defaults.global.tooltips, {
+                        backgroundColor: "rgba(255, 255, 255, 0.98)",
+                        titleFontColor: "#1f1f1f",
+                        bodyFontColor: "#3f3f3f",
+                        borderColor: "#d9d9d9",
+                        borderWidth: 1,
+                        xPadding: 12,
+                        yPadding: 10,
+                        caretPadding: 10,
+                        cornerRadius: 12,
+                        displayColors: false,
+                        titleMarginBottom: 2,
+                        bodySpacing: 2,
+                        titleFontFamily: "Roboto, sans-serif",
+                        bodyFontFamily: "Roboto, sans-serif",
+                        titleFontStyle: "bold",
+                        bodyFontStyle: "normal",
+                    });
+
+                    Chart.defaults.global.tooltips.callbacks = Chart.defaults.global.tooltips.callbacks || {};
+                    Chart.defaults.global.tooltips.callbacks.label = buildChartTooltipCallback(
+                        Chart.defaults.global.tooltips.callbacks.label
+                    );
+
+                    return true;
+                }
+
+                let attempts = 0;
+
+                function ensureDepartmentChartTooltipTheme() {
+                    if (applyDepartmentChartTooltipTheme() || attempts >= 20) {
+                        patchExistingChartInstances();
+                        patchDomTooltips();
+                        scheduleDepartmentGraphTextNormalisation();
+                        observeDepartmentGraphText();
+                        return;
+                    }
+
+                    attempts += 1;
+                    window.setTimeout(ensureDepartmentChartTooltipTheme, 150);
+                }
+
+                applyDepartmentChartTooltipTheme();
+                patchDomTooltips();
+                scheduleDepartmentGraphTextNormalisation();
+                document.addEventListener("DOMContentLoaded", ensureDepartmentChartTooltipTheme);
+                window.addEventListener("load", ensureDepartmentChartTooltipTheme);
+                document.addEventListener("DOMContentLoaded", function() {
+                    patchDomTooltips();
+                    scheduleDepartmentGraphTextNormalisation();
+                    observeDepartmentGraphText();
+                });
+                ensureDepartmentChartTooltipTheme();
+            })();
+        </script>
 
         <h1 class="Page-mainHeading u-textAlignCenter u-marginBottom0 u-marginLeft0">
             {{ name }}
@@ -157,65 +579,67 @@
             </div>
         </div>
 
-        {% if infra_enabled %}
-        <div id="InfraSection">
-            <h3 class="Title Title--section">Department infrastructure projects</h3>
+        <div class="u-marginTop25 u-marginBottom25">
+            {% if infra_enabled %}
+            <div id="InfraSection">
+                <h3 class="Title Title--section">Department infrastructure projects</h3>
 
-            <p>Largest infrastructure projects by this department.</p>
+                <p>Largest infrastructure projects by this department.</p>
 
-            <div class="Section-card">
-                <table class="u-widthFull u-textAlignLeft">
-                    <tr>
-                        <th>Project name</th>
-                        <th class="hidden-sm">Status</th>
-                        <th class="hidden-md">Estimated completion date</th>
-                    </tr>
-                    {% for project in projects %}
-                    <tr>
-                        <td>
-                            <a href="{{ project.url_path }}">
-                                {{ project.name }}
-                            </a>
-                        </td>
-                        <td class="hidden-sm">{{ project.status|default:"Not available" }}</td>
-                        <td class="hidden-md">{{ project.estimated_completion_date|default:"Not available" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4">No projects available for this department.</td>
-                    </tr>
-                    {% endfor %}
-                </table>
+                <div class="Section-card">
+                    <table class="u-widthFull u-textAlignLeft">
+                        <tr>
+                            <th>Project name</th>
+                            <th class="hidden-sm">Status</th>
+                            <th class="hidden-md">Estimated completion date</th>
+                        </tr>
+                        {% for project in projects %}
+                        <tr>
+                            <td>
+                                <a href="{{ project.url_path }}">
+                                    {{ project.name }}
+                                </a>
+                            </td>
+                            <td class="hidden-sm">{{ project.status|default:"Not available" }}</td>
+                            <td class="hidden-md">{{ project.estimated_completion_date|default:"Not available" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">No projects available for this department.</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+                <div class="u-textAlignRight">
+                    <a class="Button is-secondary is-inline u-marginTop20 u-textAlignRight"
+                        href="/infrastructure-projects/provincial/?q=&filter=department%3A{{ name|iriencode }}&filter=government_label%3A{{ government.label|iriencode }}">
+                        View all projects
+                    </a>
+                </div>
+
             </div>
+            {% endif %}
 
-            <div class="u-textAlignRight">
-                <a class="Button is-secondary is-inline u-marginTop20 u-textAlignRight"
-                    href="/infrastructure-projects/provincial/?q=&filter=department%3A{{ name|iriencode }}&filter=government_label%3A{{ government.label|iriencode }}">
-                    View all projects
-                </a>
+            {% if in_year_monitoring_resource_links %}
+            <div class="js-tooltips">
+                {% include 'scenes/department/ResourceLinks/resource-links.html' with
+                resource_links=in_year_monitoring_resource_links section_title="In-year monitoring resources" %}
             </div>
+            {% endif %}
 
+            {% if performance_resource_links %}
+            <div class="js-tooltips">
+                {% include 'scenes/department/ResourceLinks/resource-links.html' with
+                resource_links=performance_resource_links section_title="Performance monitoring resources" %}
+            </div>
+            {% endif %}
+
+            {% if eqprs_data_enabled %}
+            <div id="js-initPerformanceIndicators" data-department="{{ name }}" data-year="{{ selected_financial_year }}"
+                data-government="{{ government.name }}" data-sphere="{{ sphere.name }}"></div>
+            {% endif %}
         </div>
-        {% endif %}
-
-        {% if in_year_monitoring_resource_links %}
-        <div class="js-tooltips">
-            {% include 'scenes/department/ResourceLinks/resource-links.html' with
-            resource_links=in_year_monitoring_resource_links section_title="In-year monitoring resources" %}
-        </div>
-        {% endif %}
-
-        {% if performance_resource_links %}
-        <div class="js-tooltips">
-            {% include 'scenes/department/ResourceLinks/resource-links.html' with
-            resource_links=performance_resource_links section_title="Performance monitoring resources" %}
-        </div>
-        {% endif %}
-
-        {% if eqprs_data_enabled %}
-        <div id="js-initPerformanceIndicators" data-department="{{ name }}" data-year="{{ selected_financial_year }}"
-            data-government="{{ government.name }}" data-sphere="{{ sphere.name }}"></div>
-        {% endif %}
 
         <div class="u-marginTop100">
             <div class="DeptSectionHead DeptSectionHead--purple" id="section-review">
@@ -223,20 +647,22 @@
             </div>
         </div>
 
-        <div class="u-marginBottom60 u-marginTop15">
-            {% include 'scenes/department/ExpenditureSection/index.html' with items=expenditure_over_time.expenditure cpi=global_values.cpi_dataset_url source_type=source_type year=selected_financial_year dataset=expenditure_over_time.dataset_detail_page pdf=pdf_link excel=excel csv=expenditure_over_time.department_data_csv guide=guide color="purple" title="Planned compared to historical expenditure" subtitle=subtitle description="Expenditure changes over time" %}
-        </div>
+        <div class="u-marginTop25">
+            <div class="u-marginBottom60">
+                {% include 'scenes/department/ExpenditureSection/index.html' with items=expenditure_over_time.expenditure cpi=global_values.cpi_dataset_url source_type=source_type year=selected_financial_year dataset=expenditure_over_time.dataset_detail_page pdf=pdf_link excel=excel csv=expenditure_over_time.department_data_csv guide=guide color="purple" title="Planned compared to historical expenditure" subtitle=subtitle description="Expenditure changes over time" %}
+            </div>
 
-        {% with ""|add:department_location|add:" "|add:name|add:" Department" as text %}
+            {% with ""|add:department_location|add:" "|add:name|add:" Department" as text %}
 
-        <div class="u-marginBottom60 u-marginTop15">
-            {% include 'scenes/department/ExpenditurePhaseSection/index.html' with items=budget_actual.expenditure cpi=global_values.cpi_dataset_url source_type="Expenditure Time Series" year=selected_financial_year dataset=budget_actual.dataset_detail_page csv=budget_actual.department_data_csv color="purple" description="Budgeted and Actual Expenditure comparison" subtitle=review_subtitle notices=budget_actual.notices website_url=website_url %}
-        </div>
+            <div class="u-marginBottom60">
+                {% include 'scenes/department/ExpenditurePhaseSection/index.html' with items=budget_actual.expenditure cpi=global_values.cpi_dataset_url source_type="Expenditure Time Series" year=selected_financial_year dataset=budget_actual.dataset_detail_page csv=budget_actual.department_data_csv color="purple" description="Budgeted and Actual Expenditure comparison" subtitle=review_subtitle notices=budget_actual.notices website_url=website_url %}
+            </div>
 
-        <div class="u-marginBottom60 u-marginTop15">
-            {% include 'scenes/department/ExpenditureMultiplesSection/index.html' with items=budget_actual_programmes cpi=global_values.cpi_dataset_url source_type="Expenditure Time Series" year=selected_financial_year dataset=budget_actual_programmes csv=budget_actual_programmes color="purple" subtitle=review_subtitle description="Budgeted and Actual Expenditure comparison by Programme" %}
+            <div class="u-marginBottom60">
+                {% include 'scenes/department/ExpenditureMultiplesSection/index.html' with items=budget_actual_programmes cpi=global_values.cpi_dataset_url source_type="Expenditure Time Series" year=selected_financial_year dataset=budget_actual_programmes csv=budget_actual_programmes color="purple" subtitle=review_subtitle description="Budgeted and Actual Expenditure comparison by Programme" %}
+            </div>
+            {% endwith %}
         </div>
-        {% endwith %}
         <div class="u-marginTop20">
             <div class="Grid has-leftSidebar">
                 <div>

@@ -23,7 +23,7 @@
             <p class="js-tooltips">Select an Economic Classification to filter the data in this chart and see how much
                 programmes spend on that category.</p>
 
-            <p class="js-tooltips" Only the categories that this department spends on are shown in the filter.</p>
+            <p class="js-tooltips">Only the categories that this department spends on are shown in the filter.</p>
 
             <ul class="LinksList">
                 {% if subprog_econ4_bars_data.get_dataset %}
@@ -46,42 +46,41 @@
         <div class="ProgramEconSmallMultiplesSection-item ProgramEconSmallMultiplesSection-item--right">
             <div class="Page-content">   
                 <div class="Card">
-                    <div className="DeptControls">
-                        <div class="dropdown-container">
-                            <div class="dropdown-item">
+                    <div class="programmeEconCard">
+                        <div class="programmeEconControls">
+                            <div class="programmeEconFilter">
                                 <label for="programme-dropdown">Programme</label>
-                                <div class="DeptControls-itemWrap">
-                                    <div class="DeptControls-dropdown">
-                                        <div class="PseudoSelect">
-                                            <select id="programme-dropdown" class="PseudoSelect PseudoSelect-list">
-                                            </select>
-                                        </div>
-                                    </div>
+                                <div class="programmeEconSelectWrap">
+                                    <select id="programme-dropdown" class="programmeEconSelect"></select>
                                 </div>
                             </div>
-                            <div class="dropdown-item">
+                            <div class="programmeEconFilter">
                                 <label for="economic-classification-dropdown">Economic Classification</label>
-                                <div class="DeptControls-itemWrap">
-                                    <div class="DeptControls-dropdown">
-                                        <div class="PseudoSelect">
-                                            <select id="economic-classification-dropdown" class="PseudoSelect PseudoSelect-list">
-                                               
-                                            </select>
-                                        </div>
-                                    </div>
+                                <div class="programmeEconSelectWrap">
+                                    <select id="economic-classification-dropdown" class="programmeEconSelect"></select>
                                 </div>
                             </div>
-                        
-                            
                         </div>
-                                
-                    </div>
-                
-                    <!-- SVG for D3 Chart -->
-                    <div class="horizontalBarGraph">
-                        <label><b>SUB PROGRAMME</b></label>
-                        <svg id="horizontalBarChart"></svg>
-                        <div class="tooltip"></div>
+
+                        <div class="programmeEconSummary">
+                            <div class="programmeEconSummaryItem">
+                                <p class="programmeEconSummaryEyebrow">Selected programme</p>
+                                <p id="programme-econ-selected-programme" class="programmeEconSummaryValue">Loading programme...</p>
+                            </div>
+                            <div class="programmeEconSummaryItem">
+                                <p class="programmeEconSummaryEyebrow">Economic classification</p>
+                                <p id="programme-econ-selected-classification" class="programmeEconSummaryValue">Loading classification...</p>
+                            </div>
+                        </div>
+
+                        <div class="programmeEconChartBlock">
+                            <label>SUB-PROGRAMME</label>
+                            <div class="programmeEconChartStage">
+                                <svg id="horizontalBarChart"></svg>
+                            </div>
+                        </div>
+
+                        <div class="tooltip DepartmentGraphTooltip" id="programme-econ-tooltip"></div>
                     </div>
                 </div>             
             </div>   

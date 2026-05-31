@@ -77,13 +77,16 @@ const palette = [
       },
 
       tooltips: {
-        enabled: true,
+        ...getSharedTooltipTheme(),
         callbacks: {
+          title: function(tooltipItems, data) {
+            const item = tooltipItems && tooltipItems.length ? tooltipItems[0] : null;
+            return item ? data.labels[item.index] || "" : "";
+          },
           label: function(tooltipItem, data) {
-            const label = data.labels[tooltipItem.index] || "";
             const value =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            return label + ": " + formatCurrency(value);
+            return formatCurrency(value);
           },
         },
       },
@@ -197,6 +200,7 @@ const palette = [
         },
 
         tooltips: {
+          ...getSharedTooltipTheme(),
           callbacks: {
             label: function(tooltipItem) {
               var value = tooltipItem.xLabel;
@@ -279,6 +283,7 @@ const palette = [
         },
 
         tooltips: {
+          ...getSharedTooltipTheme(),
           callbacks: {
             label: function(tooltipItem, data) {
               var value = tooltipItem.yLabel;
@@ -304,3 +309,56 @@ const palette = [
 
 });
 
+function getSharedTooltipTheme() {
+  return {
+    enabled: false,
+    custom: createDepartmentTooltip,
+    backgroundColor: "#fff",
+    titleFontColor: "#3f3f3f",
+    bodyFontColor: "#3f3f3f",
+    borderColor: "#d2d2d2",
+    borderWidth: 1,
+    xPadding: 12,
+    yPadding: 10,
+    caretPadding: 10,
+    cornerRadius: 10,
+    displayColors: false,
+    titleMarginBottom: 2,
+    bodySpacing: 2,
+    titleFontFamily: "Roboto, sans-serif",
+    bodyFontFamily: "Roboto, sans-serif",
+    titleFontStyle: "bold",
+    bodyFontStyle: "normal",
+  };
+}
+
+function createDepartmentTooltip(tooltipModel) {
+  const chart = this._chart;
+  const canvas = chart.canvas;
+  let tooltipEl = document.getElementById(`${canvas.id}-tooltip`);
+
+  if (!tooltipEl) {
+    tooltipEl = document.createElement("div");
+    tooltipEl.id = `${canvas.id}-tooltip`;
+    tooltipEl.className = "tooltip DepartmentGraphTooltip BudgetSummaryDetailTooltip";
+    canvas.parentNode.appendChild(tooltipEl);
+  }
+
+  if (tooltipModel.opacity === 0) {
+    tooltipEl.style.display = "none";
+    return;
+  }
+
+  const title = tooltipModel.title && tooltipModel.title.length
+    ? `<strong>${tooltipModel.title.join(" ")}</strong>`
+    : "";
+  const body = tooltipModel.body
+    ? tooltipModel.body.map((item) => item.lines.join("<br>")).join("<br>")
+    : "";
+  const position = canvas.getBoundingClientRect();
+
+  tooltipEl.innerHTML = title && body ? `${title}<br>${body}` : title || body;
+  tooltipEl.style.display = "block";
+  tooltipEl.style.left = `${position.left + window.pageXOffset + tooltipModel.caretX + 10}px`;
+  tooltipEl.style.top = `${position.top + window.pageYOffset + tooltipModel.caretY - 10}px`;
+}

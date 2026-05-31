@@ -9,6 +9,8 @@ import budgetportal
 from budgetportal.models import AENEData, DatasetCategory, DatasetUpload, ENEData, ConsolidationData, EPREData, BudgetVSActualNationalData, BudgetVSActualProvincialData, Organisation, VoteDocumentUpload, Department, VoteDocument, FinancialYear, Sphere, Government, Dataset, DatasetResource
 from budgetportal.dataset_uploading import preprocess													
 
+DATASET_BULK_CREATE_BATCH_SIZE = 100
+
 ENE_HEADERS = [
     "VoteNumber",
     "Department",
@@ -43,6 +45,7 @@ EPRE_HEADERS = [
     "EconomicClassification5",
     "FunctionGroup1",
     "FunctionGroup2",
+    "BudgetYear",
     "FinancialYear",
     "BudgetPhase",
     "Value"
@@ -62,6 +65,7 @@ BUDGET_ACTUAL_HEADERS = [
     "EconomicClassification4",
     "EconomicClassification5",
     "FunctionGroup1",
+    "BudgetYear",
     "FinancialYear",
     "BudgetPhase",
     "AmountKind",
@@ -157,7 +161,7 @@ def import_dataset(obj_id):
                 "subprogNumber", "subprogramme", "economicClassification1",
                 "economicClassification2", "economicClassification3",
                 "economicClassification4", "economicClassification5",
-                "functionGroup1", "functionGroup2", "financialYear",
+                "functionGroup1", "functionGroup2", "budgetYear","financialYear",
                 "budgetPhase", "value"
             ],
         },
@@ -166,7 +170,7 @@ def import_dataset(obj_id):
             "model": BudgetVSActualNationalData,
             "resource": BudgetVSActualResource,
             "fields": [
-                "government", "voteNumber", "progNumber", "department",
+                "government", "voteNumber", "department", "progNumber",
                 "programme", "subprogNumber", "subprogramme",
                 "economicClassification1", "economicClassification2",
                 "economicClassification3", "economicClassification4",
@@ -179,11 +183,11 @@ def import_dataset(obj_id):
             "model": BudgetVSActualProvincialData,
             "resource": BudgetVSActualResource,
             "fields": [
-                "government", "voteNumber", "progNumber", "department",
+                "government", "voteNumber", "department", "progNumber",
                 "programme", "subprogNumber", "subprogramme",
                 "economicClassification1", "economicClassification2",
                 "economicClassification3", "economicClassification4",
-                "economicClassification5", "functionGroup1",
+                "economicClassification5", "functionGroup1","budgetYear",
                 "financialYear", "budgetPhase", "amountKind", "value"
             ],
         },
@@ -196,40 +200,24 @@ def import_dataset(obj_id):
 
     headers = config["headers"]
     model_class = config["model"]
-    resource_class = config["resource"]
     fields = config["fields"]
 
     # Preprocess and clean data
-    preprocessed_dataset = preprocess(dataset, headers)
-    # Create model objects
-    
+    preprocessed_dataset = preprocess(dataset, headers, obj.type)
     header_to_field = dict(zip(headers, fields))
-
-    objects_to_create = [
-        model_class(**{header_to_field[k]: v for k, v in item.items()})
-        for item in preprocessed_dataset
-    ]
-
     financialYear = obj.financialYear.slug.split("-")[0]  # Extract year from slug like "2023-24"
 
+    objects_to_create = []
+    for item in preprocessed_dataset:
+        row_data = {header_to_field[k]: v for k, v in item.items()}
+        row_data.setdefault("budgetYear", financialYear)
+        objects_to_create.append(model_class(**row_data))
+
     model_class.objects.filter(budgetYear=financialYear).delete()
-
-    # model_class.objects.bulk_create(objects_to_create)
-
-    # # Prepare dataset for import-export validation
-    # dataset_import = Dataset()
-    # if preprocessed_dataset:
-    #     dataset_import.headers = preprocessed_dataset[0].keys()
-    #     for row in preprocessed_dataset:
-    #         dataset_import.append(row.values())
-
-    # # Use correct resource dynamically
-    # resource = resource_class()
-    # result = resource.import_data(dataset_import, dry_run=True)
-    
-    # if result.has_errors():
-    #     print("Import errors found:", result.invalid_rows)
-    #     return result
+    model_class.objects.bulk_create(
+        objects_to_create,
+        batch_size=DATASET_BULK_CREATE_BATCH_SIZE,
+    )
 
     organisation = Organisation.objects.get(id=1)
     
@@ -272,7 +260,7 @@ def import_dataset(obj_id):
     elif obj.type == 'Budget-vs-Actual-Provincial':
         title = 'Budgeted and Actual Provincial Expenditure'
         category = DatasetCategory.objects.get(title=title)
-        formatted_title = f"{title} {financialYear.slug}"
+        formatted_title = f"{title} {obj.financialYear.slug}"
         desciption = formatted_title
         short_description = formatted_title
         category = DatasetCategory.objects.get(title='Budgeted and Actual Provincial Expenditure')
@@ -300,8 +288,11 @@ def import_dataset(obj_id):
         file=obj.file
     )
 
-
-    return resource.import_data(dataset_import, dry_run=False)
+    return {
+        "dataset_id": new_dataset.id,
+        "dataset_upload_id": obj.id,
+        "imported_rows": len(objects_to_create),
+    }
 
 
 
@@ -666,6 +657,7 @@ class EPREResource(resources.ModelResource):
     economicClassification5 = Field(column_name="EconomicClassification5")
     functionGroup1 = Field(column_name="FunctionGroup1")
     functionGroup2 = Field(column_name="FunctionGroup2")
+    BudgetYear = Field(column_name="BudgetYear")    
     financialYear = Field(column_name="FinancialYear")
     budgetPhase = Field(column_name="BudgetPhase")
     value = Field(column_name="Value")
@@ -699,7 +691,7 @@ class BudgetVSActualResource(resources.ModelResource):
     economicClassification4 = Field(column_name="EconomicClassification4")
     economicClassification5 = Field(column_name="EconomicClassification5")
     functionGroup1 = Field(column_name="FunctionGroup1")
-    functionGroup2 = Field(column_name="FunctionGroup2")
+    budgetYear = Field(column_name="BudgetYear")
     financialYear = Field(column_name="FinancialYear")
     budgetPhase = Field(column_name="BudgetPhase")
     amountKind = Field(column_name="AmountKind")

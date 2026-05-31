@@ -15,6 +15,75 @@
           {{ description|ensure_heading_blocks|markdownify|safe }}
       </div>
     </div>
+    <script>
+      (function() {
+        function buildPrompt() {
+          const wrapper = document.createElement("div");
+          const fade = document.createElement("div");
+          fade.className = "IntroSection-fade";
+
+          const buttonWrap = document.createElement("div");
+          buttonWrap.className = "IntroSection-button";
+
+          const button = document.createElement("button");
+          button.className = "Button is-secondary is-inline";
+          button.type = "button";
+          button.textContent = "Read More";
+
+          buttonWrap.appendChild(button);
+          wrapper.appendChild(fade);
+          wrapper.appendChild(buttonWrap);
+
+          return { wrapper, button };
+        }
+
+        function patchIntroSection(root) {
+          if (!root || root.dataset.introSectionPatched === "true") {
+            return;
+          }
+
+          const contentNodes = Array.from(root.querySelectorAll(".IntroSection-content"));
+          const sourceNode = contentNodes.find((node) => !node.querySelector(".IntroSection-content")) || contentNodes[contentNodes.length - 1];
+
+          if (!sourceNode) {
+            return;
+          }
+
+          const contentHtml = sourceNode.innerHTML;
+          root.innerHTML = "";
+
+          const text = document.createElement("div");
+          text.className = "IntroSection-text";
+
+          const content = document.createElement("div");
+          content.className = "IntroSection-content";
+          content.innerHTML = contentHtml;
+          text.appendChild(content);
+          root.appendChild(text);
+
+          const contentHeight = content.scrollHeight;
+
+          if (contentHeight > 330) {
+            text.classList.add("is-initialised");
+            const prompt = buildPrompt();
+            text.appendChild(prompt.wrapper);
+            prompt.button.addEventListener("click", function() {
+              text.classList.add("is-open");
+              prompt.wrapper.remove();
+            });
+          }
+
+          root.dataset.introSectionPatched = "true";
+        }
+
+        function applyIntroPatch() {
+          document.querySelectorAll(".js-initIntroSection").forEach(patchIntroSection);
+        }
+
+        document.addEventListener("DOMContentLoaded", applyIntroPatch);
+        window.addEventListener("load", applyIntroPatch);
+      })();
+    </script>
     
     {% if public_entities %}    
       <h2>

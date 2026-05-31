@@ -1,31 +1,30 @@
-from budgetportal import models
-from import_export import resources
-from import_export.fields import Field
-from import_export.instance_loaders import ModelInstanceLoader
-from import_export.widgets import ForeignKeyWidget
-from tablib import Databook
-from tablib import Dataset
+def normalize_header(header):
+    if header is None:
+        return ""
+    return str(header).strip()
 
-def preprocess(input_dataset, base_headers):
-    # We're going to assume things about the order of columns so ensure they're
-    # in the order we expect.
 
-    # check_input_column_order(input_dataset.headers)
-    # implementor_column_indexes = get_implementor_column_indexes(
-    #     input_dataset.headers)
+def check_input_column_order(input_headers, base_headers, dataset_type=None):
+    actual_headers = [normalize_header(header) for header in (input_headers or [])]
+    actual_headers = actual_headers[: len(base_headers)]
+    expected_headers = [normalize_header(header) for header in base_headers]
 
+    if actual_headers != expected_headers:
+        label = f" for {dataset_type}" if dataset_type else ""
+        raise ValueError(
+            "Invalid upload columns"
+            f"{label}. Expected columns: {', '.join(expected_headers)}. "
+            f"Found columns: {', '.join(actual_headers)}."
+        )
+
+
+def preprocess(input_dataset, base_headers, dataset_type=None):
+    check_input_column_order(input_dataset.headers, base_headers, dataset_type)
     output_dataset = []
     for row in input_dataset:
         try:
             if not row_is_empty(row):
-                processed_row = preprocess_row(row, base_headers)
-                # Convert row to dictionary with base_headers as keys
-                processed_dict = {base_headers[i]: processed_row[i] for i in range(len(base_headers))}
-                # if filter_column and filter_value:
-                #     column_index = base_headers.index(filter_column)
-                #     if row[column_index] == filter_value:
-                #         output_dataset.append(processed_dict)
-                # else:
+                processed_dict = preprocess_row(row, base_headers)
                 output_dataset.append(processed_dict)
         except Exception as e:
             print(f"Error occurred while processing row: {row}")
@@ -38,5 +37,7 @@ def row_is_empty(row):
 
 
 def preprocess_row(row, base_headers):
-    base_columns = row[: len(base_headers)]
-    return base_columns
+    return {
+        base_headers[i]: row[i] if i < len(row) else None
+        for i in range(len(base_headers))
+    }

@@ -107,7 +107,7 @@ const responseSchema = PropTypes.shape({
 });
 
 SearchPage.propTypes = {
-  tab: PropTypes.oneOf(['all', 'contributed', 'national', 'provincial']).isRequired,
+  tab: PropTypes.oneOf(['all', 'departments', 'datasets']).isRequired,
   updateTab: PropTypes.func.isRequired,
   phrase: PropTypes.string.isRequired,
   error: PropTypes.bool,

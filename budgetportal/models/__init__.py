@@ -1127,7 +1127,7 @@ class AENEData(models.Model):
     amountKind = models.CharField(max_length=1024)
     value = models.DecimalField(
         max_digits=15, decimal_places=2, default=0)
-
+      
 
 class ConsolidationData(models.Model):
     functionGroup = models.CharField(max_length=400)
@@ -1154,7 +1154,7 @@ class EPREData(models.Model):
     economicClassification4 = models.CharField(max_length=400)
     economicClassification5 = models.CharField(max_length=400)
     functionGroup1 = models.CharField(max_length=400)
-    functionGroup2 = models.CharField(max_length=400)
+    functionGroup2 = models.CharField(max_length=400, default=None, blank=True, null=True)
     budgetYear = models.CharField(
         max_length=10, default=None, blank=True, null=True)
     financialYear = models.CharField(max_length=400)
@@ -1199,7 +1199,7 @@ class BudgetVSActualProvincialData(models.Model):
     economicClassification3 = models.CharField(max_length=400)
     economicClassification4 = models.CharField(max_length=400)
     economicClassification5 = models.CharField(max_length=400)
-    functionGroup1 = models.CharField(max_length=400)
+    functionGroup1 = models.CharField(max_length=400, default=None, blank=True, null=True)
     budgetYear = models.CharField(
         max_length=10, default=None, blank=True, null=True)
     financialYear = models.CharField(max_length=400)

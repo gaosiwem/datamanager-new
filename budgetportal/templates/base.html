@@ -37,6 +37,18 @@
     </script>
   <!-- End Google Tag Manager -->
 
+  {% block meta_title %}
+  <title>{% firstof title "vulekamali" %}</title>
+  {% endblock meta_title %}
+
+  {% block meta_description %}
+  {% if description %}
+  <meta name="description" content="{{ description }}">
+  <meta name="twitter:description" content="{{ description }}">
+  <meta property="og:description" content="{{ description }}">
+  {% endif %}
+  {% endblock meta_description %}
+
   <link href="https://fonts.googleapis.com/css?family=Lato:400,700,900" rel="stylesheet">
   <link href="{% static 'generated/styles.bundle.css' %}" rel="stylesheet">
 

@@ -22,12 +22,14 @@
 
   @media screen and (max-width: 1000px) {
     &--right {
-      width: calc(100% + 3rem);
-      margin-left: -1.5rem;
+      width: 100%;
+      margin-left: 0;
     }
   }
 
   &--right .Card {
+    width: 100%;
+    overflow-x: hidden;
     // height: calc(100vh - 145px);
 
     iframe {
@@ -44,6 +46,10 @@
 
 .EconClassPackedCirclesSection-share {
   max-width: 250px;
+}
+
+.EconClassPackedCirclesSection-item--right .Page-content {
+  width: 100%;
 }
 
 .Missing {

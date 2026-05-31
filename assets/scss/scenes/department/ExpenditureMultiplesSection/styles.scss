@@ -25,16 +25,98 @@
 
 .ExpenditureMultiplesSectionContent {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  /* Three columns of equal width */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 16px;
-  /* Space between items */
-  margin: 20px;
-  /* Optional margin around the grid */
+  margin: 20px 0 0;
+
+  @media screen and (min-width: 1200px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-.chart-container {
-  margin-top: 20px;
+.ExpenditureMultiplesChartCard {
+  padding: 1.35rem 1.35rem 1rem;
+}
+
+.ExpenditureMultiplesChartTitle {
+  color: #1f1f1f;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.ExpenditureMultiplesChartLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 1.2rem;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.ExpenditureMultiplesLegendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #3f3f3f;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.ExpenditureMultiplesLegendSwatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+}
+
+.ExpenditureMultiplesChartCanvas {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin-top: 0;
+  padding-bottom: 0;
+}
+
+.ExpenditureMultiplesChartCanvas svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.ExpenditureMultiplesSection .ExpenditureAxis text,
+.ExpenditureMultiplesSection .ExpenditureEmptyState,
+.ExpenditureMultiplesSection .ExpenditureEmptyHint {
+  font-family: Roboto, sans-serif;
+}
+
+.ExpenditureMultiplesSection .ExpenditureAxis text {
+  fill: #4a4a4a;
+  font-size: 11px;
+}
+
+.ExpenditureMultiplesSection .ExpenditureAxis path,
+.ExpenditureMultiplesSection .ExpenditureAxis line {
+  stroke: #d2d2d2;
+}
+
+.ExpenditureMultiplesSection .ExpenditureGrid line {
+  stroke: #ececec;
+}
+
+.ExpenditureMultiplesSection .ExpenditureGrid path {
+  stroke: none;
+}
+
+.ExpenditureMultiplesSection .ExpenditureEmptyState {
+  fill: #4a4a4a;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ExpenditureMultiplesSection .ExpenditureEmptyHint {
+  fill: #979797;
+  font-size: 13px;
 }
 
 .chart-frame {

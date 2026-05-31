@@ -15,110 +15,410 @@
 <div class="AdjustedSection" id="adjusted">
   <h3 class="Title Title--section">Budget changes in the Adjusted Budget</h3>
 
+  <style>
+    .AdjustedSection .AdjustedSection-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .AdjustedSection .AdjustedSection-item {
+      min-width: 0;
+      padding: 0;
+      width: auto;
+    }
+
+    .AdjustedSection .AdjustedSectionPanel,
+    .AdjustedSection .AdjustedSectionChartCard {
+      padding: 1.35rem 1.35rem 1rem;
+    }
+
+    .AdjustedSection .AdjustedSectionPanel {
+      height: 100%;
+    }
+
+    .AdjustedSection .AdjustedSectionPanel--intro .LinksList {
+      margin-top: 1rem;
+    }
+
+    .AdjustedSection .AdjustedSectionPanel--empty {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 220px;
+      text-align: left;
+    }
+
+    .AdjustedSection .AdjustedSectionSummaryGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .AdjustedSection .AdjustedSectionStatCard,
+    .AdjustedSection .AdjustedSectionSupplementCard {
+      border: 1px solid #ececec;
+      border-radius: 12px;
+      background: #fcfcfc;
+    }
+
+    .AdjustedSection .AdjustedSectionStatCard {
+      padding: 1rem 1rem 1.1rem;
+    }
+
+    .AdjustedSection .AdjustedSectionStatCard .Title {
+      min-height: 2.5rem;
+    }
+
+    .AdjustedSection .AdjustedSectionStatCard p,
+    .AdjustedSection .AdjustedSectionSupplementCard p {
+      margin-bottom: 0;
+    }
+
+    .AdjustedSection .AdjustedSectionSupplementCard {
+      margin-top: 16px;
+      padding: 1rem 1rem 1.1rem;
+    }
+
+    .AdjustedSection .AdjustedSectionSupplementGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .AdjustedSection .AdjustedSectionSupplementItem {
+      border-radius: 10px;
+      background: #fff;
+      padding: 0.9rem;
+    }
+
+    .AdjustedSection .AdjustedSectionSupplementItem p {
+      margin-top: 0.7rem;
+    }
+
+    .AdjustedSection .AdjustedSectionChartCard {
+      height: 100%;
+    }
+
+    .AdjustedSection .AdjustedSectionChartCanvas {
+      position: relative;
+      width: 100%;
+      height: 360px;
+      margin-top: 0.5rem;
+    }
+
+    .AdjustedSection .AdjustedSectionChartCanvas canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .AdjustedSection .AdjustedSectionChartCard--empty {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      min-height: 240px;
+    }
+
+    .AdjustedSection .AdjustedSectionChartHint {
+      color: #6f6f6f;
+      font-size: 0.92rem;
+      margin-bottom: 0;
+    }
+
+    .AdjustedSection .AdjustedSection-emptyEyebrow {
+      color: #7bb344;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.55rem;
+      text-transform: uppercase;
+    }
+
+    @media screen and (min-width: 1000px) {
+      .AdjustedSection .AdjustedSection-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .AdjustedSection .AdjustedSection-item--full {
+        grid-column: 1 / -1;
+        width: 100%;
+      }
+    }
+  </style>
+
+  <script>
+    (function() {
+      const adjustedChartIds = ["categoryBarChart", "econBarChart", "programmesBarChart"];
+
+      function formatAdjustedCurrency(value) {
+        if (typeof window.__formatDepartmentCurrency === "function") {
+          return window.__formatDepartmentCurrency(value);
+        }
+
+        const numericValue = Number(value);
+        const absoluteValue = Math.abs(numericValue);
+
+        if (!Number.isFinite(numericValue)) {
+          return value;
+        }
+
+        if (absoluteValue >= 1e12) return `R ${Math.round(numericValue / 1e12).toLocaleString()} trillion`;
+        if (absoluteValue >= 1e9) return `R ${Math.round(numericValue / 1e9).toLocaleString()} billion`;
+        if (absoluteValue >= 1e6) return `R ${Math.round(numericValue / 1e6).toLocaleString()} million`;
+        if (absoluteValue >= 1e3) return `R ${Math.round(numericValue / 1e3).toLocaleString()} thousand`;
+        return `R ${Math.round(numericValue).toLocaleString()}`;
+      }
+
+      function normaliseAdjustedIndicators() {
+        document.querySelectorAll(".AdjustedSection .ChangeIndicator-secondary[data-amount]").forEach(function(node) {
+          const amount = Number(node.getAttribute("data-amount"));
+
+          if (!Number.isFinite(amount)) {
+            return;
+          }
+
+          node.textContent = formatAdjustedCurrency(amount);
+        });
+      }
+
+      function applyAxisTheme(axis) {
+        if (!axis) {
+          return;
+        }
+
+        axis.gridLines = Object.assign({}, axis.gridLines, {
+          drawOnChartArea: true,
+          drawTicks: true,
+          drawBorder: true,
+          offsetGridLines: false,
+        });
+
+        axis.ticks = Object.assign({}, axis.ticks, {
+          fontColor: "#4a4a4a",
+          fontFamily: "Roboto, sans-serif",
+          fontSize: 11,
+        });
+
+        axis.scaleLabel = Object.assign({}, axis.scaleLabel, {
+          display: false,
+        });
+      }
+
+      function applyAdjustedChartTheme(chart) {
+        if (!chart || chart.__adjustedSectionPatched || !chart.canvas || adjustedChartIds.indexOf(chart.canvas.id) === -1) {
+          return;
+        }
+
+        chart.__adjustedSectionPatched = true;
+        chart.options = chart.options || {};
+        chart.options.responsive = true;
+        chart.options.maintainAspectRatio = false;
+        chart.options.legend = Object.assign({}, chart.options.legend, { display: false });
+        chart.options.layout = Object.assign({}, chart.options.layout, {
+          padding: {
+            top: 4,
+            right: 8,
+            bottom: 0,
+            left: 0,
+          },
+        });
+
+        chart.options.tooltips = Object.assign({}, chart.options.tooltips, {
+          backgroundColor: "rgba(255, 255, 255, 0.98)",
+          titleFontColor: "#1f1f1f",
+          bodyFontColor: "#3f3f3f",
+          borderColor: "#d9d9d9",
+          borderWidth: 1,
+          xPadding: 12,
+          yPadding: 10,
+          caretPadding: 10,
+          cornerRadius: 12,
+          displayColors: false,
+          titleMarginBottom: 2,
+          bodySpacing: 2,
+          titleFontFamily: "Roboto, sans-serif",
+          bodyFontFamily: "Roboto, sans-serif",
+          titleFontStyle: "bold",
+          bodyFontStyle: "normal",
+          callbacks: {
+            label: function(tooltipItem) {
+              return formatAdjustedCurrency(tooltipItem.xLabel ?? tooltipItem.value ?? tooltipItem.yLabel);
+            },
+          },
+        });
+
+        chart.options.scales = chart.options.scales || {};
+        const xAxis = chart.options.scales.xAxes && chart.options.scales.xAxes[0];
+        const yAxis = chart.options.scales.yAxes && chart.options.scales.yAxes[0];
+
+        applyAxisTheme(xAxis);
+        applyAxisTheme(yAxis);
+
+        if (xAxis) {
+          xAxis.gridLines = Object.assign({}, xAxis.gridLines, { color: "#ececec", lineWidth: 1 });
+          xAxis.ticks = Object.assign({}, xAxis.ticks, {
+            beginAtZero: true,
+            callback: function(value) {
+              return formatAdjustedCurrency(value);
+            },
+          });
+        }
+
+        if (yAxis) {
+          yAxis.gridLines = Object.assign({}, yAxis.gridLines, { color: "#f4f4f4", lineWidth: 1 });
+          yAxis.ticks = Object.assign({}, yAxis.ticks, { autoSkip: false });
+        }
+
+        chart.data.datasets.forEach(function(dataset) {
+          dataset.backgroundColor = "#ad3c64";
+          dataset.hoverBackgroundColor = "#8f2e52";
+          dataset.borderWidth = 0;
+          dataset.barThickness = 18;
+          dataset.maxBarThickness = 22;
+        });
+
+        if (typeof chart.update === "function") {
+          chart.update(0);
+        }
+      }
+
+      function patchAdjustedCharts() {
+        if (!window.Chart || !Chart.instances) {
+          return false;
+        }
+
+        Object.keys(Chart.instances).forEach(function(key) {
+          applyAdjustedChartTheme(Chart.instances[key]);
+        });
+
+        return true;
+      }
+
+      let attempts = 0;
+
+      function ensureAdjustedSectionTheme() {
+        normaliseAdjustedIndicators();
+
+        if (patchAdjustedCharts() || attempts >= 20) {
+          return;
+        }
+
+        attempts += 1;
+        window.setTimeout(ensureAdjustedSectionTheme, 150);
+      }
+
+      document.addEventListener("DOMContentLoaded", ensureAdjustedSectionTheme);
+      window.addEventListener("load", ensureAdjustedSectionTheme);
+    })();
+  </script>
+
   <div class="AdjustedSection-container">
-    <div class="AdjustedSection-item">
-      <div class="AdjustedSection-share u-marginTop10 u-marginBottom15">
-        <div data-component="Share" data-anchor="adjusted" data-color="{{ color }}"></div>
-      </div>
-
-      <p class="js-tooltips">
-        These charts show changes to the spending plans originally published in the {{ source_type }}. Details of these changes are published in the {{ source_type_adjusted }}.
-      </p>
-
-      {% if items.special_appropriation %}
-        <p class="js-tooltips">
-          Special appropriations are not included in the Adjustments Appropriation. Special appropriations passed before the adjusted budget are included in the dataset.
-        </p>
-      {% endif %}
-
-       {% if parliament %}
-        <p class="js-tooltips">
-          Amendments to Parliaments' budget are determined independently of the national government's budget
-          processes in accordance with the Financial Management of Parliament and Provincial Legislatures Act,
-          (2009) as amended.
-        </p>
-      {% endif %}
-
-      <ul class="LinksList">
-        {% include 'components/LinksList/item.html' with prefix="Source" text=source_text url=dataset type="dataset" %}
-
-        {% include 'components/LinksList/item.html' with text="Download this data for analysis (CSV)" url=csv type="download" %}
-
-        {% include 'components/LinksList/item.html' with text=pdf_adjusted_text url=pdf_adjusted type="download" %}
-
-        {% include 'components/LinksList/item.html' with text=excel_adjusted_text url=excel_adjusted type="download" %}
-
-        {% include 'components/LinksList/item.html' with text=pdf_text url=pdf type="download" %}
-
-        {% include 'components/LinksList/item.html' with text=excel_text url=excel type="download" %}
-
-      </ul>
-    </div>
-
-    {% if items == null %}
+    {% if items %}
       <div class="AdjustedSection-item">
-        <div class="Message Message--secondary u-marginBottom60 ">
-          <div class="Message-content">
-            {% include 'components/Icon/index.html' with type="info" size="large" %}
-            <span class="Message-heading">
-        Please note
-      </span>
+        <div class="Card AdjustedSectionPanel AdjustedSectionPanel--intro">
+          <div class="AdjustedSection-share u-marginTop10 u-marginBottom15">
+            <div data-component="Share" data-anchor="adjusted" data-color="{{ color }}"></div>
           </div>
-          <div class="Message-text Message-text--secondary">No adjusted budget data available for this year
-            yet
-          </div>
+
+          <p class="js-tooltips">
+            These charts show changes to the spending plans originally published in the {{ source_type }}. Details of these changes are published in the {{ source_type_adjusted }}.
+          </p>
+
+          {% if items.special_appropriation %}
+            <p class="js-tooltips">
+              Special appropriations are not included in the Adjustments Appropriation. Special appropriations passed before the adjusted budget are included in the dataset.
+            </p>
+          {% endif %}
+
+           {% if parliament %}
+            <p class="js-tooltips">
+              Amendments to Parliaments' budget are determined independently of the national government's budget
+              processes in accordance with the Financial Management of Parliament and Provincial Legislatures Act,
+              (2009) as amended.
+            </p>
+          {% endif %}
+
+          <ul class="LinksList">
+            {% include 'components/LinksList/item.html' with prefix="Source" text=source_text url=dataset type="dataset" %}
+
+            {% include 'components/LinksList/item.html' with text="Download this data for analysis (CSV)" url=csv type="download" %}
+
+            {% include 'components/LinksList/item.html' with text=pdf_adjusted_text url=pdf_adjusted type="download" %}
+
+            {% include 'components/LinksList/item.html' with text=excel_adjusted_text url=excel_adjusted type="download" %}
+
+            {% include 'components/LinksList/item.html' with text=pdf_text url=pdf type="download" %}
+
+            {% include 'components/LinksList/item.html' with text=excel_text url=excel type="download" %}
+
+          </ul>
+        </div>
+      </div>
+    {% else %}
+      <div class="AdjustedSection-item AdjustedSection-item--full">
+        <div class="Card AdjustedSectionPanel AdjustedSectionPanel--empty">
+          <div class="AdjustedSection-emptyEyebrow">Adjusted Budget</div>
+          <div class="Title Title--interSection u-marginBottom10">No adjusted budget data yet</div>
+          <p class="u-marginBottom0">
+            No adjusted budget data is available for this department for {{ year }}.
+          </p>
         </div>
       </div>
     {% endif %}
 
-   {% if items %}
+    {% if items %}
       <div class="AdjustedSection-item">
-        <div class="AdjustedSection-indicatorsGrid">
-          <div class="AdjustedSection-indicator">
-            <div class="Title Title--interSection u-marginBottom10">
-              Total Adjustments
-            </div>
-
-            {% include 'scenes/department/AdjustedSection/components/ChangeIndicator/index.html' with percentage=items.total_change.percentage amount=items.total_change.amount icon="true" priority="true" %}
-
-            <p>Total adjustment to the original budget for this department.</p>
+        <div class="Card AdjustedSectionPanel">
+          <div class="Title Title--interSection u-marginBottom15">
+            Adjustment highlights
           </div>
 
-          <div class="AdjustedSection-indicator">
-            <div class="Title Title--interSection u-marginBottom10">
-              {{ items.unforeseeable.label }}
-            </div>
-
-            {% include 'scenes/department/AdjustedSection/components/ChangeIndicator/index.html' with percentage=items.unforeseeable.percentage amount=items.unforeseeable.amount %}
-
-            <p>Unforeseeable or unavoidable expenditure arising from events or circumstances that could not have been anticipated or
-            prevented.</p>
-          </div>
-
-          {% if items.special_appropriation %}
-            <div class="AdjustedSection-indicator">
+          <div class="AdjustedSectionSummaryGrid">
+            <div class="AdjustedSectionStatCard">
               <div class="Title Title--interSection u-marginBottom10">
-                Special Appropriation
+                Total Adjustments
               </div>
 
-              {% include 'scenes/department/AdjustedSection/components/ChangeIndicator/index.html' with percentage=items.special_appropriation.percentage amount=items.special_appropriation.amount %}
+              {% include 'scenes/department/AdjustedSection/components/ChangeIndicator/index.html' with percentage=items.total_change.percentage amount=items.total_change.amount icon="true" priority="true" %}
 
-              <p>A Special Appropriation has been tabled. Percentage of the total Main Appropriation.</p>
+              <p>Total adjustment to the original budget for this department.</p>
             </div>
-          {% endif %}
-        </div>
+
+            <div class="AdjustedSectionStatCard">
+              <div class="Title Title--interSection u-marginBottom10">
+                {{ items.unforeseeable.label }}
+              </div>
+
+              {% include 'scenes/department/AdjustedSection/components/ChangeIndicator/index.html' with percentage=items.unforeseeable.percentage amount=items.unforeseeable.amount %}
+
+              <p>Unforeseeable or unavoidable expenditure arising from events or circumstances that could not have been anticipated or prevented.</p>
+            </div>
+
+            {% if items.special_appropriation %}
+              <div class="AdjustedSectionStatCard">
+                <div class="Title Title--interSection u-marginBottom10">
+                  Special Appropriation
+                </div>
+
+                {% include 'scenes/department/AdjustedSection/components/ChangeIndicator/index.html' with percentage=items.special_appropriation.percentage amount=items.special_appropriation.amount %}
+
+                <p>A Special Appropriation has been tabled. Percentage of the total Main Appropriation.</p>
+              </div>
+            {% endif %}
+          </div>
 
         {% if items.direct_charges %}
-          <div>
+          <div class="AdjustedSectionSupplementCard">
             <div class="Title Title--interSection u-marginBottom10">
               Direct charge against the National Revenue Fund
             </div>
 
             <p>Adjustments as percentage of these budgets:</p>
 
-            <div class="AdjustedSection-indicatorsGrid">
+            <div class="AdjustedSectionSupplementGrid">
               {% for charge in items.direct_charges %}
-                <div class="AdjustedSection-indicator AdjustedSection-indicator--small">
+                <div class="AdjustedSectionSupplementItem">
                   {% include 'scenes/department/AdjustedSection/components/ChangeIndicator/index.html' with percentage=charge.percentage amount=charge.amount icon="true" small="true" %}
 
                   <p>{{ charge.label }}</p>
@@ -127,29 +427,28 @@
             </div>
           </div>
         {% endif %}
+        </div>
       </div>
     {% endif %}
 
     {% if items and items.by_type %}
       <div class="AdjustedSection-item">
-        <div class="Card Card--fullHeight">
+        <div class="Card AdjustedSectionChartCard">
           <div class="Title Title--interSection u-marginBottom15">
             Total adjustment by type
           </div>
-          <div class="Page-content">
-            <div class="Card">
-              <div style="height: 400px; width: 100%;">
-                <canvas id="categoryBarChart"></canvas>
-              </div>
-            </div>            
-            <script id="category-data" type="application/json">{{ items.by_type|safe }}</script>        
+          <p class="AdjustedSectionChartHint">See which budget adjustment categories contributed most to the revised total.</p>
+          <div class="AdjustedSectionChartCanvas">
+            <canvas id="categoryBarChart"></canvas>
+          </div>
+          <script id="category-data" type="application/json">{{ items.by_type|safe }}</script>
         </div>
       </div>
     {% endif %}
 
     {% if items and items.by_type == null %}
       <div class="AdjustedSection-item">
-        <div class="Card Card--fullHeight Card--dark">
+        <div class="Card AdjustedSectionChartCard AdjustedSectionChartCard--empty">
           <div class="Title Title--interSection u-marginBottom15">
             Total adjustment by type
           </div>
@@ -158,68 +457,61 @@
         </div>
       </div>
     {% endif %}
-     </div>
 
-     <!-- Econ section-->
-      {% if items and items.econ_classes %}
+    <!-- Econ section-->
+    {% if items and items.econ_classes %}
       <div class="AdjustedSection-item">
-        <div class="Card Card--fullHeight">
+        <div class="Card AdjustedSectionChartCard">
           <div class="Title Title--interSection u-marginBottom15">
             Total adjustments by economic classification
           </div>
-          <div class="Page-content">
-            <div class="Card">
-              <div style="height: 400px; width: 100%;">
-                <canvas id="econBarChart"></canvas>
-              </div>
-            </div>
-            <script id="econ-data" type="application/json">{{ items.econ_classes|safe }}</script>
+          <p class="AdjustedSectionChartHint">Compare where the adjustments landed across compensation, goods and services, transfers, and capital spending.</p>
+          <div class="AdjustedSectionChartCanvas">
+            <canvas id="econBarChart"></canvas>
           </div>
+          <script id="econ-data" type="application/json">{{ items.econ_classes|safe }}</script>
         </div>
-        {% endif %}
-      
-        {% if items and items.econ_classes == null %}
-        <div class="AdjustedSection-item">
-          <div class="Card Card--fullHeight Card--dark">
-            <div class="Title Title--interSection u-marginBottom15">
-              Total adjustments by economic classification
-            </div>
-      
-            <p>There were no adjustements to economic classification totals</p>
-          </div>
-        </div>
-        {% endif %}
       </div>
+    {% endif %}
 
-          <!-- Programmes section-->
-          {% if items and items.programmes %}
-          <div class="AdjustedSection-item">
-            <div class="Card Card--fullHeight">
-              <div class="Title Title--interSection u-marginBottom15">
-                Total adjustments by programmes
-              </div>
-              <div class="Page-content">
-                <div class="Card">
-                  <div style="height: 400px; width: 100%;">
-                    <canvas id="programmesBarChart"></canvas>
-                  </div>
-                </div>
-                <script id="programmes-data" type="application/json">{{ items.programmes|safe }}</script>
-              </div>
-            </div>
-            {% endif %}
-          
-            {% if items and items.programmes == null %}
-            <div class="AdjustedSection-item">
-              <div class="Card Card--fullHeight Card--dark">
-                <div class="Title Title--interSection u-marginBottom15">
-                  Total adjustments by programmes
-                </div>
-          
-                <p>There were no adjustements to programmes totals</p>
-              </div>
-            </div>
-            {% endif %}
+    {% if items and items.econ_classes == null %}
+      <div class="AdjustedSection-item">
+        <div class="Card AdjustedSectionChartCard AdjustedSectionChartCard--empty">
+          <div class="Title Title--interSection u-marginBottom15">
+            Total adjustments by economic classification
           </div>
+
+          <p>There were no adjustements to economic classification totals</p>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Programmes section-->
+    {% if items and items.programmes %}
+      <div class="AdjustedSection-item AdjustedSection-item--full">
+        <div class="Card AdjustedSectionChartCard">
+          <div class="Title Title--interSection u-marginBottom15">
+            Total adjustments by programmes
+          </div>
+          <p class="AdjustedSectionChartHint">Review how the revised budget shifts across the department&apos;s programmes.</p>
+          <div class="AdjustedSectionChartCanvas">
+            <canvas id="programmesBarChart"></canvas>
+          </div>
+          <script id="programmes-data" type="application/json">{{ items.programmes|safe }}</script>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if items and items.programmes == null %}
+      <div class="AdjustedSection-item AdjustedSection-item--full">
+        <div class="Card AdjustedSectionChartCard AdjustedSectionChartCard--empty">
+          <div class="Title Title--interSection u-marginBottom15">
+            Total adjustments by programmes
+          </div>
+
+          <p>There were no adjustements to programmes totals</p>
+        </div>
+      </div>
+    {% endif %}
   </div>
 </div>

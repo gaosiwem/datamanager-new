@@ -1,53 +1,106 @@
 .AdjustedSection-container {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 
   @media screen and (min-width: 1000px) {
-    flex-flow: row wrap;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 .AdjustedSection-item {
   min-width: 0;
-  padding-bottom: 1rem;
+  padding: 0;
+}
 
-  @media screen and (min-width: 1000px) {
-    width: 50%;
-    padding-right: 1rem;
+.AdjustedSectionPanel,
+.AdjustedSectionChartCard {
+  padding: 1.35rem 1.35rem 1rem;
+}
 
-    &--full {
-      width: 100%;
-    }
+.AdjustedSectionPanel {
+  height: 100%;
+}
 
-    &:nth-of-type(2n) {
-      padding-left: 1rem;
-      padding-right: 0;
-    }
-  }
+.AdjustedSectionPanel--empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 220px;
 }
 
 .AdjustedSection-share {
   max-width: 250px;
 }
 
-.AdjustedSection-indicatorsGrid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: stretch;
+.AdjustedSectionSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
 }
 
-.AdjustedSection-indicator {
-  padding: 0 0.5rem 2rem;
+.AdjustedSectionStatCard,
+.AdjustedSectionSupplementCard {
+  border: 1px solid #ececec;
+  border-radius: 12px;
+  background: #fcfcfc;
+}
+
+.AdjustedSectionStatCard {
+  padding: 1rem 1rem 1.1rem;
+}
+
+.AdjustedSectionSupplementCard {
+  margin-top: 16px;
+  padding: 1rem 1rem 1.1rem;
+}
+
+.AdjustedSectionSupplementGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.AdjustedSectionSupplementItem {
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.9rem;
+}
+
+.AdjustedSectionChartCanvas {
+  position: relative;
   width: 100%;
+  height: 360px;
+  margin-top: 0.5rem;
+}
 
-  @media screen and (min-width: 600px) {
-    width: (100% / 3);
-  }
+.AdjustedSectionChartCanvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
 
-  &--small {
-    @media screen and (min-width: 1400px) {
-      width: (100% / 4);
-    }
+.AdjustedSectionChartCard--empty {
+  min-height: 240px;
+}
+
+.AdjustedSectionChartHint {
+  color: #6f6f6f;
+  font-size: 0.92rem;
+  margin-bottom: 0;
+}
+
+.AdjustedSection-emptyEyebrow {
+  color: #7bb344;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.55rem;
+  text-transform: uppercase;
+}
+
+@media screen and (min-width: 1000px) {
+  .AdjustedSection-item--full {
+    grid-column: 1 / -1;
   }
 }

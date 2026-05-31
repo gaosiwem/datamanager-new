@@ -15,6 +15,11 @@ import debounce from "lodash.debounce";
 import slugify from "slugify";
 import "../../../scss/components/public-entity-budgets/index.scss";
 
+const rootRelativePath = (path) => {
+  if (!path) return "";
+  return `/${String(path).replace(/^\/+/, "")}`;
+};
+
 /**
  * Card-based list view for Public Entities.
  * Uses existing backend response shape:
@@ -401,8 +406,6 @@ setSort = (key) => {
 
   renderCard(item, idx) {
     const year = this.getFinancialYear();
-    //const domain = "http://localhost:8000";
-     const domain = "https://vulekamali.gov.za";
 
     const entityName = item && item.name ? String(item.name) : "";
     const pfma = item && item.pfma ? String(item.pfma) : "-";
@@ -415,10 +418,18 @@ setSort = (key) => {
           ? item.department.name
           : String(item.department)
         : "";
+    const deptSlug =
+      item && item.department && typeof item.department === "object"
+        ? item.department.slug
+        : slugify(String(deptName));
+    const deptPath =
+      item && item.department && typeof item.department === "object"
+        ? rootRelativePath(item.department.url_path)
+        : "";
 
     const entityUrl = `/public-entities/${year}/national/${item.slug}`;
     const deptUrl = deptName
-      ? `${domain}/${year}/national/departments/${slugify(String(deptName))}`
+      ? deptPath || `/${year}/national/departments/${deptSlug}`
       : null;
 
       const formatValues = (value) => {

@@ -1,0 +1,238 @@
+.BudgetSummaryTreemapList {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 42px;
+  width: 100%;
+}
+
+.BudgetSummaryTreemap {
+  width: 100%;
+  min-width: 0;
+}
+
+.BudgetSummaryTreemapHeader {
+  margin-bottom: 14px;
+}
+
+.BudgetSummaryTreemapTotal {
+  margin: 0.25rem 0 0;
+  color: #3f3f3f;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.BudgetSummaryTreemap .Card {
+  box-sizing: border-box;
+  padding: 1.35rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.BudgetSummaryTreemap .treemapWrapper {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.BudgetSummaryTreemap .treemapContainer {
+  box-sizing: border-box;
+  flex-basis: 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.BudgetSummaryTreemap .treemapContainer {
+  min-height: 680px;
+}
+
+.BudgetSummaryTreemap .treemapSummary {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.BudgetSummaryTreemap .treemap {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 520px;
+}
+
+.BudgetSummaryDetailChartCard {
+  padding: 1.35rem;
+}
+
+.BudgetSummaryDetailGraphList {
+  display: flex;
+  flex-direction: column;
+  gap: 52px;
+}
+
+.BudgetSummaryDetailGraph {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 100%;
+}
+
+.BudgetSummaryDetailGraphHeader {
+  min-width: 0;
+  margin-bottom: 14px;
+  padding-bottom: 1rem;
+}
+
+.BudgetSummaryDetailGraphHeader p {
+  max-width: none;
+}
+
+.BudgetSummaryDetailGraph > .Page-content {
+  width: 100%;
+  min-width: 0;
+}
+
+.BudgetSummaryDetailGraph > .Page-content .Card {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.BudgetSummaryDetailChartPanel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.BudgetSummaryDetailChartPanel + .BudgetSummaryDetailChartPanel {
+  border-left: 1px solid #d2d2d2;
+  padding-left: 24px;
+}
+
+.BudgetSummaryDetailChartPanel label {
+  font-family: Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: #3f3f3f;
+  color: #fff;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.BudgetSummaryDetailChart {
+  min-height: 400px;
+  width: 100%;
+  flex: 1 1 auto;
+}
+
+.BudgetSummaryDetailChartColumn {
+  float: none;
+  width: 100%;
+  padding: 0;
+}
+
+.BudgetSummaryDetailChart canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.BudgetSummaryTreemapTooltip,
+.BudgetSummaryDetailTooltip {
+  position: absolute;
+  display: none;
+  padding: 10px 12px;
+  border: solid 1px #d2d2d2;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: #3f3f3f;
+  font: 12px Roboto, sans-serif;
+  pointer-events: none;
+  text-align: left;
+  z-index: 1000;
+}
+
+@media screen and (min-width: 1000px) {
+  .BudgetSummaryDetailGraph {
+    flex-flow: row wrap;
+  }
+
+  .BudgetSummaryDetailGraphHeader {
+    width: 38%;
+    margin-bottom: 0;
+    padding-right: 1.25rem;
+  }
+
+  .BudgetSummaryDetailGraph > .Page-content {
+    width: 58%;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .BudgetSummaryTreemapList {
+    gap: 34px;
+  }
+
+  .BudgetSummaryTreemap .Card {
+    padding: 1rem;
+  }
+
+  .BudgetSummaryTreemap .treemapContainer {
+    min-height: 560px;
+  }
+
+  .BudgetSummaryTreemap .treemap {
+    min-height: 420px;
+  }
+
+  .BudgetSummaryDetailChartCard {
+    padding: 1rem;
+  }
+
+  .BudgetSummaryDetailGraphList {
+    gap: 34px;
+  }
+
+  .BudgetSummaryDetailChartPanel {
+    padding: 0;
+  }
+
+  .BudgetSummaryDetailChartPanel + .BudgetSummaryDetailChartPanel {
+    border-left: 0;
+    border-top: 1px solid #d2d2d2;
+    padding-left: 0;
+    padding-top: 18px;
+  }
+
+  .BudgetSummaryDetailChart {
+    min-height: 320px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .BudgetSummaryTreemapList {
+    gap: 28px;
+  }
+
+  .BudgetSummaryTreemapHeader {
+    margin-bottom: 10px;
+  }
+
+  .BudgetSummaryTreemap .Card {
+    padding: 0.75rem;
+  }
+
+  .BudgetSummaryTreemap .treemapContainer {
+    min-height: 440px;
+  }
+
+  .BudgetSummaryTreemap .treemap {
+    min-height: 320px;
+  }
+}

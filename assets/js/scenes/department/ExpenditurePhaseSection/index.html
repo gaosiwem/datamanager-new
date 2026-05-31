@@ -57,17 +57,420 @@
         <div class="ExpenditurePhaseSection-item ExpenditurePhaseSection-item--right">
             <input type="hidden" id="sphere-slug" value="{{ sphere.slug }}">
             <div class="Page-content">
-                <div class="Card">
+                <style>
+                    .ExpenditurePhaseSection .ExpenditureChartCard {
+                        padding: 1.35rem 1.35rem 1rem;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureChartMeta {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 0.9rem 1.2rem;
+                        margin-bottom: 1rem;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureChartLegend {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 0.9rem 1.2rem;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureLegendItem {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 0.45rem;
+                        color: #3f3f3f;
+                        font-size: 0.9rem;
+                        font-weight: 500;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureLegendSwatch {
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 999px;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureChartCanvas {
+                        position: relative;
+                        display: block;
+                        width: 100% !important;
+                        max-width: none;
+                        margin-top: 0;
+                        padding-bottom: 0;
+                    }
+
+                    .ExpenditurePhaseSection #budgetActualChart {
+                        display: block;
+                        width: 100% !important;
+                        height: auto;
+                        overflow: visible;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureAxis text,
+                    .ExpenditurePhaseSection .ExpenditureValueLabel,
+                    .ExpenditurePhaseSection .ExpenditureEmptyState,
+                    .ExpenditurePhaseSection .ExpenditureEmptyHint {
+                        font-family: Roboto, sans-serif;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureAxis text {
+                        fill: #4a4a4a;
+                        font-size: 11px;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureAxis path,
+                    .ExpenditurePhaseSection .ExpenditureAxis line {
+                        stroke: #d2d2d2;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureGrid line {
+                        stroke: #ececec;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureGrid path {
+                        stroke: none;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureValueLabel {
+                        fill: #3f3f3f;
+                        font-size: 11px;
+                        font-weight: 700;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureEmptyState {
+                        fill: #4a4a4a;
+                        font-size: 16px;
+                        font-weight: 600;
+                    }
+
+                    .ExpenditurePhaseSection .ExpenditureEmptyHint {
+                        fill: #979797;
+                        font-size: 13px;
+                    }
+
+                    .ExpenditurePhaseSection .tooltip {
+                        position: absolute;
+                        display: none;
+                        max-width: 220px;
+                        padding: 10px 12px;
+                        border: 1px solid #d9d9d9;
+                        border-radius: 12px;
+                        background: rgba(255, 255, 255, 0.98);
+                        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+                        color: #3f3f3f;
+                        font: 12px/1.5 Roboto, sans-serif;
+                        pointer-events: none;
+                        z-index: 20;
+                    }
+                </style>
+                <div class="Card ExpenditureChartCard">
                     <div style="display: flex; flex-direction: column; justify-content: space-between; width: 100%;">
-                        <div id="legend"></div>
+                        <div class="ExpenditureChartMeta">
+                            <div id="legend" class="ExpenditureChartLegend"></div>
+                        </div>
                         <div>
-                            <div class="chart-container">
+                            <div class="ExpenditureChartCanvas">
                                 <svg id="budgetActualChart"></svg>
-                                <div class="tooltip"></div>                                
+                                <div class="tooltip DepartmentGraphTooltip"></div>                                
                             </div>    
                         </div>
                         <script id="budgetActualData" type="application/json">
                             {{ budget_actual_spending |safe }}
+                        </script>
+                        <script>
+                            window.addEventListener("load", function() {
+                                if (window.__budgetActualChartPatched) {
+                                    return;
+                                }
+
+                                window.__budgetActualChartPatched = true;
+
+                                const PHASE_METADATA = {
+                                    "Main appropriation": {
+                                        rank: 1,
+                                        color: "#ad3c64",
+                                    },
+                                    "Adjusted appropriation": {
+                                        rank: 2,
+                                        color: "#ee9f31",
+                                    },
+                                    "Final Appropriation": {
+                                        rank: 3,
+                                        color: "#ee9f31",
+                                    },
+                                    "Audit Outcome": {
+                                        rank: 4,
+                                        color: "#7bb344",
+                                    },
+                                    "Audited Outcome": {
+                                        rank: 5,
+                                        color: "#7bb344",
+                                    },
+                                };
+
+                                const chartDataNode = document.getElementById("budgetActualData");
+                                const svg = d3.select("#budgetActualChart");
+                                const legend = d3.select("#legend");
+                                const tooltip = d3.select(".ExpenditurePhaseSection-item--right .tooltip");
+                                const chartCard = svg.node() ? svg.node().closest(".ExpenditureChartCard") : null;
+                                const chartContainer = svg.node() ? svg.node().parentElement : null;
+                                let lastMeasuredWidth = 0;
+
+                                if (!chartDataNode || svg.empty() || !chartCard || !chartContainer) {
+                                    return;
+                                }
+
+                                function formatFinancialYear(yearValue) {
+                                    const year = parseInt(yearValue, 10);
+
+                                    if (Number.isNaN(year)) {
+                                        return String(yearValue || "");
+                                    }
+
+                                    return `${year}-${(year + 1).toString().slice(-2)}`;
+                                }
+
+                                function formatValue(value) {
+                                    const numericValue = Number(value);
+                                    const absoluteValue = Math.abs(numericValue);
+
+                                    if (absoluteValue >= 1e12) return `R ${Math.round(numericValue / 1e12).toLocaleString()} trillion`;
+                                    if (absoluteValue >= 1e9) return `R ${Math.round(numericValue / 1e9).toLocaleString()} billion`;
+                                    if (absoluteValue >= 1e6) return `R ${Math.round(numericValue / 1e6).toLocaleString()} million`;
+                                    if (absoluteValue >= 1e3) return `R ${Math.round(numericValue / 1e3).toLocaleString()} thousand`;
+                                    return `R ${Math.round(numericValue).toLocaleString()}`;
+                                }
+
+                                function formatGraphValue(value) {
+                                    return formatValue(value);
+                                }
+
+                                function formatYAxis(value) {
+                                    return formatGraphValue(value);
+                                }
+
+                                function normalisePhase(phase) {
+                                    return String(phase || "").trim();
+                                }
+
+                                function getPhaseMeta(phase) {
+                                    return PHASE_METADATA[phase] || {
+                                        rank: 99,
+                                        color: "#7d7d7d",
+                                    };
+                                }
+
+                                function renderEmptyState(message, hint) {
+                                    const width = getChartWidth();
+                                    const height = 280;
+
+                                    svg.selectAll("*").remove();
+                                    svg
+                                        .attr("viewBox", `0 0 ${width} ${height}`)
+                                        .attr("width", width)
+                                        .attr("height", height)
+                                        .attr("preserveAspectRatio", "xMidYMid meet");
+
+                                    svg.append("text")
+                                        .attr("class", "ExpenditureEmptyState")
+                                        .attr("x", width / 2)
+                                        .attr("y", height / 2 - 10)
+                                        .attr("text-anchor", "middle")
+                                        .text(message);
+
+                                    svg.append("text")
+                                        .attr("class", "ExpenditureEmptyHint")
+                                        .attr("x", width / 2)
+                                        .attr("y", height / 2 + 18)
+                                        .attr("text-anchor", "middle")
+                                        .text(hint);
+                                }
+
+                                function getChartWidth() {
+                                    const containerWidth = chartContainer.getBoundingClientRect().width;
+                                    const cardWidth = Math.max(chartCard.getBoundingClientRect().width - 32, 0);
+                                    const measuredWidth = Math.max(containerWidth, cardWidth);
+
+                                    return Math.max(Math.round(measuredWidth), 320);
+                                }
+
+                                function createChart() {
+                                    let dataset;
+
+                                    try {
+                                        dataset = JSON.parse(chartDataNode.textContent);
+                                    } catch (error) {
+                                        console.error("Budget actual chart parse error:", error);
+                                        return;
+                                    }
+
+                                    if (!dataset || !dataset.children || !dataset.children.length) {
+                                        renderEmptyState("No expenditure data available", "Please try again later.");
+                                        return;
+                                    }
+
+                                    const items = dataset.children.map((item, index) => {
+                                        const rawYear = item.name || item.Name;
+                                        const year = parseInt(rawYear, 10);
+                                        const value = Number(item.value || item.Count || 0);
+                                        const budgetPhase = normalisePhase(item.budgetPhase || item.BudgetPhase);
+                                        const phaseMeta = getPhaseMeta(budgetPhase);
+
+                                        return {
+                                            key: `${rawYear}-${budgetPhase}-${index}`,
+                                            year: Number.isNaN(year) ? null : year,
+                                            yearLabel: formatFinancialYear(rawYear),
+                                            value,
+                                            budgetPhase,
+                                            phaseRank: phaseMeta.rank,
+                                            phaseColor: phaseMeta.color,
+                                            formattedValue: formatValue(value),
+                                        };
+                                    }).filter((item) => item.value >= 0)
+                                        .sort((left, right) => {
+                                            if (left.year !== right.year) {
+                                                return (left.year || 0) - (right.year || 0);
+                                            }
+
+                                            return left.phaseRank - right.phaseRank;
+                                        });
+
+                                    if (!items.length) {
+                                        renderEmptyState("No expenditure data available", "Please try again later.");
+                                        return;
+                                    }
+
+                                    const subcategories = [...new Set(items.map((item) => item.budgetPhase))]
+                                        .sort((left, right) => getPhaseMeta(left).rank - getPhaseMeta(right).rank);
+                                    const axisLabels = {};
+
+                                    items.forEach((item) => {
+                                        axisLabels[item.key] = item.yearLabel;
+                                    });
+
+                                    const width = getChartWidth();
+                                    const height = width >= 960 ? 420 : width >= 700 ? 380 : 340;
+                                    const margin = {
+                                        top: 24,
+                                        right: width >= 700 ? 20 : 14,
+                                        bottom: 56,
+                                        left: width >= 700 ? 124 : 104,
+                                    };
+                                    const innerWidth = width - margin.left - margin.right;
+                                    const innerHeight = height - margin.top - margin.bottom;
+
+                                    svg.selectAll("*").remove();
+                                    svg
+                                        .attr("width", width)
+                                        .attr("height", height)
+                                        .attr("viewBox", `0 0 ${width} ${height}`)
+                                        .attr("preserveAspectRatio", "xMidYMid meet");
+
+                                    const xScale = d3.scaleBand()
+                                        .domain(items.map((item) => item.key))
+                                        .range([0, innerWidth])
+                                        .padding(width >= 700 ? 0.38 : 0.28);
+
+                                    const y = d3.scaleLinear()
+                                        .domain([0, (d3.max(items, (item) => item.value) || 0) * 1.12])
+                                        .nice()
+                                        .range([innerHeight, 0]);
+
+                                    const chartGroup = svg.append("g")
+                                        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+                                    chartGroup.append("g")
+                                        .attr("class", "ExpenditureGrid")
+                                        .call(
+                                            d3.axisLeft(y)
+                                                .ticks(width >= 700 ? 5 : 4)
+                                                .tickSize(-innerWidth)
+                                                .tickFormat("")
+                                        );
+
+                                    chartGroup.append("g")
+                                        .attr("transform", `translate(0, ${innerHeight})`)
+                                        .call(d3.axisBottom(xScale).tickFormat((key) => axisLabels[key]))
+                                        .attr("class", "ExpenditureAxis ExpenditureAxis--x");
+
+                                    chartGroup.append("g")
+                                        .call(d3.axisLeft(y).tickFormat((value) => formatYAxis(value)))
+                                        .attr("class", "ExpenditureAxis ExpenditureAxis--y");
+
+                                    const bars = chartGroup.selectAll(".ExpenditureBar")
+                                        .data(items)
+                                        .enter()
+                                        .append("rect")
+                                        .attr("class", "ExpenditureBar")
+                                        .style("cursor", "pointer")
+                                        .attr("x", (item) => xScale(item.key))
+                                        .attr("y", (item) => y(item.value))
+                                        .attr("width", xScale.bandwidth())
+                                        .attr("height", (item) => innerHeight - y(item.value))
+                                        .attr("rx", 10)
+                                        .attr("ry", 10)
+                                        .attr("fill", (item) => item.phaseColor)
+                                        .on("mouseover", function(item) {
+                                            const chartBounds = chartContainer.getBoundingClientRect();
+                                            const pointerEvent = d3.event;
+                                            const left = pointerEvent.clientX - chartBounds.left + 12;
+                                            const top = pointerEvent.clientY - chartBounds.top - 12;
+
+                                            tooltip
+                                                .style("display", "block")
+                                                .html(
+                                                    `<strong>${item.yearLabel}</strong><br>${item.budgetPhase}<br>${item.formattedValue}`
+                                                )
+                                                .style("left", `${left}px`)
+                                                .style("top", `${top}px`);
+                                        })
+                                        .on("mousemove", function() {
+                                            const chartBounds = chartContainer.getBoundingClientRect();
+                                            const pointerEvent = d3.event;
+                                            const left = pointerEvent.clientX - chartBounds.left + 12;
+                                            const top = pointerEvent.clientY - chartBounds.top - 12;
+
+                                            tooltip
+                                                .style("left", `${left}px`)
+                                                .style("top", `${top}px`);
+                                        })
+                                        .on("mouseout", function() {
+                                            tooltip.style("display", "none");
+                                        });
+
+                                    bars.raise();
+
+                                    legend.html("");
+                                    subcategories.forEach((phase) => {
+                                        const legendItem = legend.append("div").attr("class", "ExpenditureLegendItem");
+                                        legendItem.append("div")
+                                            .attr("class", "ExpenditureLegendSwatch")
+                                            .style("background-color", getPhaseMeta(phase).color);
+                                        legendItem.append("span").text(phase);
+                                    });
+                                }
+
+                                function scheduleChartRender() {
+                                    const nextWidth = getChartWidth();
+
+                                    if (svg.attr("width") && nextWidth === lastMeasuredWidth) {
+                                        return;
+                                    }
+
+                                    lastMeasuredWidth = nextWidth;
+                                    createChart();
+                                    window.requestAnimationFrame(createChart);
+                                    window.setTimeout(createChart, 180);
+                                    window.setTimeout(createChart, 420);
+                                }
+
+                                scheduleChartRender();
+                                window.addEventListener("resize", scheduleChartRender);
+
+                                if (window.ResizeObserver) {
+                                    new ResizeObserver(scheduleChartRender).observe(chartCard);
+                                }
+                            });
                         </script>
                     </div>
                 </div>

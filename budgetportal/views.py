@@ -62,6 +62,22 @@ from .models import (
 
 COMMON_DESCRIPTION = "South Africa's National and Provincial budget data "
 COMMON_DESCRIPTION_ENDING = "from National Treasury in partnership with IMALI YETHU."
+DEPARTMENT_SLUG_ALIASES = {
+    "science-technology-and-innovation": "science-and-innovation",
+}
+
+
+def get_department_by_slug_or_alias(government, department_slug):
+    requested_slug = slugify(department_slug)
+    department = government.departments.filter(slug=requested_slug).first()
+    if department:
+        return department
+
+    aliased_slug = DEPARTMENT_SLUG_ALIASES.get(requested_slug)
+    if aliased_slug:
+        return government.departments.filter(slug=aliased_slug).first()
+
+    return None
 
 
 def serialize_showcase(showcase_items):
@@ -456,6 +472,46 @@ def department_list(request, financial_year_id):
     return render(request, "department_list.html", context)
 
 
+def search_result_page(request, financial_year_id):
+    selected_year = get_object_or_404(FinancialYear, slug=financial_year_id)
+
+    context = {
+        "title": "Search Results - vulekamali",
+        "description": COMMON_DESCRIPTION + COMMON_DESCRIPTION_ENDING,
+        "navbar": MainMenuItem.objects.prefetch_related("children").all(),
+        "latest_year": FinancialYear.get_latest_year().slug,
+        "selected_financial_year": selected_year.slug,
+        "financial_years": [],
+    }
+
+    for year in FinancialYear.get_available_years():
+        context["financial_years"].append(
+            {
+                "id": year.slug,
+                "is_selected": year.slug == selected_year.slug,
+                "closest_match": {
+                    "is_exact_match": True,
+                    "url_path": "/%s/search-result" % year.slug,
+                },
+            }
+        )
+
+    return render(request, "search-result.html", context)
+
+
+def latest_search_result_redirect(request):
+    latest_year = FinancialYear.get_latest_year()
+    if latest_year is None:
+        raise Http404("No financial years available for search results")
+
+    destination = "/%s/search-result/" % latest_year.slug
+    query_string = request.GET.urlencode()
+    if query_string:
+        destination = "%s?%s" % (destination, query_string)
+
+    return redirect(destination)
+
+
 def department_list_json(request, financial_year_id):
     response_json = json.dumps(
         department_list_data(financial_year_id),
@@ -478,10 +534,19 @@ def department_page(
         if year.slug == financial_year_id:
             selected_year = year
             sphere = selected_year.spheres.filter(slug=sphere_slug).first()
+            if not sphere:
+                raise Http404("Sphere not found")
             government = sphere.governments.filter(
                 slug=government_slug).first()
-            department = government.departments.filter(
-                slug=department_slug).first()
+            if not government:
+                raise Http404("Government not found")
+            department = get_department_by_slug_or_alias(government, department_slug)
+
+    if not department:
+        raise Http404("Department not found")
+
+    if department.slug != department_slug:
+        return redirect("/%s" % department.get_url_path(), permanent=True)
 
     financial_years_context = []
     for year in years:
@@ -585,7 +650,7 @@ def department_page(
         ).values_list('programme', flat=True).distinct()
     )
 
-    intro = department.intro.replace("\\n", "\n")
+    intro = department.intro or ""
 
     context = {
         "comments_enabled": True,
@@ -691,7 +756,7 @@ def department_page(
     context["public_entities"] = []
 
     for public_entity in PublicEntity.objects.filter(
-        department__slug=department_slug, 
+        department__slug=department.slug,
         government=department.government
     ):
         context["public_entities"].append(
@@ -1150,19 +1215,23 @@ def get_economicClassification(request):
 def get_programmes(request):
     
     department = get_department_name(request)
-    print('department name')
-    print(department)
 
-    prov = request.GET.get('province', '').strip() 
-    if prov == 'datasets':
+    prov = request.GET.get('province', '').strip()
+    if prov in ['undefined', 'null', 'datasets']:
+        return JsonResponse("[]", safe=False)
+
+    econ = request.GET.get('econ', '').strip() 
+    financialYear = request.GET.get('financialYear', '').strip()
+    if financialYear in ['', 'undefined', 'null'] or not department:
         return JsonResponse("[]", safe=False)
 
     province = ''
-    if prov != '':
+    if prov:
         province = get_province(prov)
+        if province is None:
+            return JsonResponse("[]", safe=False)
 
-    econ = request.GET.get('econ', '').strip() 
-    financialYear = request.GET.get('financialYear', '').split("-")[0]; 
+    financialYear = financialYear.split("-")[0]
     prog = None
 
     if(econ == ''):
@@ -1173,7 +1242,7 @@ def get_programmes(request):
             prog =  EPREData.objects.filter(financialYear=financialYear, department=department, government = province).values_list("programme", flat=True).distinct()
     else:
         if prov == '':
-            prog = EPREData.objects.filter(financialYear=financialYear, department=department, economicClassification4 = econ).values_list("programme", flat=True).distinct()
+            prog = ENEData.objects.filter(financialYear=financialYear, department=department, economicClassification4 = econ).values_list("programme", flat=True).distinct()
 
         else:
             prog = EPREData.objects.filter(financialYear=financialYear, department=department,
@@ -1200,15 +1269,38 @@ def get_historical_expenditure(department, govt_label):
 def historical_expenditure(department, govt_label):
 
     history_list = get_historical_expenditure(department, govt_label)
-    
-    sorted_history = sorted(history_list, key=itemgetter("financialYear"))
+
+    phase_priority = {
+        "Audit Outcome": 5,
+        "Audited Outcome": 4,
+        "Final Appropriation": 3,
+        "Adjusted appropriation": 2,
+        "Main appropriation": 1,
+    }
+
+    filtered_history = {}
+    for item in history_list:
+        year = item["financialYear"]
+        current = filtered_history.get(year)
+
+        if current is None or phase_priority.get(item["budgetPhase"], 0) > phase_priority.get(
+            current["budgetPhase"], 0
+        ):
+            filtered_history[year] = item
+
+    sorted_history = sorted(filtered_history.values(), key=itemgetter("financialYear"))
 
     data = {
         "children": [
             {
                 "Name": item["financialYear"],
                 "Count": float(item["total_value"]),
-                "BudgetPhase": item["budgetPhase"]
+                "BudgetPhase": item["budgetPhase"],
+                "SeriesType": (
+                    "historical"
+                    if item["budgetPhase"] in ("Audit Outcome", "Audited Outcome", "Final Appropriation")
+                    else "planned"
+                ),
             }
             for item in sorted_history
         ],
@@ -1857,19 +1949,17 @@ def get_department_name(request):
     return department_name
 
 def get_province(prov):    
-
-    province = Government.objects.filter(slug=prov).first().name
-    return province
+    government = Government.objects.filter(slug=prov).first()
+    return government.name if government else None
 
 def get_adjusted_budget_summary(financialYear, department):
-
-    print("financial year:", financialYear)
     queryset = AENEData.objects.filter(department=department, financialYear=financialYear.split("-")[0]) \
         .values("amountKind", "budgetPhase", "programme", "subprogramme", "economicClassification2", "economicClassification3", "value")
 
     data_list = list(queryset)
 
-    # print("data list: ", data_list)
+    if not data_list:
+        return None
 
     # 1. Adjustment by type
     adjustment_by_type =  defaultdict(float)
@@ -1986,13 +2076,13 @@ def get_adjusted_budget_summary(financialYear, department):
     percent_change = (total_adjustment / total_voted * 100) if total_voted != 0 else 0
 
     summary = {
-        "by_type": json.dumps(adjustment_by_type),
+        "by_type": json.dumps(adjustment_by_type) if adjustment_by_type else None,
         "total_change": {
             "amount": total_adjustment,
             "percentage": percent_change,
         },
-        "econ_classes": json.dumps(adjustment_by_econ),
-        "programmes": json.dumps(adjustment_by_prog),
+        "econ_classes": json.dumps(adjustment_by_econ) if adjustment_by_econ else None,
+        "programmes": json.dumps(adjustment_by_prog) if adjustment_by_prog else None,
         # "virements": {
         #     "label": "virements and shifts",
         #     "amount": tota_virements,
