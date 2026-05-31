@@ -54,7 +54,7 @@
 
       <div class="AuthField">
         <label for="{{ form.login.id_for_label }}">
-          {% if is_admin_login %}{% trans "Email address" %}{% else %}{{ form.login.label }}{% endif %}
+          {% if is_admin_login %}{% trans "Username or Email address" %}{% else %}{{ form.login.label }}{% endif %}
         </label>
         <input
           type="text"
