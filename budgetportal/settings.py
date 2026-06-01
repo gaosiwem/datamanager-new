@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'performance',
     'provincial_infrastructure',
     'public_entities',
+    'data_validation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
