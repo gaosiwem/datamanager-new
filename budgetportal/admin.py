@@ -345,6 +345,7 @@ class DatasetAdmin(SortableAdmin):
     model = models.Dataset    
     list_display = ('title', 'slug', 'visibility', 'dataset_category')
 
+
 class GovernmentFunctionAdmin(SortableAdmin):
     model = models.GovernmentFunction
 
@@ -392,8 +393,7 @@ def save_vote_documents(obj_id):
 class DatasetUploadAdmin(admin.ModelAdmin):
     
     def save_model(self, request, obj, form, change):
-        if not obj.pk:
-            obj.user = request.user
+        obj.user = request.user
         super().save_model(request, obj, form, change)
         # It looks like the task isn't saved synchronously, so we can't set the
         # task as a related object synchronously. We have to fetch it by its ID
