@@ -15,6 +15,61 @@ VALID_REPORT_TYPES = [
     ("National", "National Institutions Oversight Performance Report"),
 ]
 
+REQUIRED_EQPRS_COLUMNS = {"Institution", "Programme"}
+
+
+def normalize_csv_header(value):
+    if value is None:
+        return ""
+    return value.replace("\ufeff", "").strip()
+
+
+def parse_eqprs_csv(full_text):
+    lines = full_text.splitlines()
+    header_index = None
+
+    for index, line in enumerate(lines):
+        if not line.strip():
+            continue
+
+        headers = [normalize_csv_header(header) for header in next(csv.reader([line]))]
+        if REQUIRED_EQPRS_COLUMNS.issubset(headers):
+            header_index = index
+            break
+
+    if header_index is None:
+        return None, (
+            "Could not find the EQPRS header row. Expected at least the "
+            "'Institution' and 'Programme' columns."
+        )
+
+    reader = csv.DictReader(StringIO("\n".join(lines[header_index:])))
+    reader.fieldnames = [normalize_csv_header(name) for name in reader.fieldnames or []]
+    parsed_data = []
+
+    for row in reader:
+        normalized_row = {
+            normalize_csv_header(key): (value.strip() if isinstance(value, str) else value)
+            for key, value in row.items()
+            if key is not None
+        }
+        if any(value not in ("", None) for value in normalized_row.values()):
+            parsed_data.append(normalized_row)
+
+    missing_columns = REQUIRED_EQPRS_COLUMNS - set(reader.fieldnames or [])
+    if missing_columns:
+        missing_columns_display = ", ".join(sorted(missing_columns))
+        return None, f"Missing required EQPRS columns: {missing_columns_display}"
+
+    return parsed_data, None
+
+
+def mark_import_failed(obj_to_update, import_report):
+    obj_to_update.num_imported = None
+    obj_to_update.num_not_imported = None
+    obj_to_update.import_report = import_report
+    obj_to_update.save()
+
 
 def generate_import_report(
     report_type_validated, frictionless_report, not_matching_departments
@@ -64,14 +119,15 @@ def save_imported_indicators(obj_id):
     
     sphere = reportType
     # clean_text = full_text.split("\n", 3)[3]
-    f = StringIO(full_text)
-    reader = csv.DictReader(f)
-    parsed_data = list(reader)
+    parsed_data, parsing_error = parse_eqprs_csv(full_text)
+    if parsing_error:
+        mark_import_failed(obj_to_update, parsing_error)
+        return
     
 
     # find the objects
     department_government_pairs = set(
-        [(x["Institution"], x["Programme"]) for x in parsed_data if x["Institution"]]
+        [(x["Institution"], x["Programme"]) for x in parsed_data if x.get("Institution")]
     )  # Programme column in CSV is mislabeled
     num_imported = 0
     total_record_count = len(parsed_data)

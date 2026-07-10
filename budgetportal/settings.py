@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'taggit',
     'budgetportal.apps.BudgetPortalConfig',
     'performance',
+    'dataset_preparation.apps.DatasetPreparationConfig',
     'provincial_infrastructure',
     'public_entities',
     'data_validation',
@@ -202,7 +203,8 @@ Q_CLUSTER = {
     "queue_limit": 1,
     "bulk": 1,
     "orm": "default",  # Use Django ORM as storage backend
-    "poll": 10,  # Check for queued tasks this frequently (seconds)
+    "broker_class": "budgetportal.queue_broker.SqlServerSafeORMBroker",
+    "poll": int(os.environ.get("DJANGO_Q_POLL_SECONDS", "30")),  # Check for queued tasks this frequently (seconds)
     "save_limit": 0,
     "ack_failures": True,  # Dequeue failed tasks
     "sync": DJANGO_Q_SYNC,
@@ -240,9 +242,18 @@ DATABASES = {
         'PASSWORD': '1StrongPwd!!',
         'HOST': os.environ.get('DB_HOST', 'sqlserver'),
         'PORT': '1433',
+        'CONN_MAX_AGE': int(os.environ.get('DB_CONN_MAX_AGE', 600)),
         'OPTIONS': {
             'driver': 'ODBC Driver 18 for SQL Server',
-            "extra_params": "TrustServerCertificate=yes;Encrypt=no"
+            "extra_params": (
+                "TrustServerCertificate=yes;"
+                "Encrypt=no;"
+                "Connection Timeout={};"
+                "LoginTimeout={}"
+            ).format(
+                os.environ.get("DB_CONNECTION_TIMEOUT", "60"),
+                os.environ.get("DB_LOGIN_TIMEOUT", "60"),
+            ),
         },
     }
 }

@@ -1,15 +1,19 @@
+import csv
+import os
 from import_export import resources
 from import_export.fields import Field
 from import_export.instance_loaders import ModelInstanceLoader
 from import_export.widgets import ForeignKeyWidget
 from tablib import Databook
-from tablib import Dataset
+from tablib import Dataset as TablibDataset
 
 import budgetportal
 from budgetportal.models import AENEData, DatasetCategory, DatasetUpload, ENEData, ConsolidationData, EPREData, BudgetVSActualNationalData, BudgetVSActualProvincialData, Organisation, VoteDocumentUpload, Department, VoteDocument, FinancialYear, Sphere, Government, Dataset, DatasetResource
 from budgetportal.dataset_uploading import preprocess													
+from django.db import transaction
 
-DATASET_BULK_CREATE_BATCH_SIZE = 100
+DATASET_BULK_CREATE_BATCH_SIZE = 5000
+SQL_SERVER_SAFE_PARAM_LIMIT = 2000
 
 ENE_HEADERS = [
     "VoteNumber",
@@ -110,12 +114,49 @@ AENE_HEADERS = [
 ]
 
 
-def import_dataset(obj_id):
-    obj = DatasetUpload.objects.get(id=obj_id)
-    file = obj.file.read()
+def log_progress(progress_callback, message):
+    print("[dataset_importer] {}".format(message), flush=True)
+    if progress_callback:
+        progress_callback(message)
 
-    data_book = Databook().load(file, "xlsx")
-    dataset = data_book.sheets()[0]
+
+def chunked(iterable, size):
+    for start in range(0, len(iterable), size):
+        yield iterable[start:start + size]
+
+
+def safe_bulk_create_batch_size(field_count):
+    if field_count <= 0:
+        return DATASET_BULK_CREATE_BATCH_SIZE
+    sql_server_batch_size = max(1, SQL_SERVER_SAFE_PARAM_LIMIT // field_count)
+    return min(DATASET_BULK_CREATE_BATCH_SIZE, sql_server_batch_size)
+
+
+def load_tablib_dataset(upload_obj, file_bytes, progress_callback=None):
+    file_extension = os.path.splitext(upload_obj.file.name)[1].lower()
+    if file_extension == ".csv":
+        log_progress(progress_callback, "Detected CSV upload format")
+        decoded = file_bytes.decode("utf-8-sig")
+        reader = csv.reader(decoded.splitlines())
+        rows = list(reader)
+        if not rows:
+            raise ValueError("Uploaded CSV file is empty.")
+        dataset = TablibDataset()
+        dataset.headers = rows[0]
+        for row in rows[1:]:
+            dataset.append(row)
+        return dataset, "CSV"
+
+    log_progress(progress_callback, "Detected XLSX upload format")
+    data_book = Databook().load(file_bytes, "xlsx")
+    return data_book.sheets()[0], "XLSX"
+
+
+def import_dataset(obj_id, progress_callback=None):
+    obj = DatasetUpload.objects.get(id=obj_id)
+    log_progress(progress_callback, "Reading DatasetUpload {} ({})".format(obj.id, obj.type))
+    file = obj.file.read()
+    dataset, upload_format = load_tablib_dataset(obj, file, progress_callback=progress_callback)
 
     # Central configuration for all dataset types
     DATASET_CONFIG = {
@@ -204,6 +245,7 @@ def import_dataset(obj_id):
 
     # Preprocess and clean data
     preprocessed_dataset = preprocess(dataset, headers, obj.type)
+    log_progress(progress_callback, "Preprocessed {} rows".format(len(preprocessed_dataset)))
     header_to_field = dict(zip(headers, fields))
     financialYear = obj.financialYear.slug.split("-")[0]  # Extract year from slug like "2023-24"
 
@@ -213,14 +255,41 @@ def import_dataset(obj_id):
         row_data.setdefault("budgetYear", financialYear)
         objects_to_create.append(model_class(**row_data))
 
-    model_class.objects.filter(budgetYear=financialYear).delete()
-    model_class.objects.bulk_create(
-        objects_to_create,
-        batch_size=DATASET_BULK_CREATE_BATCH_SIZE,
+    # Keep the high-volume row replacement outside a long-lived explicit transaction.
+    # On SQL Server, holding delete + bulk insert + metadata updates in one atomic block
+    # can escalate locks and make unrelated requests wait behind the import.
+    deleted_count, _ = model_class.objects.filter(budgetYear=financialYear).delete()
+    log_progress(
+        progress_callback,
+        "Deleted {} existing {} rows for budget year {}".format(
+            deleted_count,
+            model_class.__name__,
+            financialYear,
+        ),
     )
+    bulk_create_batch_size = safe_bulk_create_batch_size(len(fields))
+    total_chunks = max(
+        1,
+        (len(objects_to_create) + bulk_create_batch_size - 1) // bulk_create_batch_size,
+    )
+    for index, object_chunk in enumerate(
+        chunked(objects_to_create, bulk_create_batch_size), start=1
+    ):
+        model_class.objects.bulk_create(
+            object_chunk,
+            batch_size=bulk_create_batch_size,
+        )
+        log_progress(
+            progress_callback,
+            "Inserted chunk {} of {} ({} rows) into {}".format(
+                index,
+                total_chunks,
+                len(object_chunk),
+                model_class.__name__,
+            ),
+        )
 
     organisation = Organisation.objects.get(id=1)
-    
 
     if obj.type in ["ENE", "AENE", "Consolidation", "Budget-vs-Actual-National"]:
         sphere = Sphere.objects.get(name="National", financial_year=obj.financialYear)
@@ -265,33 +334,40 @@ def import_dataset(obj_id):
         short_description = formatted_title
         category = DatasetCategory.objects.get(title='Budgeted and Actual Provincial Expenditure')
 
-    new_dataset = Dataset.objects.create(
-        title=formatted_title,
-        short_description=short_description,
-        description=desciption,
-        organisation=organisation,
-        visibility=True,
-        financial_year=obj.financialYear,
-        sphere=sphere,
-        # government_functions=gov_fn,  # can be None
-        # dimensions=dimension,         # can be None
-        province="South Africa",
-        dataset_category=category,    # optional if you want explicit
-    )
+    with transaction.atomic():
+        new_dataset, created_dataset = Dataset.objects.update_or_create(
+            title=formatted_title,
+            financial_year=obj.financialYear,
+            sphere=sphere,
+            dataset_category=category,
+            defaults={
+                "short_description": short_description,
+                "description": desciption,
+                "organisation": organisation,
+                "visibility": True,
+                "province": "South Africa",
+            },
+        )
 
-    DatasetResource.objects.create(
-        fileName=title,
-        description=formatted_title,
-        # path=obj.file.path,
-        format="XLSX",
-        dataset=new_dataset,
-        file=obj.file
+        DatasetResource.objects.filter(dataset=new_dataset, format="XLSX").delete()
+        DatasetResource.objects.filter(dataset=new_dataset, format="CSV").delete()
+        DatasetResource.objects.create(
+            fileName=title,
+            description=formatted_title,
+            format=upload_format,
+            dataset=new_dataset,
+            file=obj.file
+        )
+    log_progress(
+        progress_callback,
+        "Updated dataset {} ({})".format(new_dataset.id, formatted_title),
     )
 
     return {
         "dataset_id": new_dataset.id,
         "dataset_upload_id": obj.id,
         "imported_rows": len(objects_to_create),
+        "created_dataset": created_dataset,
     }
 
 
