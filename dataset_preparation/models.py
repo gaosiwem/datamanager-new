@@ -34,13 +34,18 @@ class DatasetPreparationJob(models.Model):
     )
 
     DATASET_TYPE_EPRE = "EPRE"
+    DATASET_TYPE_ENE = "ENE"
+    DATASET_TYPE_AENE = "AENE"
 
     DATASET_TYPE_CHOICES = (
         (DATASET_TYPE_EPRE, "EPRE"),
+        (DATASET_TYPE_ENE, "ENE"),
+        (DATASET_TYPE_AENE, "AENE"),
     )
 
     user = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True)
     source_url = models.URLField()
+    consolidation_source_url = models.URLField(blank=True)
     dataset_type = models.CharField(max_length=255, choices=DATASET_TYPE_CHOICES)
     financial_year = models.ForeignKey(
         budgetportal_models.FinancialYear,
@@ -78,6 +83,16 @@ class DatasetPreparationJob(models.Model):
         blank=True,
         null=True,
     )
+    consolidated_file = models.FileField(
+        upload_to=budgetportal_models.resources_file_path,
+        blank=True,
+        null=True,
+    )
+    consolidated_excel_file = models.FileField(
+        upload_to=budgetportal_models.resources_file_path,
+        blank=True,
+        null=True,
+    )
     log = models.TextField(blank=True, default="")
     error_message = models.TextField(blank=True, default="")
     task_id = models.CharField(max_length=255, blank=True, null=True)
@@ -89,6 +104,7 @@ class DatasetPreparationJob(models.Model):
     excel_conversion_task_id = models.CharField(max_length=255, blank=True, null=True)
     epre_prepared_rows = models.IntegerField(blank=True, null=True)
     budget_vs_actual_prepared_rows = models.IntegerField(blank=True, null=True)
+    consolidated_prepared_rows = models.IntegerField(blank=True, null=True)
     duration_seconds = models.DecimalField(
         max_digits=12,
         decimal_places=2,
@@ -123,11 +139,19 @@ class DatasetImportJob(models.Model):
     )
 
     DATASET_TYPE_EPRE = "EPRE"
+    DATASET_TYPE_ENE = "ENE"
+    DATASET_TYPE_AENE = "AENE"
+    DATASET_TYPE_BVA_NATIONAL = "Budget-vs-Actual-National"
     DATASET_TYPE_BVA_PROVINCIAL = "Budget-vs-Actual-Provincial"
+    DATASET_TYPE_CONSOLIDATION = "Consolidation"
 
     DATASET_TYPE_CHOICES = (
         (DATASET_TYPE_EPRE, "EPRE"),
+        (DATASET_TYPE_ENE, "ENE"),
+        (DATASET_TYPE_AENE, "AENE"),
+        (DATASET_TYPE_BVA_NATIONAL, "Budget-vs-Actual-National"),
         (DATASET_TYPE_BVA_PROVINCIAL, "Budget-vs-Actual-Provincial"),
+        (DATASET_TYPE_CONSOLIDATION, "Consolidation"),
     )
 
     preparation_job = models.ForeignKey(

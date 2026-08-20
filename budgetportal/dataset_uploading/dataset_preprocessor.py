@@ -14,6 +14,7 @@ from django.db import transaction
 
 DATASET_BULK_CREATE_BATCH_SIZE = 5000
 SQL_SERVER_SAFE_PARAM_LIMIT = 2000
+CHUNK_LOG_INTERVAL = 100
 
 ENE_HEADERS = [
     "VoteNumber",
@@ -120,6 +121,24 @@ def log_progress(progress_callback, message):
         progress_callback(message)
 
 
+def get_or_create_dataset_category(title, description="", category_type="Original Budget", alternate_titles=None):
+    alternate_titles = alternate_titles or []
+
+    for candidate_title in [title] + list(alternate_titles):
+        category = DatasetCategory.objects.filter(title=candidate_title).first()
+        if category:
+            return category
+
+    category, _ = DatasetCategory.objects.get_or_create(
+        title=title,
+        defaults={
+            "description": description or title,
+            "type": category_type,
+        },
+    )
+    return category
+
+
 def chunked(iterable, size):
     for start in range(0, len(iterable), size):
         yield iterable[start:start + size]
@@ -152,7 +171,7 @@ def load_tablib_dataset(upload_obj, file_bytes, progress_callback=None):
     return data_book.sheets()[0], "XLSX"
 
 
-def import_dataset(obj_id, progress_callback=None):
+def import_dataset(obj_id, progress_callback=None, excel_file=None):
     obj = DatasetUpload.objects.get(id=obj_id)
     log_progress(progress_callback, "Reading DatasetUpload {} ({})".format(obj.id, obj.type))
     file = obj.file.read()
@@ -215,7 +234,7 @@ def import_dataset(obj_id, progress_callback=None):
                 "programme", "subprogNumber", "subprogramme",
                 "economicClassification1", "economicClassification2",
                 "economicClassification3", "economicClassification4",
-                "economicClassification5", "functionGroup1",
+                "economicClassification5", "functionGroup1", "budgetYear",
                 "financialYear", "budgetPhase", "amountKind", "value"
             ],
         },
@@ -249,45 +268,65 @@ def import_dataset(obj_id, progress_callback=None):
     header_to_field = dict(zip(headers, fields))
     financialYear = obj.financialYear.slug.split("-")[0]  # Extract year from slug like "2023-24"
 
-    objects_to_create = []
-    for item in preprocessed_dataset:
-        row_data = {header_to_field[k]: v for k, v in item.items()}
-        row_data.setdefault("budgetYear", financialYear)
-        objects_to_create.append(model_class(**row_data))
+    imported_budget_years = sorted(
+        {
+            str(item.get("BudgetYear") or financialYear)
+            for item in preprocessed_dataset
+        }
+    )
+    log_progress(
+        progress_callback,
+        "Prepared to import budget years: {}".format(", ".join(imported_budget_years)),
+    )
 
     # Keep the high-volume row replacement outside a long-lived explicit transaction.
     # On SQL Server, holding delete + bulk insert + metadata updates in one atomic block
     # can escalate locks and make unrelated requests wait behind the import.
-    deleted_count, _ = model_class.objects.filter(budgetYear=financialYear).delete()
+    deleted_count, _ = model_class.objects.filter(budgetYear__in=imported_budget_years).delete()
     log_progress(
         progress_callback,
-        "Deleted {} existing {} rows for budget year {}".format(
+        "Deleted {} existing {} rows for budget years {}".format(
             deleted_count,
             model_class.__name__,
-            financialYear,
+            ", ".join(imported_budget_years),
         ),
     )
-    bulk_create_batch_size = safe_bulk_create_batch_size(len(fields))
+    # Use the model's inserted fields rather than the input headers.  AENE has
+    # no BudgetYear column in its upload schema, but the importer supplies that
+    # model field before bulk insertion; counting only the CSV columns exceeds
+    # SQL Server's parameter limit.
+    inserted_field_count = len(model_class._meta.fields) - 1  # Exclude auto PK.
+    bulk_create_batch_size = safe_bulk_create_batch_size(inserted_field_count)
     total_chunks = max(
         1,
-        (len(objects_to_create) + bulk_create_batch_size - 1) // bulk_create_batch_size,
+        (len(preprocessed_dataset) + bulk_create_batch_size - 1) // bulk_create_batch_size,
     )
-    for index, object_chunk in enumerate(
-        chunked(objects_to_create, bulk_create_batch_size), start=1
+    for index, item_chunk in enumerate(
+        chunked(preprocessed_dataset, bulk_create_batch_size), start=1
     ):
+        object_chunk = []
+        for item in item_chunk:
+            row_data = {header_to_field[k]: v for k, v in item.items()}
+            row_data.setdefault("budgetYear", financialYear)
+            object_chunk.append(model_class(**row_data))
         model_class.objects.bulk_create(
             object_chunk,
             batch_size=bulk_create_batch_size,
         )
-        log_progress(
-            progress_callback,
-            "Inserted chunk {} of {} ({} rows) into {}".format(
-                index,
-                total_chunks,
-                len(object_chunk),
-                model_class.__name__,
-            ),
-        )
+        if (
+            index == 1
+            or index == total_chunks
+            or index % CHUNK_LOG_INTERVAL == 0
+        ):
+            log_progress(
+                progress_callback,
+                "Inserted chunk {} of {} ({} rows) into {}".format(
+                    index,
+                    total_chunks,
+                    len(object_chunk),
+                    model_class.__name__,
+                ),
+            )
 
     organisation = Organisation.objects.get(id=1)
 
@@ -298,41 +337,65 @@ def import_dataset(obj_id, progress_callback=None):
 
     if obj.type == 'ENE':
         title = 'Estimates of National Expenditure'
-        category = DatasetCategory.objects.get(title=title) 
+        category = get_or_create_dataset_category(
+            title,
+            description=title,
+            category_type="Original Budget",
+        )
         formatted_title = f"{title} {obj.financialYear.slug}"
         desciption = formatted_title
         short_description = formatted_title
     elif obj.type == 'AENE': 
         title = 'Adjusted Estimates of National Expenditure'
-        category = DatasetCategory.objects.get(title=title)
+        category = get_or_create_dataset_category(
+            title,
+            description=title,
+            category_type="Adjusted Budget",
+        )
         formatted_title = f"{title} {obj.financialYear.slug}"
         desciption = formatted_title
         short_description = formatted_title
     elif obj.type == 'Consolidation': 
         title = 'Consolidated Expenditure'
-        category = DatasetCategory.objects.get(title=title) 
+        category = get_or_create_dataset_category(
+            title,
+            description=title,
+            category_type="Original Budget",
+        )
         formatted_title = f"{title} {obj.financialYear.slug}"
         desciption = formatted_title
         short_description = formatted_title
     elif obj.type == 'EPRE': 
         title = 'Estimates of Provincial Revenue and Expenditure'
-        category = DatasetCategory.objects.get(title=title)
+        category = get_or_create_dataset_category(
+            title,
+            description=title,
+            category_type="Original Budget",
+        )
         formatted_title = f"{title} {obj.financialYear.slug}"
         desciption = formatted_title
         short_description = formatted_title
     elif obj.type == 'Budget-vs-Actual-National':
         title = 'Budgeted vs Actual National Expenditure'
-        category = DatasetCategory.objects.get(title=title)
+        category = get_or_create_dataset_category(
+            title,
+            description=title,
+            category_type="Original Budget",
+            alternate_titles=["Budgeted and Actual National Expenditure"],
+        )
         formatted_title = f"{title} {obj.financialYear.slug}"
         desciption = formatted_title
         short_description = formatted_title
     elif obj.type == 'Budget-vs-Actual-Provincial':
         title = 'Budgeted and Actual Provincial Expenditure'
-        category = DatasetCategory.objects.get(title=title)
+        category = get_or_create_dataset_category(
+            title,
+            description=title,
+            category_type="Original Budget",
+        )
         formatted_title = f"{title} {obj.financialYear.slug}"
         desciption = formatted_title
         short_description = formatted_title
-        category = DatasetCategory.objects.get(title='Budgeted and Actual Provincial Expenditure')
 
     with transaction.atomic():
         new_dataset, created_dataset = Dataset.objects.update_or_create(
@@ -358,6 +421,14 @@ def import_dataset(obj_id, progress_callback=None):
             dataset=new_dataset,
             file=obj.file
         )
+        if excel_file:
+            DatasetResource.objects.create(
+                fileName=title,
+                description=formatted_title,
+                format="XLSX",
+                dataset=new_dataset,
+                file=excel_file,
+            )
     log_progress(
         progress_callback,
         "Updated dataset {} ({})".format(new_dataset.id, formatted_title),
@@ -366,7 +437,7 @@ def import_dataset(obj_id, progress_callback=None):
     return {
         "dataset_id": new_dataset.id,
         "dataset_upload_id": obj.id,
-        "imported_rows": len(objects_to_create),
+        "imported_rows": len(preprocessed_dataset),
         "created_dataset": created_dataset,
     }
 

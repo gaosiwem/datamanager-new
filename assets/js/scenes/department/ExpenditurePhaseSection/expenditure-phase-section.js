@@ -3,8 +3,10 @@ document.addEventListener("DOMContentLoaded", function () {
         "Main appropriation": { rank: 1, color: "#ad3c64" },
         "Adjusted appropriation": { rank: 2, color: "#ee9f31" },
         "Final Appropriation": { rank: 3, color: "#ee9f31" },
-        "Audit Outcome": { rank: 4, color: "#7bb344" },
+        "Revised estimate": { rank: 4, color: "#3b82b6" },
+        "Audit Outcome": { rank: 5, color: "#7bb344" },
         "Audited Outcome": { rank: 5, color: "#7bb344" },
+        "Audited outcome": { rank: 5, color: "#7bb344" },
     };
 
     const chartDataNode = document.getElementById("budgetActualData");

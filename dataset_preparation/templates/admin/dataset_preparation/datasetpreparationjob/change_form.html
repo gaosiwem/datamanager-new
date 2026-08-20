@@ -1,13 +1,42 @@
 {% extends "admin/change_form.html" %}
+{% block extrahead %}
+{{ block.super }}
+<script>
+(function () {
+  function updateConsolidationSourceVisibility() {
+    var datasetType = document.getElementById("id_dataset_type");
+    var sourceField = document.getElementById("id_consolidation_source_url");
+    if (!datasetType || !sourceField) {
+      return;
+    }
+
+    var fieldRow = sourceField.closest(".form-row");
+    if (fieldRow) {
+      fieldRow.style.display = datasetType.value === "ENE" ? "" : "none";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var datasetType = document.getElementById("id_dataset_type");
+    updateConsolidationSourceVisibility();
+    if (datasetType) {
+      datasetType.addEventListener("change", updateConsolidationSourceVisibility);
+    }
+  });
+}());
+</script>
+{% endblock %}
 {% block object-tools-items %}
 {{ block.super }}
 {% if original and original.pk %}
 <li>
-  <a href="{{ queue_epre_import_url }}">Queue EPRE Import</a>
+  <a href="{{ queue_primary_import_url }}">{{ queue_primary_import_label }}</a>
 </li>
+{% if has_secondary_output %}
 <li>
-  <a href="{{ queue_both_imports_url }}">Queue Both Imports</a>
+  <a href="{{ queue_pair_imports_url }}">{{ queue_pair_imports_label }}</a>
 </li>
+{% endif %}
 <li>
   <a href="{{ queue_excel_conversion_url }}">Queue Excel Conversion</a>
 </li>

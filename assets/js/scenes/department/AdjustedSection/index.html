@@ -104,7 +104,8 @@
     .AdjustedSection .AdjustedSectionChartCanvas {
       position: relative;
       width: 100%;
-      height: 360px;
+      height: auto;
+      min-height: 260px;
       margin-top: 0.5rem;
     }
 
@@ -112,6 +113,8 @@
       width: 100% !important;
       height: 100% !important;
     }
+
+    .AdjustedSection .programmeEconAdjustedChart { display: block; width: 100%; height: auto; overflow: visible; }
 
     .AdjustedSection .AdjustedSectionChartCard--empty {
       display: flex;
@@ -124,6 +127,42 @@
       color: #6f6f6f;
       font-size: 0.92rem;
       margin-bottom: 0;
+    }
+
+    /* Match the visual language of Programme spending under economic classifications. */
+    .AdjustedSection .AdjustedSectionChartCard {
+      border-radius: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .AdjustedSection .AdjustedSectionChartCard > .Title,
+    .AdjustedSection .AdjustedSectionChartCard > .AdjustedSectionChartHint {
+      padding-left: 1.35rem;
+      padding-right: 1.35rem;
+    }
+
+    .AdjustedSection .AdjustedSectionChartCard > .Title {
+      padding-top: 1.35rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .AdjustedSection .AdjustedSectionChartCard > .AdjustedSectionChartHint {
+      padding-bottom: 1rem;
+    }
+
+    .AdjustedSection .AdjustedSectionChartCanvas {
+      border-top: 1px solid #ececec;
+      background: #fcfcfc;
+      margin-top: 0;
+      padding: 1rem 1.35rem 1.35rem;
+    }
+
+    .AdjustedSection .AdjustedSectionChartCanvas canvas {
+      background: #fff;
+      border: 1px solid #ececec;
+      border-radius: 12px;
+      padding: 0.75rem;
     }
 
     .AdjustedSection .AdjustedSection-emptyEyebrow {
@@ -311,6 +350,110 @@
       document.addEventListener("DOMContentLoaded", ensureAdjustedSectionTheme);
       window.addEventListener("load", ensureAdjustedSectionTheme);
     })();
+  </script>
+
+  <script>
+    /* Render the adjusted-budget summaries with the same horizontal-bar language
+       used by Programme spending under economic classifications. */
+    window.addEventListener("load", function() {
+      function formatValue(value) {
+        var amount = Number(value || 0), absoluteAmount = Math.abs(amount);
+        if (absoluteAmount >= 1e9) return "R " + (amount / 1e9).toFixed(1).replace(/\.0$/, "") + " billion";
+        if (absoluteAmount >= 1e6) return "R " + (amount / 1e6).toFixed(1).replace(/\.0$/, "") + " million";
+        if (absoluteAmount >= 1e3) return "R " + (amount / 1e3).toFixed(1).replace(/\.0$/, "") + " thousand";
+        return "R " + amount.toLocaleString();
+      }
+
+      function wrapLabel(label, width) {
+        var maximumCharacters = Math.max(18, Math.floor(width / 7));
+        var words = String(label || "").split(/\s+/);
+        var lines = [""];
+        words.forEach(function(word) {
+          var currentLine = lines[lines.length - 1];
+          if (currentLine && (currentLine + " " + word).length > maximumCharacters && lines.length < 2) {
+            lines.push(word);
+          } else {
+            lines[lines.length - 1] = (currentLine + " " + word).trim();
+          }
+        });
+        return lines;
+      }
+
+      function renderHorizontalBars(canvasId, dataId) {
+        var canvas = document.getElementById(canvasId);
+        var dataNode = document.getElementById(dataId);
+        if (!canvas || !dataNode || !window.d3) return;
+
+        var data;
+        try { data = JSON.parse(dataNode.textContent || "[]"); } catch (error) { return; }
+        data = (data || []).map(function(item) {
+          return { name: item.name, value: Number(item.value || 0) };
+        }).sort(function(a, b) { return Math.abs(b.value) - Math.abs(a.value); });
+        if (!data.length) return;
+
+        var stage = canvas.parentNode;
+        var width = Math.max(stage.clientWidth || 640, 320);
+        var labelWidth = width >= 700 ? 310 : 185;
+        var valueWidth = width >= 700 ? 115 : 90;
+        var rowHeight = 54;
+        var height = Math.max(data.length * rowHeight + 34, 220);
+        var chartWidth = Math.max(width - labelWidth - valueWidth - 24, 60);
+        var maximum = d3.max(data, function(item) { return Math.abs(item.value); }) || 1;
+        var svg = d3.select(stage).html("").append("svg")
+          .attr("class", "programmeEconAdjustedChart")
+          .attr("viewBox", "0 0 " + width + " " + height)
+          .attr("preserveAspectRatio", "xMidYMid meet");
+        var plotStart = labelWidth;
+        svg.append("line").attr("x1", plotStart - 14).attr("x2", plotStart - 14)
+          .attr("y1", 0).attr("y2", height - 14).attr("stroke", "#d9d9d9");
+        [0.25, 0.5, 0.75, 1].forEach(function(tick) {
+          var x = plotStart + chartWidth * tick;
+          svg.append("line").attr("x1", x).attr("x2", x).attr("y1", 0).attr("y2", height - 14)
+            .attr("stroke", "#ececec");
+        });
+        var rows = svg.selectAll(".adjustedExplorerRow").data(data).enter().append("g")
+          .attr("class", "adjustedExplorerRow")
+          .attr("transform", function(item, index) { return "translate(0," + (index * rowHeight + 16) + ")"; });
+        var labelEdge = labelWidth - 30;
+        var labels = rows.append("text").attr("x", labelEdge)
+          .attr("text-anchor", "end").attr("class", "programmeEconAxis");
+        labels.each(function(item) {
+          var label = d3.select(this);
+          var lines = wrapLabel(item.name, labelWidth - 26);
+          var firstLineY = lines.length === 1 ? 25 : 17;
+          lines.forEach(function(line, index) {
+            label.append("tspan")
+              .attr("x", labelEdge)
+              .attr("y", index === 0 ? firstLineY : null)
+              .attr("dy", index === 0 ? 0 : 15)
+              .text(line);
+          });
+          label.append("title").text(item.name);
+        });
+        rows.append("rect").attr("x", labelWidth).attr("y", 2).attr("height", 36)
+          .attr("width", function(item) { return Math.abs(item.value) / maximum * chartWidth; })
+          .attr("rx", 8).attr("class", "programmeEconBar")
+          .append("title").text(function(item) { return item.name + ": " + formatValue(item.value); });
+        rows.append("text").attr("x", function(item) {
+          var barWidth = Math.abs(item.value) / maximum * chartWidth;
+          var textWidth = formatValue(item.value).length * 7;
+          return barWidth >= textWidth + 20 ? labelWidth + barWidth - 10 : labelWidth + barWidth + 8;
+        }).attr("text-anchor", function(item) {
+          var barWidth = Math.abs(item.value) / maximum * chartWidth;
+          return barWidth >= formatValue(item.value).length * 7 + 20 ? "end" : "start";
+        }).attr("y", 25).attr("class", "programmeEconValueLabel")
+          .style("fill", function(item) {
+            var barWidth = Math.abs(item.value) / maximum * chartWidth;
+            return barWidth >= formatValue(item.value).length * 7 + 20 ? "#ffffff" : "#263238";
+          }).text(function(item) { return formatValue(item.value); });
+      }
+
+      window.setTimeout(function() {
+        renderHorizontalBars("categoryBarChart", "category-data");
+        renderHorizontalBars("econBarChart", "econ-data");
+        renderHorizontalBars("programmesBarChart", "programmes-data");
+      }, 250);
+    });
   </script>
 
   <div class="AdjustedSection-container">

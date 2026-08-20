@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from slugify import slugify
 from django.core.exceptions import FieldDoesNotExist
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.urls import reverse
 from django.db.models import F
 import os
@@ -1417,9 +1417,168 @@ def format_values(value):
     else:
         return f"R {format_number(value)}"
 
+
+def consolidation_budget_year_queryset(financial_year_start):
+    base_queryset = ConsolidationData.objects.filter(
+        financialYear=financial_year_start,
+    )
+
+    queryset = base_queryset.filter(
+        financialYear=financial_year_start,
+        budgetYear=financial_year_start,
+    )
+    if queryset.exists():
+        return queryset
+
+    queryset = base_queryset.filter(Q(budgetYear__isnull=True) | Q(budgetYear=""))
+    if queryset.exists():
+        return queryset
+
+    tagged_queryset = base_queryset.exclude(Q(budgetYear__isnull=True) | Q(budgetYear=""))
+    selected_budget_year = (
+        tagged_queryset.filter(budgetYear__lte=financial_year_start)
+        .order_by("-budgetYear")
+        .values_list("budgetYear", flat=True)
+        .first()
+    )
+    if selected_budget_year is None:
+        selected_budget_year = (
+            tagged_queryset.order_by("-budgetYear")
+            .values_list("budgetYear", flat=True)
+            .first()
+        )
+
+    if selected_budget_year is None:
+        return base_queryset.none()
+
+    return base_queryset.filter(budgetYear=selected_budget_year)
+
+
+def consolidation_function_group_queryset(function_group, financial_year_start):
+    return consolidation_budget_year_queryset(financial_year_start).filter(
+        functionGroup__iexact=function_group,
+    )
+
+
+def consolidation_function_group_history(function_group):
+    yearly_data = []
+    financial_years = (
+        ConsolidationData.objects.filter(functionGroup__iexact=function_group)
+        .values_list("financialYear", flat=True)
+        .distinct()
+        .order_by("financialYear")
+    )
+
+    for financial_year in financial_years:
+        year_total = (
+            consolidation_function_group_queryset(function_group, financial_year)
+            .aggregate(total=Sum("value"))
+            .get("total")
+        )
+        if year_total is None:
+            continue
+        yearly_data.append(
+            {
+                "financialYear": financial_year,
+                "year_total": float(year_total),
+            }
+        )
+
+    return yearly_data
+
+
+def budget_actual_year_queryset(model_class, financial_year_start, budget_phases=None):
+    budget_phases = budget_phases or ["Main appropriation"]
+
+    for budget_phase in budget_phases:
+        base_queryset = model_class.objects.filter(
+            financialYear=financial_year_start,
+            budgetPhase=budget_phase,
+        )
+
+        queryset = base_queryset.filter(Q(budgetYear__isnull=True) | Q(budgetYear=""))
+        if queryset.exists():
+            return queryset
+
+        queryset = base_queryset.filter(budgetYear=financial_year_start)
+        if queryset.exists():
+            return queryset
+
+        tagged_queryset = base_queryset.exclude(Q(budgetYear__isnull=True) | Q(budgetYear=""))
+        selected_budget_year = (
+            tagged_queryset.filter(budgetYear__lte=financial_year_start)
+            .order_by("-budgetYear")
+            .values_list("budgetYear", flat=True)
+            .first()
+        )
+        if selected_budget_year is None:
+            selected_budget_year = (
+                tagged_queryset.order_by("-budgetYear")
+                .values_list("budgetYear", flat=True)
+                .first()
+            )
+
+        if selected_budget_year is not None:
+            return base_queryset.filter(budgetYear=selected_budget_year)
+
+    return model_class.objects.none()
+
+
+def national_budget_year_queryset(financial_year_start):
+    return budget_actual_year_queryset(BudgetVSActualNationalData, financial_year_start)
+
+
+def provincial_budget_year_queryset(financial_year_start):
+    target_year = int(financial_year_start)
+    expected_province_count = 9
+
+    for year in range(target_year, 0, -1):
+        queryset = budget_actual_year_queryset(
+            BudgetVSActualProvincialData,
+            str(year),
+            budget_phases=["Main appropriation", "Baseline"],
+        )
+
+        province_count = queryset.values("government").distinct().count()
+        if province_count >= expected_province_count:
+            return queryset
+
+    return BudgetVSActualProvincialData.objects.none()
+
+
+def budget_actual_history(model_class, extra_filters=None):
+    yearly_data = []
+    extra_filters = extra_filters or {}
+    financial_years = (
+        model_class.objects.filter(**extra_filters)
+        .values_list("financialYear", flat=True)
+        .distinct()
+        .order_by("financialYear")
+    )
+
+    for financial_year in financial_years:
+        year_total = (
+            budget_actual_year_queryset(model_class, financial_year)
+            .filter(**extra_filters)
+            .aggregate(total=Sum("value"))
+            .get("total")
+        )
+        if year_total is None:
+            continue
+        yearly_data.append(
+            {
+                "financialYear": financial_year,
+                "year_total": float(year_total),
+            }
+        )
+
+    return yearly_data
+
+
 def consolidated_spending(financialYear):
+    financial_year_start = financialYear.split("-")[0]
     
-    queryset = ConsolidationData.objects.filter(financialYear=financialYear.split("-")[0]) \
+    queryset = consolidation_budget_year_queryset(financial_year_start) \
         .values("functionGroup") \
         .annotate(total_value=Sum("value"))
 
@@ -1449,7 +1608,9 @@ def consolidated_spending(financialYear):
     return json.dumps(data)
 
 def consolidated_spending_total(financialYear):
-    queryset = ConsolidationData.objects.filter(financialYear=financialYear.split("-")[0]) \
+    financial_year_start = financialYear.split("-")[0]
+
+    queryset = consolidation_budget_year_queryset(financial_year_start) \
         .values("functionGroup") \
         .annotate(total_value=Sum("value"))
 
@@ -1471,8 +1632,7 @@ def consolidated_spending_details(request, financial_year_id, focus_slug):
         function_group = focus_slug.replace('-', ' ').title()
 
         # Get queryset for the selected Function Group
-        qs = ConsolidationData.objects.filter(
-            functionGroup__iexact=function_group, financialYear = financialYear)
+        qs = consolidation_function_group_queryset(function_group, financialYear)
         # if not qs.exists():
         #     raise Http404(f"No data found for {function_group}")
 
@@ -1511,18 +1671,7 @@ def consolidated_spending_details(request, financial_year_id, focus_slug):
         # }               
 
         # Yearly trend for line chart
-        qs = ConsolidationData.objects.filter(
-            functionGroup__iexact=function_group)
-        
-        yearly_data = list(
-            qs.values('financialYear')
-              .annotate(year_total=Sum('value'))
-              .order_by('financialYear')
-        )
-
-        # Convert Decimals → float
-        for item in yearly_data:
-            item['year_total'] = float(item['year_total'])
+        yearly_data = consolidation_function_group_history(function_group)
         
         # Context
         context = {
@@ -1550,10 +1699,7 @@ def national_spending_details(request, financial_year_id, department):
         department_name = list(department_query)[0].get('name')
 
         # --- Query base dataset ---
-        qs = BudgetVSActualNationalData.objects.filter(
-            department=department_name,
-            financialYear=financialYear,
-        )
+        qs = national_budget_year_queryset(financialYear).filter(department=department_name)
 
         # =========== Pie graph
 
@@ -1604,21 +1750,10 @@ def national_spending_details(request, financial_year_id, department):
         ]
 
         # ==========Line Graph 
-        line = (
-            BudgetVSActualNationalData.objects
-            .filter(department=department_name, budgetPhase='Main appropriation')
-            .values("financialYear")
-            .annotate(year_total=Sum("value"))
-            .order_by("financialYear")
+        yearly_data = budget_actual_history(
+            BudgetVSActualNationalData,
+            {"department": department_name},
         )
-
-        yearly_data = [
-            {
-                "financialYear": item["financialYear"],
-                "year_total": float(item["year_total"])
-            }
-            for item in line
-        ]
 
         total_budget = qs.aggregate(total=Sum("value"))["total"] or Decimal(0)
         total_budget_float = float(total_budget)
@@ -1709,18 +1844,10 @@ def provincial_spending_details(request, financial_year_id, province):
         ]
 
         # ==========Line Graph 
-        line = BudgetVSActualProvincialData.objects.filter(
-            government=government_name,
+        yearly_data = budget_actual_history(
+            BudgetVSActualProvincialData,
+            {"government": government_name},
         )
-   
-        yearly_data = list(
-            line.values("financialYear")
-            .annotate(year_total=Sum("value"))
-            .order_by("financialYear")
-        )
-
-        for item in yearly_data:
-            item["year_total"] = float(item["year_total"])
 
         national_budget_summary = {            
             "function_data": json.dumps(function_data),
@@ -1746,8 +1873,9 @@ def provincial_spending_details(request, financial_year_id, province):
     
 
 def national_budget_spending(financialYear):
+    financial_year_start = financialYear.split("-")[0]
 
-    queryset = BudgetVSActualNationalData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
+    queryset = national_budget_year_queryset(financial_year_start) \
         .values("department") \
         .annotate(total_value=Sum("value"))
 
@@ -1772,13 +1900,14 @@ def national_budget_spending(financialYear):
     return json.dumps(data)
 
 def national_budget_spending_total(financialYear, department=None):
+    financial_year_start = financialYear.split("-")[0]
 
     if department:
-        queryset = BudgetVSActualNationalData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation', department=department) \
+        queryset = national_budget_year_queryset(financial_year_start).filter(department=department) \
             .values("department") \
             .annotate(total_value=Sum("value"))
     else:
-        queryset = BudgetVSActualNationalData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
+        queryset = national_budget_year_queryset(financial_year_start) \
             .values("department") \
             .annotate(total_value=Sum("value"))
 
@@ -1792,13 +1921,14 @@ def national_budget_spending_total(financialYear, department=None):
 
 
 def provincial_budget_spending_total(financialYear, province= None):
+    financial_year_start = financialYear.split("-")[0]
 
     if province:
-        queryset = BudgetVSActualProvincialData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation', government=province) \
+        queryset = provincial_budget_year_queryset(financial_year_start).filter(government=province) \
             .values("government") \
             .annotate(total_value=Sum("value"))
     else:
-        queryset = BudgetVSActualProvincialData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
+        queryset = provincial_budget_year_queryset(financial_year_start) \
             .values("government") \
             .annotate(total_value=Sum("value"))
 
@@ -1812,8 +1942,9 @@ def provincial_budget_spending_total(financialYear, province= None):
 
 
 def provincial_budget_spending(financialYear):
+    financial_year_start = financialYear.split("-")[0]
 
-    queryset = BudgetVSActualProvincialData.objects.filter(financialYear=financialYear.split("-")[0], budgetPhase='Main appropriation') \
+    queryset = provincial_budget_year_queryset(financial_year_start) \
         .values("government") \
         .annotate(total_value=Sum("value"))
 
@@ -1883,8 +2014,7 @@ def budget_summary_detail(request, focus_slug):
         function_group = focus_slug.replace('-', ' ').title()
 
         # Get queryset for the selected Function Group
-        qs = ConsolidationData.objects.filter(
-            functionGroup__iexact=function_group)
+        qs = consolidation_function_group_queryset(function_group, financialYearFormatted)
         if not qs.exists():
             raise Http404(f"No data found for {function_group}")
 
@@ -1911,15 +2041,7 @@ def budget_summary_detail(request, focus_slug):
             })
 
         # Yearly trend for line chart
-        yearly_data = list(
-            qs.values('financialYear')
-              .annotate(year_total=Sum('value'))
-              .order_by('financialYear')
-        )
-
-        # Convert Decimals → float
-        for item in yearly_data:
-            item['year_total'] = float(item['year_total'])
+        yearly_data = consolidation_function_group_history(function_group)
 
         # Context
         context = {

@@ -24,7 +24,7 @@
 
 .BudgetSummaryTreemap .Card {
   box-sizing: border-box;
-  padding: 1.35rem;
+  padding: 1.6rem;
   width: 100%;
   min-width: 0;
 }
@@ -32,20 +32,24 @@
 .BudgetSummaryTreemap .treemapWrapper {
   box-sizing: border-box;
   width: 100%;
-  max-width: 100%;
+  max-width: 1320px;
   min-width: 0;
+  margin: 0 auto;
 }
 
 .BudgetSummaryTreemap .treemapContainer {
   box-sizing: border-box;
   flex-basis: 100%;
   width: 100%;
-  max-width: 100%;
+  max-width: 1320px;
   min-width: 0;
+  margin: 0 auto;
 }
 
 .BudgetSummaryTreemap .treemapContainer {
   min-height: 680px;
+  padding: 0;
+  border-radius: 12px;
 }
 
 .BudgetSummaryTreemap .treemapSummary {
@@ -180,11 +184,13 @@
   }
 
   .BudgetSummaryTreemap .Card {
-    padding: 1rem;
+    padding: 1.1rem;
   }
 
   .BudgetSummaryTreemap .treemapContainer {
     min-height: 560px;
+    padding: 0;
+    max-width: 100%;
   }
 
   .BudgetSummaryTreemap .treemap {
@@ -225,11 +231,13 @@
   }
 
   .BudgetSummaryTreemap .Card {
-    padding: 0.75rem;
+    padding: 0.9rem;
   }
 
   .BudgetSummaryTreemap .treemapContainer {
     min-height: 440px;
+    padding: 0;
+    max-width: 100%;
   }
 
   .BudgetSummaryTreemap .treemap {
