@@ -4,6 +4,7 @@ from django_q.tasks import async_task
 from django.urls import path, reverse
 
 from .models import DatasetImportJob, DatasetPreparationJob
+from .services import get_preparation_dataset_config
 from .tasks import (
     queue_dataset_import_job,
     queue_excel_conversion_job,
@@ -31,7 +32,7 @@ class DatasetImportJobInline(admin.TabularInline):
 @admin.register(DatasetPreparationJob)
 class DatasetPreparationJobAdmin(admin.ModelAdmin):
     inlines = (DatasetImportJobInline,)
-    actions = ("queue_both_imports", "queue_excel_conversions")
+    actions = ("queue_pair_imports", "queue_excel_conversions")
     change_form_template = "admin/dataset_preparation/datasetpreparationjob/change_form.html"
     list_display = (
         "source_url",
@@ -52,6 +53,8 @@ class DatasetPreparationJobAdmin(admin.ModelAdmin):
         "prepared_excel_file",
         "budget_vs_actual_file",
         "budget_vs_actual_excel_file",
+        "consolidated_file",
+        "consolidated_excel_file",
         "log",
         "error_message",
         "task_id",
@@ -59,6 +62,7 @@ class DatasetPreparationJobAdmin(admin.ModelAdmin):
         "excel_conversion_task_id",
         "epre_prepared_rows",
         "budget_vs_actual_prepared_rows",
+        "consolidated_prepared_rows",
         "duration_seconds",
         "created_at",
         "updated_at",
@@ -66,6 +70,7 @@ class DatasetPreparationJobAdmin(admin.ModelAdmin):
     fields = (
         "source_url",
         "dataset_type",
+        "consolidation_source_url",
         "financial_year",
         "sheet_name",
         "status",
@@ -75,6 +80,8 @@ class DatasetPreparationJobAdmin(admin.ModelAdmin):
         "prepared_excel_file",
         "budget_vs_actual_file",
         "budget_vs_actual_excel_file",
+        "consolidated_file",
+        "consolidated_excel_file",
         "log",
         "error_message",
         "task_id",
@@ -82,23 +89,67 @@ class DatasetPreparationJobAdmin(admin.ModelAdmin):
         "excel_conversion_task_id",
         "epre_prepared_rows",
         "budget_vs_actual_prepared_rows",
+        "consolidated_prepared_rows",
         "duration_seconds",
         "created_at",
         "updated_at",
     )
 
+    secondary_output_fields = (
+        "budget_vs_actual_file",
+        "budget_vs_actual_excel_file",
+        "budget_vs_actual_prepared_rows",
+    )
+    consolidation_output_fields = (
+        "consolidated_file",
+        "consolidated_excel_file",
+        "consolidated_prepared_rows",
+    )
+
+    def get_fields(self, request, obj=None):
+        fields = list(super().get_fields(request, obj))
+        if obj:
+            config = get_preparation_dataset_config(obj.dataset_type)
+            hidden_fields = set()
+            if not config.get("budget_vs_actual_dataset_type"):
+                hidden_fields.update(self.secondary_output_fields)
+            if not config.get("consolidation_dataset_type"):
+                hidden_fields.update(self.consolidation_output_fields)
+            return tuple(field for field in fields if field not in hidden_fields)
+        return fields
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields["consolidation_source_url"].help_text = (
+            "Required for ENE jobs. Use the National Treasury Consolidated account "
+            "of government Pivot workbook for the selected financial year."
+        )
+        return form
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = list(super().get_readonly_fields(request, obj))
+        if obj:
+            config = get_preparation_dataset_config(obj.dataset_type)
+            hidden_fields = set()
+            if not config.get("budget_vs_actual_dataset_type"):
+                hidden_fields.update(self.secondary_output_fields)
+            if not config.get("consolidation_dataset_type"):
+                hidden_fields.update(self.consolidation_output_fields)
+            return tuple(field for field in readonly_fields if field not in hidden_fields)
+        return readonly_fields
+
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
             path(
-                "<path:object_id>/queue-epre-import/",
-                self.admin_site.admin_view(self.queue_epre_import_view),
-                name="dataset_preparation_datasetpreparationjob_queue_epre_import",
+                "<path:object_id>/queue-primary-import/",
+                self.admin_site.admin_view(self.queue_primary_import_view),
+                name="dataset_preparation_datasetpreparationjob_queue_primary_import",
             ),
             path(
-                "<path:object_id>/queue-both-imports/",
-                self.admin_site.admin_view(self.queue_both_imports_view),
-                name="dataset_preparation_datasetpreparationjob_queue_both_imports",
+                "<path:object_id>/queue-pair-imports/",
+                self.admin_site.admin_view(self.queue_pair_imports_view),
+                name="dataset_preparation_datasetpreparationjob_queue_pair_imports",
             ),
             path(
                 "<path:object_id>/queue-excel-conversion/",
@@ -110,18 +161,32 @@ class DatasetPreparationJobAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
-        extra_context["queue_epre_import_url"] = reverse(
-            "admin:dataset_preparation_datasetpreparationjob_queue_epre_import",
-            args=[object_id],
-        )
-        extra_context["queue_both_imports_url"] = reverse(
-            "admin:dataset_preparation_datasetpreparationjob_queue_both_imports",
-            args=[object_id],
-        )
-        extra_context["queue_excel_conversion_url"] = reverse(
-            "admin:dataset_preparation_datasetpreparationjob_queue_excel_conversion",
-            args=[object_id],
-        )
+        obj = self.get_object(request, object_id)
+        if obj:
+            config = get_preparation_dataset_config(obj.dataset_type)
+            extra_context["queue_primary_import_url"] = reverse(
+                "admin:dataset_preparation_datasetpreparationjob_queue_primary_import",
+                args=[object_id],
+            )
+            extra_context["queue_primary_import_label"] = "Queue {} Import".format(
+                config["primary_log_label"]
+            )
+            extra_context["queue_pair_imports_url"] = reverse(
+                "admin:dataset_preparation_datasetpreparationjob_queue_pair_imports",
+                args=[object_id],
+            )
+            extra_context["has_secondary_output"] = bool(
+                config.get("budget_vs_actual_dataset_type")
+            )
+            if extra_context["has_secondary_output"]:
+                extra_context["queue_pair_imports_label"] = "Queue {} and {} Imports".format(
+                    config["primary_log_label"],
+                    config["budget_vs_actual_log_label"],
+                )
+            extra_context["queue_excel_conversion_url"] = reverse(
+                "admin:dataset_preparation_datasetpreparationjob_queue_excel_conversion",
+                args=[object_id],
+            )
         return super().change_view(request, object_id, form_url, extra_context=extra_context)
 
     def save_model(self, request, obj, form, change):
@@ -157,26 +222,33 @@ class DatasetPreparationJobAdmin(admin.ModelAdmin):
                 self.message_user(request, str(exc), level=messages.ERROR)
         return queued
 
-    def queue_epre_import_view(self, request, object_id):
+    def queue_primary_import_view(self, request, object_id):
         preparation_job = self.get_object(request, object_id)
+        config = get_preparation_dataset_config(preparation_job.dataset_type)
         queued = self._queue_imports_for_preparation(
             request,
             preparation_job,
-            [DatasetImportJob.DATASET_TYPE_EPRE],
+            [config["primary_dataset_type"]],
         )
         self.message_user(request, "{} import job(s) queued.".format(queued))
         return HttpResponseRedirect(
             reverse("admin:dataset_preparation_datasetpreparationjob_change", args=[object_id])
         )
 
-    def queue_both_imports_view(self, request, object_id):
+    def queue_pair_imports_view(self, request, object_id):
         preparation_job = self.get_object(request, object_id)
+        config = get_preparation_dataset_config(preparation_job.dataset_type)
+        if not config.get("budget_vs_actual_dataset_type"):
+            self.message_user(request, "This preparation type has no secondary import.", level=messages.WARNING)
+            return HttpResponseRedirect(
+                reverse("admin:dataset_preparation_datasetpreparationjob_change", args=[object_id])
+            )
         queued = self._queue_imports_for_preparation(
             request,
             preparation_job,
             [
-                DatasetImportJob.DATASET_TYPE_EPRE,
-                DatasetImportJob.DATASET_TYPE_BVA_PROVINCIAL,
+                config["primary_dataset_type"],
+                config["budget_vs_actual_dataset_type"],
             ],
         )
         self.message_user(request, "{} import job(s) queued.".format(queued))
@@ -195,21 +267,24 @@ class DatasetPreparationJobAdmin(admin.ModelAdmin):
             reverse("admin:dataset_preparation_datasetpreparationjob_change", args=[object_id])
         )
 
-    def queue_both_imports(self, request, queryset):
+    def queue_pair_imports(self, request, queryset):
         queued = 0
         for preparation_job in queryset:
+            config = get_preparation_dataset_config(preparation_job.dataset_type)
+            if not config.get("budget_vs_actual_dataset_type"):
+                continue
             queued += self._queue_imports_for_preparation(
                 request,
                 preparation_job,
                 [
-                    DatasetImportJob.DATASET_TYPE_EPRE,
-                    DatasetImportJob.DATASET_TYPE_BVA_PROVINCIAL,
+                    config["primary_dataset_type"],
+                    config["budget_vs_actual_dataset_type"],
                 ],
             )
 
         self.message_user(request, "{} import job(s) queued.".format(queued))
 
-    queue_both_imports.short_description = "Queue both imports for selected preparation jobs"
+    queue_pair_imports.short_description = "Queue both imports for selected preparation jobs"
 
     def queue_excel_conversions(self, request, queryset):
         queued = 0
