@@ -84,7 +84,6 @@ class AdjustedBudgetSummaryTests(SimpleTestCase):
         mock_filter.assert_called_once_with(
             department="Example Department",
             financialYear="2024",
-            amountKind="Total",
         )
         self.assertEqual(
             {item["name"]: item["value"] for item in json.loads(result["by_type"])},
@@ -105,3 +104,55 @@ class AdjustedBudgetSummaryTests(SimpleTestCase):
             },
         )
         self.assertEqual(result["total_change"]["amount"], 150.0)
+
+    @patch("budgetportal.views.AENEData.objects.filter")
+    def test_uses_voted_rows_when_total_rows_are_unavailable(self, mock_filter):
+        rows = [
+            {
+                "amountKind": "Voted",
+                "budgetPhase": "Appropriation",
+                "programme": "Programme A",
+                "subprogramme": "Subprogramme A",
+                "economicClassification2": "Current payments",
+                "economicClassification3": "Goods and services",
+                "value": 1000,
+            },
+            {
+                "amountKind": "Voted",
+                "budgetPhase": "Total adjustments",
+                "programme": "Programme A",
+                "subprogramme": "Subprogramme A",
+                "economicClassification2": "Current payments",
+                "economicClassification3": "Goods and services",
+                "value": 150,
+            },
+            {
+                "amountKind": "Voted",
+                "budgetPhase": "Adjusted appropriation",
+                "programme": "Programme A",
+                "subprogramme": "Subprogramme A",
+                "economicClassification2": "Current payments",
+                "economicClassification3": "Goods and services",
+                "value": 1150,
+            },
+            {
+                "amountKind": "Adjustment - Total adjustments",
+                "budgetPhase": "Total adjustments",
+                "programme": "Programme A",
+                "subprogramme": "Subprogramme A",
+                "economicClassification2": "Current payments",
+                "economicClassification3": "Goods and services",
+                "value": 150,
+            },
+        ]
+        mock_queryset = Mock()
+        mock_queryset.values.return_value = rows
+        mock_filter.return_value = mock_queryset
+
+        result = get_adjusted_budget_summary("2025-26", "Example Department")
+
+        self.assertEqual(result["total_change"]["amount"], 150.0)
+        self.assertEqual(
+            json.loads(result["programmes"]),
+            [{"name": "Programme A", "value": 150.0}],
+        )

@@ -2078,7 +2078,6 @@ def get_adjusted_budget_summary(financialYear, department):
     queryset = AENEData.objects.filter(
         department=department,
         financialYear=financialYear.split("-")[0],
-        amountKind="Total",
     ) \
         .values("amountKind", "budgetPhase", "programme", "subprogramme", "economicClassification2", "economicClassification3", "value")
 
@@ -2086,6 +2085,26 @@ def get_adjusted_budget_summary(financialYear, department):
 
     if not data_list:
         return None
+
+    # AENE imports are available in two formats. Newer prepared files label
+    # the complete, non-duplicated representation as ``Total``; older files
+    # use ``Voted`` and also contain parallel adjustment-specific rows. Pick
+    # one canonical representation before calculating any chart totals.
+    amount_kinds = {
+        str(item.get("amountKind") or "").strip().lower() for item in data_list
+    }
+    canonical_amount_kind = (
+        "total" if "total" in amount_kinds
+        else "voted" if "voted" in amount_kinds
+        else None
+    )
+    if canonical_amount_kind:
+        data_list = [
+            item
+            for item in data_list
+            if str(item.get("amountKind") or "").strip().lower()
+            == canonical_amount_kind
+        ]
 
     # The AENE includes the original appropriation, adjustment categories, the
     # adjustment total, and the revised appropriation as separate phases. The
