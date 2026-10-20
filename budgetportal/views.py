@@ -2138,6 +2138,7 @@ def get_adjusted_budget_summary(financialYear, department):
             "type": "kind"
         }
         for k, v in adjustment_by_type.items()
+        if v != 0
     ]
 
     # 2. Adjustment by programme
@@ -2153,6 +2154,7 @@ def get_adjusted_budget_summary(financialYear, department):
             "value": v,
         }
         for k, v in adjustment_by_programme.items()
+        if v != 0
     ]
     
     # 3. Adjustment by economic classification
@@ -2175,6 +2177,7 @@ def get_adjusted_budget_summary(financialYear, department):
             "value": v,
         }
         for k, v in econ.items()
+        if v != 0
     ]
 
     # 4. Veriments
