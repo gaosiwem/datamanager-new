@@ -2075,7 +2075,11 @@ def get_province(prov):
     return government.name if government else None
 
 def get_adjusted_budget_summary(financialYear, department):
-    queryset = AENEData.objects.filter(department=department, financialYear=financialYear.split("-")[0]) \
+    queryset = AENEData.objects.filter(
+        department=department,
+        financialYear=financialYear.split("-")[0],
+        amountKind="Total",
+    ) \
         .values("amountKind", "budgetPhase", "programme", "subprogramme", "economicClassification2", "economicClassification3", "value")
 
     data_list = list(queryset)
@@ -2083,9 +2087,27 @@ def get_adjusted_budget_summary(financialYear, department):
     if not data_list:
         return None
 
+    # The AENE includes the original appropriation, adjustment categories, the
+    # adjustment total, and the revised appropriation as separate phases. The
+    # charts below must not aggregate the original and revised budgets into a
+    # chart that describes adjustments.
+    total_adjustment_rows = [
+        item for item in data_list if item["budgetPhase"] == "Total adjustments"
+    ]
+    non_adjustment_phases = {
+        "Appropriation",
+        "Adjusted appropriation",
+        "Total adjustments",
+    }
+    adjustment_category_rows = [
+        item
+        for item in data_list
+        if item["budgetPhase"] not in non_adjustment_phases
+    ]
+
     # 1. Adjustment by type
     adjustment_by_type =  defaultdict(float)
-    for item in data_list:
+    for item in adjustment_category_rows:
         budgetPhase = item["budgetPhase"]
         value = float(item["value"])
         adjustment_by_type[budgetPhase] += value
@@ -2101,7 +2123,7 @@ def get_adjusted_budget_summary(financialYear, department):
 
     # 2. Adjustment by programme
     adjustment_by_programme = defaultdict(float)
-    for item in data_list:
+    for item in total_adjustment_rows:
         programme = item["programme"]
         value = float(item["value"])
         adjustment_by_programme[programme] += value
@@ -2116,11 +2138,10 @@ def get_adjusted_budget_summary(financialYear, department):
     
     # 3. Adjustment by economic classification
     econ = defaultdict(float)
-    for item in data_list:
-        # econ2 = item["economicClassification2"]
-        econ3 = item["economicClassification3"]
+    for item in total_adjustment_rows:
+        econ2 = item["economicClassification2"]
         value = float(item["value"] or 0)
-        econ[econ3] += value
+        econ[econ2] += value
 
     # adjustment_by_econ = [
     #     {
