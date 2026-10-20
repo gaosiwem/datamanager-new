@@ -387,7 +387,9 @@
         var data;
         try { data = JSON.parse(dataNode.textContent || "[]"); } catch (error) { return; }
         data = (data || []).map(function(item) {
-          return { name: item.name, value: Number(item.value || 0) };
+          return { name: item.name, value: Number(item.value) };
+        }).filter(function(item) {
+          return Number.isFinite(item.value) && item.value !== 0;
         }).sort(function(a, b) { return Math.abs(b.value) - Math.abs(a.value); });
         if (!data.length) return;
 
