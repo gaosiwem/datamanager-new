@@ -693,21 +693,6 @@ def save_vote_documents_data(obj_id):
                                 document_url=item["document_url"]
                             )
 
-                            dataset = Dataset()
-
-                            if preprocessed_dataset:
-                                dataset.headers = preprocessed_dataset[0].keys()  # Set headers
-
-                                # Append rows
-                                for row in preprocessed_dataset:
-                                    dataset.append(row.values())  # Add dat
-
-                            resource = VoteDocumentResource()
-                            result = resource.import_data(dataset, dry_run=True)  # Test first
-
-                            if not result.has_errors():
-                                resource.import_data(dataset, dry_run=False)          
-
 class ENEResource(resources.ModelResource):
     voteNumber = Field(
         column_name="VoteNumber",
@@ -847,19 +832,5 @@ class BudgetVSActualResource(resources.ModelResource):
 
     class Meta:
         model = EPREData
-        skip_unchanged = True
-        report_skipped = False
-
-class VoteDocumentResource(resources.ModelResource):
-    dataset_name = Field(column_name="dataset_name")
-    financialYear = Field(column_name="financialYear")
-    government = Field(column_name="government")
-    dataset_title = Field(column_name="dataset_title")
-    document_type = Field(column_name="document_type")
-    document_url = Field(column_name="document_url")
-    department = Field(column_name="department")
-
-    class Meta:
-        model = ConsolidationData
         skip_unchanged = True
         report_skipped = False
