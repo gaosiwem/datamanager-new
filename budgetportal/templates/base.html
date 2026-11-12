@@ -64,12 +64,9 @@
 
   <meta name="google-site-verification" content="AO3H6VMoji8gCAhPB73gy1R1JSvvPI98s1Gc8GV87eg" />
 
-  <!-- Appzi: Capture Insightful Feedback -->
-  <script async src="https://app.appzi.io/bootstrap/bundle.js?token=Dzqo1"></script>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
-  <!-- End Appzi -->
 </head>
 
 <body data-spy="scroll" data-offset="200">
@@ -86,6 +83,7 @@
 
   {% block content %}
   {% endblock %}
+  <div id="js-initAssistant"></div>
   {% include 'utilities/html/scripts.html' %}
 </body>
 

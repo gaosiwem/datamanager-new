@@ -75,6 +75,34 @@ class FinancialYearAdmin(admin.ModelAdmin):
     pass
 
 
+class MunicipalityAdmin(admin.ModelAdmin):
+    list_display = ("code", "name", "category", "province")
+    list_filter = ("category", "province")
+    search_fields = ("code", "name")
+
+
+class DivisionOfRevenueAdmin(admin.ModelAdmin):
+    list_display = ("financial_year", "version", "source_filename", "imported_at")
+    readonly_fields = ("financial_year", "version", "source_filename", "imported_at")
+    search_fields = ("financial_year__slug", "source_filename")
+    change_list_template = "admin/division_of_revenue/change_list.html"
+
+    def has_add_permission(self, request):
+        return False
+
+
+class DivisionOfRevenueUploadAdmin(admin.ModelAdmin):
+    list_display = ("file", "uploaded_by", "uploaded_at", "status", "division_of_revenue")
+    list_filter = ("status",)
+    readonly_fields = (
+        "file", "uploaded_by", "uploaded_at", "status", "task_id",
+        "error_message", "division_of_revenue",
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+
 class SphereAdmin(admin.ModelAdmin):
     readonly_fields = ("slug",)
 
@@ -217,6 +245,22 @@ class VideoLanguageInline(SortableTabularInline):
 
 class FAQAdmin(admin.ModelAdmin):
     model = models.FAQ
+
+
+class ApprovedDocumentAdmin(admin.ModelAdmin):
+    """Review gate for assistant evidence that is not auto-managed content."""
+
+    list_display = (
+        "title",
+        "document_type",
+        "source",
+        "financial_year",
+        "approved",
+        "ingested_at",
+    )
+    list_filter = ("approved", "document_type")
+    search_fields = ("title", "source", "text", "url")
+    readonly_fields = ("ingested_at", "source_key")
 
 class VoteDocumentAdmin(admin.ModelAdmin):
     readonly_fields = ("slug",)
@@ -433,6 +477,9 @@ class VoteDocumentUploadAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.FinancialYear, FinancialYearAdmin)
+admin.site.register(models.Municipality, MunicipalityAdmin)
+admin.site.register(models.DivisionOfRevenue, DivisionOfRevenueAdmin)
+admin.site.register(models.DivisionOfRevenueUpload, DivisionOfRevenueUploadAdmin)
 admin.site.register(models.Sphere, SphereAdmin)
 admin.site.register(models.Government, GovernmentAdmin)
 admin.site.register(models.GovtFunction, GovtFunctionAdmin)
@@ -451,6 +498,7 @@ admin.site.register(models.GovernmentFunction, GovernmentFunctionAdmin)
 admin.site.register(models.Video, VideoAdmin)
 admin.site.register(models.Event)
 admin.site.register(models.FAQ, FAQAdmin)
+admin.site.register(models.ApprovedDocument, ApprovedDocumentAdmin)
 admin.site.register(models.VoteDocument, VoteDocumentAdmin)
 
 admin.site.register(models.InfraProject, InfraProjectAdmin)

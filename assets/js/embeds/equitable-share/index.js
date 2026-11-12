@@ -1,285 +1,132 @@
-import $ from 'jquery';
-import { HorizontalBarChart } from 'vulekamali-visualisations/src/charts/bar/horizontal-bar-chart/horizontal-bar-chart';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-const allocationBySphereId = "embed-allocation-of-equitable-share-by-sphere";
-const allocationToProvincesId = "embed-allocation-of-equitable-share-to-provinces";
-const allocationToMunicipalitiesId = "embed-allocation-of-equitable-share-to-municipalities";
+import ResponsiveChart from '../../components/universal/ResponsiveChart/index.jsx';
 
-const sphereColor = {
-  "national": "#377ac6",
-  "provincial": "#aad029",
-  "local": "#eb164d",
+
+const graphUrl = '/api/division-revenue/graphs/';
+const chartIds = {
+  spheres: 'embed-allocation-of-equitable-share-by-sphere',
+  provinces: 'embed-allocation-of-equitable-share-to-provinces',
+  municipalities: 'embed-allocation-of-equitable-share-to-municipalities',
 };
 
 
-const sphereLabel = {
-  "national": "National",
-  "provincial": "Provincial",
-  "local": "Local",
-};
-const sphereUrl = {
-  "national": "/2020-21/departments",
-  "provincial": "#embed-allocation-of-equitable-share-to-provinces",
-  "local": "#embed-allocation-of-equitable-share-to-municipalities",
+const chartItems = rows => rows.reduce((result, row) => ({
+  ...result,
+  [row.label]: [row.amount_rands],
+}), {});
+
+
+const renderChart = (node, items) => {
+  ReactDOM.render(
+    <ResponsiveChart items={items} type="bar" />,
+    node,
+  );
 };
 
-const municipalityTypeLabel = {
-  "local": "Local municipalities",
-  "district": "District municipalities",
-  "metro": "Metropolitan municipalities",
+
+const clearAndShow = (node, message) => {
+  ReactDOM.unmountComponentAtNode(node);
+  node.textContent = message;
 };
 
-$(document).ready(function() {
-  const sphereChartContainer = $("#" + allocationBySphereId);
-  if (sphereChartContainer.length) {
-    initAllocationBySphere(sphereChartContainer);
+
+const addSelect = (container, labelText, choices, onChange) => {
+  const control = document.createElement('label');
+  control.className = 'DivisionRevenueChart-filter';
+  control.appendChild(document.createTextNode(labelText));
+  const select = document.createElement('select');
+  choices.forEach(({value, label}) => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    select.appendChild(option);
+  });
+  select.addEventListener('change', event => onChange(event.target.value));
+  control.appendChild(select);
+  container.appendChild(control);
+  return select;
+};
+
+
+const renderMunicipalities = (container, rows) => {
+  if (!rows.length) {
+    clearAndShow(container, 'Municipal allocations are not available for this bill.');
+    return;
   }
-  const provinceChartContainer = $("#" + allocationToProvincesId);
-  if (provinceChartContainer.length) {
-    initAllocationsToProvinces(provinceChartContainer);
-  }
-  const municipalityChartContainer = $("#" + allocationToMunicipalitiesId);
-  if (municipalityChartContainer.length) {
-    initAllocationsToMunicipalities(municipalityChartContainer);
-  }
-});
 
-function initAllocationBySphere(sphereChartContainer) {
-  sphereChartContainer.text("Loading...");
-  const ckanUrl = $("body").data("ckan-url");
+  container.innerHTML = '';
+  const controls = document.createElement('div');
+  controls.className = 'DivisionRevenueChart-filters';
+  const chart = document.createElement('div');
+  container.appendChild(controls);
+  container.appendChild(chart);
 
-  getDataset(ckanUrl)
-    .then(function(data) {
-      const datasets = data.result.results;
-      sortDatasetsFinYear(datasets);
-      const latestAllocations = getLatestAllocations(datasets);
-      if (latestAllocations !== null) {
-        return getAllocationBySpherePromise(ckanUrl, latestAllocations);
-      } else {
-        throw "Data resource not found";
-      }
-    })
-    .then(function(data) {
-      drawAllocationBySphereChart(data.result.records);
-      $(`#${allocationBySphereId}`).append(`Source: ${getSourceLink(this.dataset)}`);
-    })
-    .fail(function(jqXHR) {
-      console.error("Error getting data for chart:", jqXHR);
-      sphereChartContainer.text("Error getting data for chart");
-    });
-};
-
-function getDataset(ckanUrl) {
-  const packageSearchUrl = `${ckanUrl}/api/action/package_search`;
-  const searchParams = {
-    "q": "",
-    "fq": '+organization:"national-treasury"' +
-      'groups:"division-of-revenue-bills"',
+  const provinces = [...new Set(rows.map(row => row.province))].sort();
+  const categories = [...new Set(rows.map(row => row.category))].sort();
+  let province = provinces[0];
+  let category = '';
+  const update = () => {
+    const topMunicipalities = rows
+      .filter(row => row.province === province && (!category || row.category === category))
+      .sort((first, second) => second.amount_rands - first.amount_rands)
+      .slice(0, 10);
+    const items = topMunicipalities.reduce((result, row) => ({
+      ...result,
+      [`${row.name} — ${row.category_label}`]: [row.amount_rands],
+    }), {});
+    renderChart(chart, items);
   };
-  return $.get(packageSearchUrl, searchParams);
-}
 
-function getSourceLink(dataset) {
-  const url = `/datasets/${dataset.groups[0].name}/${dataset.name}`;
-  return `<a href="${url}">${dataset.title}</a>`;
-}
+  addSelect(
+    controls,
+    'Province',
+    provinces.map(value => ({value, label: value})),
+    (value) => { province = value; update(); },
+  );
+  addSelect(
+    controls,
+    'Municipality type',
+    [{value: '', label: 'All types'}].concat(categories.map(value => ({
+      value,
+      label: rows.find(row => row.category === value).category_label,
+    }))),
+    (value) => { category = value; update(); },
+  );
+  update();
+};
 
-/**
- * Returns {resource: ..., dataset: ...} or null if none found.
- */
-function getLatestAllocations(datasets) {
-  let allocationsResource = null;
-  let allocationsDataset = null;
-  datasets.forEach(function (dataset) {
-    dataset.resources.forEach(function (resource) {
-      if (resource.name === "Allocation of Equitable Share") {
-        allocationsResource = resource;
-        allocationsDataset = dataset;
-      }
-    });
-  });
 
-  if (allocationsResource) {
-    return {
-      dataset: allocationsDataset,
-      resource: allocationsResource,
-    };
-  } else {
-    return null;
-  }
-}
+const initialise = () => {
+  const containers = Object.keys(chartIds).reduce((result, key) => ({
+    ...result,
+    [key]: document.getElementById(chartIds[key]),
+  }), {});
+  if (!Object.values(containers).some(Boolean)) return;
 
-function sortDatasetsFinYear(datasets) {
-  datasets.sort((a, b) => {
-    const yearA = a.financial_year.length && a.financial_year[0] || null;
-    const yearB = b.financial_year.length && b.financial_year[0] || null;
-    if (yearA < yearB)
-      return -1;
-    else if (yearA === yearB)
-      return 0;
-    else
-      return 1;
-  });
-}
-
-function getAllocationBySpherePromise(ckanUrl, allocations) {
-  const sqlQuery = `\
-SELECT sum(amount_rand_thousand) as amount_rand_thousand, sphere \
-FROM "${allocations.resource.id}" \
-GROUP BY sphere \
-ORDER BY sphere`;
-  const data = {"sql": sqlQuery};
-  const queryUrl = `${ckanUrl}/api/3/action/datastore_search_sql`;
-  return $.get({url: queryUrl, data: data, context: allocations});
-}
-
-function drawAllocationBySphereChart(items) {
-  const chartItems = items.map(item => (
-    {
-      "Sphere": sphereLabel[item.sphere],
-      "color": sphereColor[item.sphere],
-      "Allocation": parseFloat(item.amount_rand_thousand) * 1000,
-      "url": sphereUrl[item.sphere],
-    }
-  ));
-
-  new HorizontalBarChart()
-    .select(allocationBySphereId)
-    .data(chartItems)
-    .nameKey("Sphere")
-    .valueKey("Allocation")
-    .xAxisUnit('B')
-    .barUnit('B')
-    .urlKey("url")
-    .reDraw();
-}
-
-function initAllocationsToProvinces(container) {
-  container.text("Loading...");
-  const ckanUrl = $("body").data("ckan-url");
-
-  getDataset(ckanUrl)
-    .then(function(data) {
-      const datasets = data.result.results;
-      sortDatasetsFinYear(datasets);
-      const latestAllocations = getLatestAllocations(datasets);
-      if (latestAllocations !== null) {
-        return getAllocationsToProvincesPromise(ckanUrl, latestAllocations);
-      } else {
-        throw "Data resource not found";
-      }
+  Object.values(containers).filter(Boolean).forEach(node => clearAndShow(node, 'Loading chart...'));
+  fetch(graphUrl)
+    .then(response => {
+      if (!response.ok) throw new Error(`Graph data request failed (${response.status})`);
+      return response.json();
     })
-    .then(function(data) {
-      drawAllocationsToProvincesChart(data.result.records);
-      $(`#${allocationToProvincesId}`).append(`Source: ${getSourceLink(this.dataset)}`);
+    .then((data) => {
+      if (containers.spheres) renderChart(containers.spheres, chartItems(data.allocation_by_sphere));
+      if (containers.provinces) renderChart(containers.provinces, chartItems(data.allocation_to_provinces));
+      if (containers.municipalities) renderMunicipalities(containers.municipalities, data.allocation_to_municipalities);
     })
-    .fail(function(jqXHR) {
-      console.error("Error getting data for chart:", jqXHR);
-      container.text("Error getting data for chart");
+    .catch((error) => {
+      console.error('Unable to load Division of Revenue graphs:', error);
+      Object.values(containers).filter(Boolean).forEach(node => (
+        clearAndShow(node, 'The Division of Revenue chart data could not be loaded.')
+      ));
     });
 };
 
-function getAllocationsToProvincesPromise(ckanUrl, allocations) {
-  const sqlQuery = `\
-SELECT sum(amount_rand_thousand) as amount_rand_thousand, geo_code, geo_name \
-FROM "${allocations.resource.id}" \
-WHERE "sphere" = 'provincial' \
-GROUP BY geo_code, geo_name`;
-  const data = {"sql": sqlQuery};
-  const queryUrl = `${ckanUrl}/api/3/action/datastore_search_sql`;
-  return $.get({url: queryUrl, data: data, context: allocations});
-}
 
-function drawAllocationsToProvincesChart(items) {
-  const chartItems = items.map(item => (
-    {
-      "Province": item.geo_name,
-      "color": sphereColor["provincial"],
-      "Allocation": parseFloat(item.amount_rand_thousand) * 1000,
-      "url": "/2020-21/departments",
-    }
-  ));
-
-  new HorizontalBarChart()
-    .select(allocationToProvincesId)
-    .data(chartItems)
-    .nameKey("Province")
-    .valueKey("Allocation")
-    .xAxisUnit('B')
-    .barUnit('B')
-    .urlKey("url")
-    .reDraw();
-}
-
-function initAllocationsToMunicipalities(container) {
-  container.text("Loading...");
-  const ckanUrl = $("body").data("ckan-url");
-
-  getDataset(ckanUrl)
-    .then(function(data) {
-      const datasets = data.result.results;
-      sortDatasetsFinYear(datasets);
-      const latestAllocations = getLatestAllocations(datasets);
-      if (latestAllocations !== null) {
-        return getAllocationsToMunicipalitiesPromise(ckanUrl, latestAllocations);
-      } else {
-        throw "Data resource not found";
-      }
-    })
-    .then(function(data) {
-      drawAllocationsToMunicipalitiesChart(data.result.records);
-      $(`#${allocationToMunicipalitiesId}`).append(`Source: ${getSourceLink(this.dataset)}`);
-    })
-    .fail(function(jqXHR) {
-      console.error("Error getting data for chart:", jqXHR);
-      container.text("Error getting data for chart");
-    });
-};
-
-function getAllocationsToMunicipalitiesPromise(ckanUrl, allocations) {
-  const sqlQuery = `\
-SELECT sum(amount_rand_thousand) as amount_rand_thousand, geo_code, geo_name, \
-municipality_type, parent_name \
-FROM "${allocations.resource.id}" \
-WHERE "sphere" = 'local' \
-GROUP BY geo_code, geo_name, municipality_type, parent_name`;
-  const data = {"sql": sqlQuery};
-  const queryUrl = `${ckanUrl}/api/3/action/datastore_search_sql`;
-  return $.get({url: queryUrl, data: data, context: allocations});
-}
-
-function drawAllocationsToMunicipalitiesChart(items) {
-  const chartItems = items.map(item => (
-    {
-      "Municipality type": municipalityTypeLabel[item.municipality_type],
-      "Municipality": item.geo_name,
-      "Province": item.parent_name,
-      "color": sphereColor["local"],
-      "Allocation": parseFloat(item.amount_rand_thousand) * 1000,
-      "url": muniUrl(item),
-    }
-  ));
-
-  new HorizontalBarChart()
-    .select(allocationToMunicipalitiesId)
-    .data(chartItems)
-    .nameKey("Municipality")
-    .valueKey("Allocation")
-    .filterKey("Province")
-    .filterLabel("Select province:")
-    .groupKey("Municipality type")
-    .xAxisUnit('M')
-    .barUnit('M')
-    .urlKey("url")
-    .reDraw();
-}
-
-function muniUrl(item) {
-  
-  let slug;
-  if (item.municipality_type === "district")
-    slug = `district-${item.geo_code}`;
-  else
-    slug = `municipality-${item.geo_code}`;
-  return `https://municipalmoney.gov.za/profiles/${slug}`;
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initialise);
+} else {
+  initialise();
 }

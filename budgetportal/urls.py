@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from django.conf import settings
 from django.urls import re_path as url
@@ -15,42 +14,65 @@ from django.conf.urls.static import static
 
 
 from . import search_api, views
+from .assistant import api as assistant_api
+from .division_revenue.api import graph_data as division_revenue_graph_data
+from .division_revenue.views import upload_view as division_revenue_upload_view
 
 CACHE_MINUTES_SECS = 60 * 5  # minutes
 
 
 department_urlpatterns = [
-    url(
-        r"^$", cache_page(CACHE_MINUTES_SECS)(views.department_page), name="department"
-    )]
+    url(r"^$", cache_page(CACHE_MINUTES_SECS)(views.department_page), name="department")
+]
 
 urlpatterns = [
+    path(
+        "api/division-revenue/graphs/",
+        division_revenue_graph_data,
+        name="division-revenue-graph-data",
+    ),
+    url(
+        r"^api/assistant/query/?$",
+        assistant_api.assistant_query,
+        name="assistant-query",
+    ),
     # Homepage
-    url(r"^$", cache_page(CACHE_MINUTES_SECS)
-        (views.homepage), name="home"),
+    url(r"^$", cache_page(CACHE_MINUTES_SECS)(views.homepage), name="home"),
     url(
         r"^glossary/?$",
         cache_page(CACHE_MINUTES_SECS)(views.glossary),
         name="glossary",
     ),
-
-    url(r'^bubble_chart/', views.bubble_graph, name='bubble_chart'),
-    url(r'^treemap_graph/', views.treemap_chart, name='treemap'),
-    url(r'^get_economicClassification/', views.get_economicClassification, name='econ'),
-    url(r'^get_horizontal_bar_data/', views.get_horizontal_bar_data, name='getGraphData'),
-    url(r'^get_programmes/', views.get_programmes, name='getProg'),
-    url(r'^budget-summary/(?P<financial_year_id>\d{4}-\d{2})?$', cache_page(CACHE_MINUTES_SECS)(views.budget_summary), name='budget_summary'), 
-    url(r'^budget-summary/consolidated_spending_details/(?P<financial_year_id>\d{4}-\d{2})/(?P<focus_slug>[\w-]+)/?$',views.consolidated_spending_details, name='focus-detail'),
-    url(r'^budget-summary/national_budget_summary/(?P<financial_year_id>\d{4}-\d{2})/(?P<department>[\w-]+)/?$',
-        views.national_spending_details, name='national-detail'),
-    url(r'^budget-summary/provincial_budget_summary/(?P<financial_year_id>\d{4}-\d{2})/(?P<province>[\w-]+)/?$',
-        views.provincial_spending_details, name='provincial-detail'),
-    
-    
+    url(r"^bubble_chart/", views.bubble_graph, name="bubble_chart"),
+    url(r"^treemap_graph/", views.treemap_chart, name="treemap"),
+    url(r"^get_economicClassification/", views.get_economicClassification, name="econ"),
+    url(
+        r"^get_horizontal_bar_data/", views.get_horizontal_bar_data, name="getGraphData"
+    ),
+    url(r"^get_programmes/", views.get_programmes, name="getProg"),
+    url(
+        r"^budget-summary/(?P<financial_year_id>\d{4}-\d{2})?$",
+        cache_page(CACHE_MINUTES_SECS)(views.budget_summary),
+        name="budget_summary",
+    ),
+    url(
+        r"^budget-summary/consolidated_spending_details/(?P<financial_year_id>\d{4}-\d{2})/(?P<focus_slug>[\w-]+)/?$",
+        views.consolidated_spending_details,
+        name="focus-detail",
+    ),
+    url(
+        r"^budget-summary/national_budget_summary/(?P<financial_year_id>\d{4}-\d{2})/(?P<department>[\w-]+)/?$",
+        views.national_spending_details,
+        name="national-detail",
+    ),
+    url(
+        r"^budget-summary/provincial_budget_summary/(?P<financial_year_id>\d{4}-\d{2})/(?P<province>[\w-]+)/?$",
+        views.provincial_spending_details,
+        name="provincial-detail",
+    ),
     url(
         r"^learning-resources/?$",
-        lambda request: redirect(
-            "/videos/", permanent=True),
+        lambda request: redirect("/videos/", permanent=True),
         name="learning-resources",
     ),
     url(
@@ -69,10 +91,12 @@ urlpatterns = [
         name="resources",
     ),
     url(r"^faq/?$", cache_page(CACHE_MINUTES_SECS)(views.faq), name="faq"),
-    url(r"^about/?$", cache_page(CACHE_MINUTES_SECS)
-        (views.about), name="about"),
-    url(r"^spendingByProgramme/?$", cache_page(CACHE_MINUTES_SECS)
-        (views.spendingByProgramme), name="spendingByProgramme"),
+    url(r"^about/?$", cache_page(CACHE_MINUTES_SECS)(views.about), name="about"),
+    url(
+        r"^spendingByProgramme/?$",
+        cache_page(CACHE_MINUTES_SECS)(views.spendingByProgramme),
+        name="spendingByProgramme",
+    ),
     # Department List
     url(
         r"^latest/departments$",
@@ -104,14 +128,11 @@ urlpatterns = [
         cache_page(CACHE_MINUTES_SECS)(search_api.search_facet_api),
         name="search-facet-api",
     ),
-
     url(r"^performance/", include("performance.urls")),
     url(r"^public-entities/", include("public_entities.urls")),
     # url(r"^data_validation/", include("data_validation.urls")),
-    
     # Provincial Infrastructure projects
     url(r"^provincial-infrastructure/", include("provincial_infrastructure.urls")),
-
     # Infrastructure projects
     url(
         r"^infrastructure-projects/?$",
@@ -131,7 +152,6 @@ urlpatterns = [
         cache_page(CACHE_MINUTES_SECS)(views.infrastructure_project_detail),
         name="infrastructure-projects",
     ),
-
     # Department detail
     # - National
     # url(
@@ -140,62 +160,66 @@ urlpatterns = [
     #     kwargs={"sphere_slug": "national", "government_slug": "south-africa"},
     #     name="national-department",
     # ),
-
     url(
         r"^(?P<financial_year_id>\d{4}-\d{2})/national/departments/(?P<department_slug>[\w-]+)/",
         include((department_urlpatterns, "national"), namespace="national"),
         kwargs={"sphere_slug": "national", "government_slug": "south-africa"},
         name="national-department",
     ),
-
-        # - Provincial
-    url(r"^(?P<financial_year_id>[\w-]+)"
+    # - Provincial
+    url(
+        r"^(?P<financial_year_id>[\w-]+)"
         "/(?P<sphere_slug>[\w-]+)"
         "/(?P<government_slug>[\w-]+)"
         "/departments"
         "/(?P<department_slug>[\w-]+)/",
         include((department_urlpatterns, "provincial"), namespace="provincial"),
     ),
-
     url(
         r"^datasets/?$",
         cache_page(CACHE_MINUTES_SECS)(views.dataset_category_list_page),
         name="dataset-landing-page",
     ),
     url(
-        r"^datasets/(?P<category_slug>[-\w]+)/(?P<financial_year_id>\d{4}-\d{2})?$", views.dataset_category_list, name="dataset-list",
+        r"^datasets/(?P<category_slug>[-\w]+)/(?P<financial_year_id>\d{4}-\d{2})?$",
+        views.dataset_category_list,
+        name="dataset-list",
     ),
     url(
-        r"^datasets/key-budget-documents/(?P<financial_year_id>\d{4}-\d{2})?$", views.dataset_category_list, name="dataset-list",
+        r"^datasets/key-budget-documents/(?P<financial_year_id>\d{4}-\d{2})?$",
+        views.dataset_category_list,
+        name="dataset-list",
     ),
     url(
         r"^datasets/(?P<category_slug>[-\w]+)/?$",
         cache_page(CACHE_MINUTES_SECS)(views.dataset_category_page),
         name="dataset-category",
     ),
-    
     # Detaset detail
     url(
         r"^datasets/(?P<category_slug>[-\w]+)/(?P<dataset_slug>[-\w]+)/?$",
         cache_page(CACHE_MINUTES_SECS)(views.dataset_page),
         name="dataset",
     ),
-     url(
+    url(
         r"^datasets/(?P<category_slug>[-\w]+)/resources/(?P<datasetresource_file>[^/]+\.[a-zA-Z0-9]+)/?$",
         cache_page(CACHE_MINUTES_SECS)(views.download_resource),
         name="download_resource",
     ),
     # Admin
+    path(
+        "admin/division-revenue/upload/",
+        admin.site.admin_view(division_revenue_upload_view),
+        name="division-revenue-upload",
+    ),
     url(r"^admin/", admin.site.urls),
     # url(r"^admin/bulk_upload/template", bulk_upload.template_view),
-
     # path('admin/', admin.site.urls),
     # path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/', include('allauth.urls')),
+    path("accounts/", include("allauth.urls")),
     url(r"^cms/", include(wagtailadmin_urls)),
     url(r"^documents/", include(wagtaildocs_urls)),
     url(r"^", include(wagtail_urls)),
-    
 ]
 
 if settings.DEBUG:
