@@ -7,24 +7,52 @@ services:
         USER_ID: ${USER_ID:-1001}
         GROUP_ID: ${GROUP_ID:-1001}
       dockerfile: Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:9000
     environment:
       - TAG_MANAGER_ID
       - DJANGO_DEBUG_TOOLBAR
       - SOLR_URL=http://solr:8983/solr/budgetportal
       - DEBUG_CACHE
       - DJANGO_WHITENOISE_AUTOREFRESH=TRUE
-      - PORT=8000
-      - DB_HOST
+      - PORT=9000
+      - DB_HOST=${DB_HOST:-sqlserver}
+      - DB_USER=${DB_USER:-sa}
+      - DB_PASSWORD=${DB_PASSWORD:-${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD must be set}}
+      - AZURE_OPENAI_ENDPOINT
+      - AZURE_OPENAI_DEPLOYMENT
+      - AZURE_OPENAI_API_KEY
+      - AZURE_OPENAI_AUTH_MODE
+      - AZURE_OPENAI_API_VERSION
+      - AZURE_OPENAI_ENTRA_SCOPE
+      - AZURE_OPENAI_CONNECT_TIMEOUT_SECONDS
+      - AZURE_OPENAI_READ_TIMEOUT_SECONDS
+      - AZURE_OPENAI_MAX_RETRIES
+      - AZURE_OPENAI_ALLOWED_HOSTS
+      - AZURE_CONTENT_SAFETY_ENABLED
+      - AZURE_CONTENT_SAFETY_ENDPOINT
+      - AZURE_CONTENT_SAFETY_API_KEY
+      - AZURE_CONTENT_SAFETY_AUTH_MODE
+      - AZURE_CONTENT_SAFETY_API_VERSION
+      - AZURE_CONTENT_SAFETY_ENTRA_SCOPE
+      - AZURE_CONTENT_SAFETY_TIMEOUT_SECONDS
+      - REDIS_URL=redis://:${REDIS_PASSWORD:?REDIS_PASSWORD must be set}@redis:6379/0
+      - ASSISTANT_CACHE_ENABLED=true
+      - ASSISTANT_REQUIRE_SHARED_CACHE=true
+      - ASSISTANT_RATE_LIMIT_PER_MINUTE=${ASSISTANT_RATE_LIMIT_PER_MINUTE:-30}
+      - ASSISTANT_MAX_FOUNDRY_CALLS=${ASSISTANT_MAX_FOUNDRY_CALLS:-4}
+      - ASSISTANT_MAX_FOUNDRY_TOKENS=${ASSISTANT_MAX_FOUNDRY_TOKENS:-1200}
       #- GUNICORN_WORKERS_ARG=1 # Useful for testing start.sh
     volumes:
       - .:/app    
     ports:
-      - "8000:8000"
+      # IIS proxies to this loopback-only port; it is not Internet reachable.
+      # Host port 9002 avoids the local MinIO service using 9000/9001.
+      - "127.0.0.1:9002:9000"
     depends_on:
       - solr
       - sqlserver
       - sqlserver.configurator
+      - redis
     links:
       - selenium
 
@@ -40,23 +68,45 @@ services:
       - DJANGO_DEBUG_TOOLBAR=${DJANGO_DEBUG_TOOLBAR:-False}
       - AWS_S3_ENDPOINT_URL=http://minio:9000
       - SOLR_URL=http://solr:8983/solr/budgetportal
+      - DB_HOST=${DB_HOST:-sqlserver}
+      - DB_USER=${DB_USER:-sa}
+      - DB_PASSWORD=${DB_PASSWORD:-${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD must be set}}
+      - DB_CONN_MAX_AGE=0
+      - AZURE_OPENAI_ENDPOINT
+      - AZURE_OPENAI_DEPLOYMENT
+      - AZURE_OPENAI_API_KEY
+      - AZURE_OPENAI_AUTH_MODE
+      - AZURE_OPENAI_API_VERSION
+      - AZURE_OPENAI_ENTRA_SCOPE
+      - AZURE_OPENAI_CONNECT_TIMEOUT_SECONDS
+      - AZURE_OPENAI_READ_TIMEOUT_SECONDS
+      - AZURE_OPENAI_MAX_RETRIES
+      - AZURE_OPENAI_ALLOWED_HOSTS
+      - REDIS_URL=redis://:${REDIS_PASSWORD:?REDIS_PASSWORD must be set}@redis:6379/0
+      - ASSISTANT_CACHE_ENABLED=true
+      - ASSISTANT_REQUIRE_SHARED_CACHE=true
     volumes:
       - .:/app
     depends_on:
-      - solr
+      sqlserver:
+        condition: service_healthy
+      solr:
+        condition: service_started
+      redis:
+        condition: service_started
 
-  nginx:
-    build: ./nginx
-    container_name: nginx_server
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - app
-    volumes:
-      - ./static:/static:ro
-      - ./nginx/certificates:/etc/nginx/ssl
+  # nginx:
+  #   build: ./nginx
+  #   container_name: nginx_server
+  #   restart: always
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   depends_on:
+  #     - app
+  #   volumes:
+  #     - ./static:/static:ro
+  #     - ./nginx/certificates:/etc/nginx/ssl
 
   solr:
     build: "https://github.com/vulekamali/solr-dokku.git"
@@ -84,10 +134,10 @@ services:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=1StrongPwd!!
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD must be set}
       - MSSQL_PID=Developer
       - MSSQL_TLS_CERT=/var/opt/mssql/cert.pfx
-      - MSSQL_TLS_KEY_PASSWORD=mypassword
+      - MSSQL_TLS_KEY_PASSWORD=${MSSQL_TLS_KEY_PASSWORD:?MSSQL_TLS_KEY_PASSWORD must be set}
       - MSSQL_FORCE_ENCRYPTION=1
     user: root
     ports:
@@ -96,14 +146,16 @@ services:
       - sqlserver_data1:/var/opt/mssql
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 1StrongPwd!! -C -Q 'SELECT 1' || exit 1"]
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $$MSSQL_SA_PASSWORD -C -l 30 -Q 'SELECT 1' || exit 1"]
       interval: 10s
-      retries: 10
-      start_period: 10s
-      timeout: 3s
+      retries: 30
+      start_period: 10m
+      timeout: 35s
   sqlserver.configurator:
     image: mcr.microsoft.com/mssql/server:2019-latest
     user: root
+    environment:
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD must be set}
     volumes:
       - ./init:/docker-entrypoint-initdb.d
     depends_on:
@@ -111,9 +163,20 @@ services:
         condition: service_healthy
     command: >
       bash -c '
-      /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P 1StrongPwd!! -C -d master -i docker-entrypoint-initdb.d/init.sql;
+      /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P $$MSSQL_SA_PASSWORD -C -d master -i docker-entrypoint-initdb.d/init.sql;
       echo "All done!";
       '
+
+  redis:
+    image: redis:7.4-alpine
+    command: >
+      sh -c 'redis-server --appendonly yes --protected-mode yes
+      --requirepass "$$REDIS_PASSWORD"'
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
 
 volumes:
   solr-data:
@@ -121,3 +184,4 @@ volumes:
     driver: local
   sqlserver_data1:
   static_volume:
+  redis_data:

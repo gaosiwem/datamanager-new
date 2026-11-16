@@ -3,6 +3,7 @@ import "../scss/styles.scss";
 import "classlist-polyfill";
 import "whatwg-fetch";
 import "url-search-params-polyfill";
+import "regenerator-runtime/runtime";
 
 import "jquery";
 import "bootstrap/js/dist/scrollspy.js";
@@ -28,6 +29,7 @@ import "./components/header-and-footer/YearSelect/scripts.jsx";
 import "./components/header-and-footer/SubLinks/scripts.js";
 import "./components/header-and-footer/NavBar/scripts.js";
 import "./components/header-and-footer/Modals/scripts.jsx";
+import "./components/assistant/scripts.jsx";
 
 import "./components/department-budgets/DeptSearch/scripts.jsx";
 import "./components/department-budgets/IntroSection/scripts.jsx";

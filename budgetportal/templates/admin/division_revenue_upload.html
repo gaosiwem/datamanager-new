@@ -1,0 +1,72 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Division of Revenue Excel Upload{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Home</a>
+  &rsaquo; <a href="{% url 'admin:budgetportal_divisionofrevenue_changelist' %}">Division of Revenue Bills</a>
+  &rsaquo; Upload
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  <fieldset class="module aligned">
+    <h2>Division of Revenue Excel Upload</h2>
+    <div class="form-row{% if form.workbook.errors %} errors{% endif %}">
+      {{ form.workbook.errors }}
+      <div>
+        {{ form.workbook.label_tag }}
+        {{ form.workbook }}
+        {% if form.workbook.help_text %}<p class="help">{{ form.workbook.help_text }}</p>{% endif %}
+      </div>
+    </div>
+  </fieldset>
+  <div class="submit-row">
+    <input type="submit" name="preview" value="Validate and preview" class="default" id="validate-preview">
+    <input type="submit" name="import" value="Import Schedules 1–3" id="import-schedules">
+  </div>
+</form>
+
+{% if preview %}
+  <fieldset class="module">
+  <h2>Workbook summary</h2>
+  {% if preview.queued_upload %}
+    <p class="success">Upload #{{ preview.queued_upload.pk }} has been queued for import.</p>
+  {% endif %}
+  <table>
+    <tr><th>File</th><td>{{ preview.filename }}</td></tr>
+    <tr><th>Financial Year</th><td>{% if preview.financial_year %}{{ preview.financial_year }}{% else %}Not detected{% endif %}</td></tr>
+    <tr><th>Workbook Status</th><td>{{ preview.status }}</td></tr>
+    <tr><th>Sheets Found</th><td>{{ preview.sheet_count }}: {{ preview.sheet_names|join:", " }}</td></tr>
+    <tr><th>Schedules Detected</th><td>{% for number, schedule in preview.schedules.items %}Schedule {{ number }}{% if not forloop.last %}, {% endif %}{% empty %}None{% endfor %}</td></tr>
+  </table>
+
+  {% if preview.warnings %}<ul class="messagelist">{% for warning in preview.warnings %}<li class="warning">{{ warning }}</li>{% endfor %}</ul>{% endif %}
+  {% if preview.errors %}<ul class="messagelist">{% for error in preview.errors %}<li class="error">{{ error }}</li>{% endfor %}</ul>{% endif %}
+  </fieldset>
+
+  {% for number, schedule in preview.schedules.items %}
+    <fieldset class="module">
+    <h2>Schedule {{ number }}</h2>
+    <table>
+      <tr><th>Detected worksheet</th><td>{{ schedule.sheet_name }}</td></tr>
+      <tr><th>Detected header row</th><td>{{ schedule.header_row|default:"Not detected" }}</td></tr>
+      <tr><th>Row count</th><td>{{ schedule.meaningful_row_count }}</td></tr>
+      <tr><th>Detected columns</th><td>{{ schedule.columns|join:", " }}</td></tr>
+    </table>
+    {% if schedule.warnings %}<ul class="messagelist">{% for warning in schedule.warnings %}<li class="warning">{{ warning }}</li>{% endfor %}</ul>{% endif %}
+    {% if schedule.rows %}
+      <table>
+        <thead><tr>{% for column in schedule.columns %}<th>{{ column }}</th>{% endfor %}</tr></thead>
+        <tbody>{% for row in schedule.rows %}<tr>{% for value in row %}<td>{{ value }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+      </table>
+    {% endif %}
+    </fieldset>
+  {% endfor %}
+{% endif %}
+</div>
+{% endblock %}

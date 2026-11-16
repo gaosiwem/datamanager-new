@@ -131,6 +131,7 @@
     "react": "^16.8.1",
     "react-dev-utils": "^12.0.1",
     "react-dom": "^16.8.1",
+    "regenerator-runtime": "^0.13.7",
     "react-ga": "^2.5.3",
     "react-html-connector": "^0.2.6",
     "react-lines-ellipsis": "^0.15.3",

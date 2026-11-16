@@ -5,6 +5,22 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+DEFAULT_CATEGORY_SLUG = "estimates-of-national-expenditure"
+
+
+def ensure_default_dataset_category(apps, schema_editor):
+    """Provide the historical default required by the VoteDocument field."""
+    DatasetCategory = apps.get_model("budgetportal", "DatasetCategory")
+    DatasetCategory.objects.get_or_create(
+        slug=DEFAULT_CATEGORY_SLUG,
+        defaults={
+            "title": "Estimates of National Expenditure",
+            "description": "Estimates of National Expenditure",
+            "type": "Original Budget",
+        },
+    )
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -12,6 +28,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(
+            ensure_default_dataset_category,
+            migrations.RunPython.noop,
+        ),
         migrations.AddField(
             model_name='budgetvsactualnationaldata',
             name='budgetYear',

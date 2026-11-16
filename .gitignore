@@ -38,6 +38,7 @@ dbdump
 *.sql
 *.png
 *.md
+!HIGH_LEVEL_PROCESS_MAP.md
 /media/resources/*.xlsx
 /media/resources/*.csv
 /media/datasets/*.csv
@@ -45,3 +46,10 @@ dbdump
 *.lock
 *.yml
 Dockerfile
+/media/eqprs_uploads/*
+/media/validation_sources/*
+/media/division_revenue_uploads/*
+/budgetportal/tests/*
+/*.playwright-mcp
+/*.err.log
+/*.out.log

@@ -12,6 +12,7 @@ from slugify import slugify
 # import ckeditor.fields as ckeditor_fields
 from adminsortable.models import SortableMixin
 from budgetportal.blocks import DescriptionEmbedBlock, SectionBlock
+
 # from budgetportal.datasets import Dataset
 from django.conf import settings
 from django.core.cache import cache
@@ -40,8 +41,14 @@ from .government import (
     PROVINCIAL_SLUG,
     EXPENDITURE_TIME_SERIES_PHASE_MAPPING,
 )
+from .division_revenue import (
+    DivisionOfRevenue,
+    DivisionOfRevenueAllocation,
+    DivisionOfRevenueUpload,
+    Municipality,
+)
 
-from budgetportal.utils.Infra_Coordinates import (CoordinateUtils)
+from budgetportal.utils.Infra_Coordinates import CoordinateUtils
 
 logger = logging.getLogger(__name__)
 
@@ -75,10 +82,12 @@ class Homepage(models.Model):
     call_to_action_link_url = models.CharField(max_length=1000, blank=True)
     call_to_action_link_target = models.CharField(max_length=1000, blank=True)
 
+
 class InfrastructureProjectImportFile(models.Model):
     file = models.FileField(upload_to="media/infrastructure_imports/")
     uploaded_at = models.DateTimeField(auto_now_add=True)
     processed = models.BooleanField(default=False)
+
 
 class InfrastructureProjectPart(models.Model):
     administration_type = models.CharField(max_length=255)
@@ -104,10 +113,8 @@ class InfrastructureProjectPart(models.Model):
     partnership_type = models.CharField(max_length=255, null=True, blank=True)
     date_of_close = models.CharField(max_length=255, null=True, blank=True)
     duration = models.CharField(max_length=255, null=True, blank=True)
-    financing_structure = models.CharField(
-        max_length=255, null=True, blank=True)
-    project_value_rand_million = models.CharField(
-        max_length=255, null=True, blank=True)
+    financing_structure = models.CharField(max_length=255, null=True, blank=True)
+    project_value_rand_million = models.CharField(max_length=255, null=True, blank=True)
     form_of_payment = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
@@ -136,13 +143,13 @@ class InfrastructureProjectPart(models.Model):
 
     def dms_to_decimal(dms_str):
         # Extract numbers and direction
-        parts = re.findall(r'\d+', dms_str)
-        direction = re.findall(r'[NSEW]', dms_str.upper())
+        parts = re.findall(r"\d+", dms_str)
+        direction = re.findall(r"[NSEW]", dms_str.upper())
         if len(parts) != 3 or not direction:
             raise ValueError(f"Invalid DMS format: {dms_str}")
         degrees, minutes, seconds = map(int, parts)
         decimal = degrees + minutes / 60 + seconds / 3600
-        if direction[0] in ['S', 'W']:
+        if direction[0] in ["S", "W"]:
             decimal = -decimal
         return decimal
 
@@ -169,20 +176,20 @@ class InfrastructureProjectPart(models.Model):
 
         try:
             coordinate = coordinate.replace(" ", "")
-            parts = coordinate.split(',')
+            parts = coordinate.split(",")
             if len(parts) != 2:
                 raise ValueError("Coordinate must be in 'lat,long' format")
 
             lat_str = parts[0].strip()
             lon_str = parts[1].strip()
 
-            lat = float(lat_str.rstrip('NSEW'))
-            lon = float(lon_str.rstrip('NSEW'))
+            lat = float(lat_str.rstrip("NSEW"))
+            lon = float(lon_str.rstrip("NSEW"))
 
             # Adjust sign based on directional suffix
-            if 'S' in lat_str.upper():
+            if "S" in lat_str.upper():
                 lat = -abs(lat)
-            if 'W' in lon_str.upper():
+            if "W" in lon_str.upper():
                 lon = -abs(lon)
 
             return {"latitude": lat, "longitude": lon}
@@ -219,7 +226,7 @@ class InfrastructureProjectPart(models.Model):
         province_name = cache.get(key, default="cache-miss")
         if province_name == "cache-miss":
             logger.info(f"Coordinate Province Cache MISS for coordinate {key}")
-           
+
             response = requests.get(
                 "https://nominatim.openstreetmap.org/reverse",
                 params={
@@ -227,9 +234,9 @@ class InfrastructureProjectPart(models.Model):
                     "lon": coordinate["longitude"],
                     "format": "json",
                     "zoom": 5,
-                    "addressdetails": 1
+                    "addressdetails": 1,
                 },
-                headers={"User-Agent": "GeoProvinceLookup/1.0"}
+                headers={"User-Agent": "GeoProvinceLookup/1.0"},
             )
             data = response.json()
             province_name = data.get("address", {}).get("state")
@@ -268,8 +275,7 @@ class InfrastructureProjectPart(models.Model):
         else:
             province = cls._get_province_from_project_name(project_name)
             if province:
-                logger.info(
-                    "Found province {} in project name".format(province))
+                logger.info("Found province {} in project name".format(province))
                 provinces.add(province)
         return list(provinces)
 
@@ -333,8 +339,7 @@ class Event(models.Model):
 class VideoLanguage(SortableMixin):
     label = models.CharField(max_length=255)
     youtube_id = models.CharField(max_length=255, null=True, blank=True)
-    video = models.ForeignKey(
-        "Video", null=True, blank=True, on_delete=models.SET_NULL)
+    video = models.ForeignKey("Video", null=True, blank=True, on_delete=models.SET_NULL)
     video_language_order = models.PositiveIntegerField(
         default=0, editable=False, db_index=True
     )
@@ -350,8 +355,7 @@ class Video(SortableMixin):
     title_id = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     description = models.TextField(max_length=510)
-    video_order = models.PositiveIntegerField(
-        default=0, editable=False, db_index=True)
+    video_order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     class Meta:
         ordering = ["video_order"]
@@ -485,18 +489,14 @@ class InfraProjectSnapshot(models.Model):
     department = models.CharField(max_length=1024, blank=True, null=True)
     sector = models.CharField(max_length=1024, blank=True, null=True)
     province = models.CharField(max_length=1024, blank=True, null=True)
-    local_municipality = models.CharField(
-        max_length=1024, blank=True, null=True)
-    district_municipality = models.CharField(
-        max_length=1024, blank=True, null=True)
+    local_municipality = models.CharField(max_length=1024, blank=True, null=True)
+    district_municipality = models.CharField(max_length=1024, blank=True, null=True)
     latitude = models.CharField(max_length=20, blank=True, null=True)
     longitude = models.CharField(max_length=20, blank=True, null=True)
     status = models.CharField(max_length=1024, blank=True, null=True)
     budget_programme = models.CharField(max_length=1024, blank=True, null=True)
-    primary_funding_source = models.CharField(
-        max_length=1024, blank=True, null=True)
-    nature_of_investment = models.CharField(
-        max_length=1024, blank=True, null=True)
+    primary_funding_source = models.CharField(max_length=1024, blank=True, null=True)
+    nature_of_investment = models.CharField(max_length=1024, blank=True, null=True)
     funding_status = models.CharField(max_length=1024, blank=True, null=True)
     program_implementing_agent = models.CharField(
         max_length=1024, blank=True, null=True
@@ -634,6 +634,7 @@ class CustomPage(NavContextMixin, Page):
         StreamFieldPanel("body"),
     ]
 
+
 class LearningIndexPage(NavContextMixin, Page):
     parent_page_types = ["budgetportal.WagtailHomePage"]
     subpage_types = ["budgetportal.GuideIndexPage"]
@@ -646,8 +647,7 @@ class PostIndexPage(NavContextMixin, Page):
     max_count = 1
     intro = RichTextField(blank=True)
 
-    content_panels = Page.content_panels + \
-        [FieldPanel("intro", classname="full")]
+    content_panels = Page.content_panels + [FieldPanel("intro", classname="full")]
 
 
 class GuideIndexPage(NavContextMixin, Page):
@@ -656,8 +656,7 @@ class GuideIndexPage(NavContextMixin, Page):
     subpage_types = ["budgetportal.GuidePage"]
     intro = RichTextField(blank=True)
 
-    content_panels = Page.content_panels + \
-        [FieldPanel("intro", classname="full")]
+    content_panels = Page.content_panels + [FieldPanel("intro", classname="full")]
 
     def get_context(self, request, *args, **kwargs):
         context = super().get_context(request, *args, **kwargs)
@@ -727,11 +726,9 @@ class CategoryGuide(models.Model):
 
     def clean(self):
         if self.external_url is None and self.guide_page is None:
-            raise ValidationError(
-                "Either Guide Page or External URL must be set.")
+            raise ValidationError("Either Guide Page or External URL must be set.")
         if self.external_url is not None and self.guide_page is not None:
-            raise ValidationError(
-                "Only one of Guide Page or External URL may be set.")
+            raise ValidationError("Only one of Guide Page or External URL may be set.")
         if self.external_url is not None and self.external_url_title is None:
             raise ValidationError("Title is required when using External URL.")
 
@@ -817,8 +814,7 @@ class Notice(SortableMixin):
     description = models.CharField(max_length=1024)
     # content = ckeditor_fields.RichTextField()
 
-    notice_order = models.PositiveIntegerField(
-        default=0, editable=False, db_index=True)
+    notice_order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     class Meta:
         ordering = ["notice_order"]
@@ -879,8 +875,7 @@ def showcase_item_file_path(instance, filename):
 class ShowcaseItem(SortableMixin):
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=400)
-    cta_text_1 = models.CharField(
-        max_length=200, verbose_name="Call to action text 1")
+    cta_text_1 = models.CharField(max_length=200, verbose_name="Call to action text 1")
     cta_link_1 = models.URLField(
         null=True, blank=True, verbose_name="Call to action link 1"
     )
@@ -905,14 +900,14 @@ class ShowcaseItem(SortableMixin):
     )
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
-    item_order = models.PositiveIntegerField(
-        default=0, editable=False, db_index=True)
+    item_order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     class Meta:
         ordering = ["item_order"]
 
     def __str__(self):
         return self.name
+
 
 class DatasetCategory(models.Model):
     title = models.CharField(max_length=1024)
@@ -922,14 +917,21 @@ class DatasetCategory(models.Model):
         max_length=200,
         always_update=True,
     )
-    
-    type = models.CharField(max_length=50, default="Original Budget", choices=(("Original Budget", "Original Budget"), ("Adjusted Budget", "Adjusted Budget")))
+
+    type = models.CharField(
+        max_length=50,
+        default="Original Budget",
+        choices=(
+            ("Original Budget", "Original Budget"),
+            ("Adjusted Budget", "Adjusted Budget"),
+        ),
+    )
 
     excluded_groups = {"budget-vote-documents", "adjusted-budget-vote-documents"}
 
     def __str__(self):
         return self.title
-    
+
     @classmethod
     def get_all(cls):
         categories = DatasetCategory.objects.all()
@@ -943,16 +945,65 @@ class DatasetCategory(models.Model):
         return cls(
             slug=group["title"], description=group["description"], title=group["title"]
         )
-    
+
     def get_url_path(self):
         return "/datasets/%s" % (self.slug)
+
+
+class ApprovedDocument(models.Model):
+    """Application-managed textual evidence approved for assistant retrieval."""
+
+    DOCUMENT_TYPES = (
+        ("glossary", "Vulekamali glossary"),
+        ("budget_review", "Budget Review"),
+        ("ene", "Estimates of National Expenditure"),
+        ("aene", "Adjusted Estimates of National Expenditure"),
+        ("appropriation", "Appropriation document"),
+        ("division_of_revenue", "Division of Revenue"),
+        ("dataset_documentation", "Dataset documentation"),
+        ("help", "Vulekamali help"),
+        ("national_treasury", "Approved National Treasury document"),
+    )
+    title = models.CharField(max_length=1024)
+    # Stable internal identity for application-managed sources (for example a
+    # FAQ primary key).  External source URLs are not used as identities.
+    source_key = models.CharField(max_length=512, unique=True, null=True, blank=True)
+    source = models.CharField(max_length=1024)
+    financial_year = models.ForeignKey(
+        FinancialYear, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    document_type = models.CharField(max_length=64, choices=DOCUMENT_TYPES)
+    url = models.URLField(blank=True, null=True)
+    page_section = models.CharField(max_length=512, blank=True, null=True)
+    approved = models.BooleanField(default=False, db_index=True)
+    ingested_at = models.DateTimeField(auto_now_add=True)
+    text = models.TextField()
+
+    class Meta:
+        ordering = ("title",)
+
+    def __str__(self):
+        return self.title
+
+
+class ApprovedDocumentChunk(models.Model):
+    document = models.ForeignKey(
+        ApprovedDocument, on_delete=models.CASCADE, related_name="chunks"
+    )
+    chunk_index = models.PositiveIntegerField()
+    text = models.TextField()
+
+    class Meta:
+        unique_together = (("document", "chunk_index"),)
+        ordering = ("document", "chunk_index")
+
 
 class Tag(models.Model):
     title = models.CharField(max_length=1024)
 
     def __str__(self):
         return self.title
-    
+
 
 class Organisation(models.Model):
     title = models.CharField(max_length=1024)
@@ -961,12 +1012,14 @@ class Organisation(models.Model):
     def __str__(self):
         return self.title
 
+
 class GovernmentFunction(models.Model):
     title = models.CharField(max_length=1024)
     description = models.TextField()
 
     def __str__(self):
         return self.title
+
 
 class Dimension(models.Model):
     title = models.CharField(max_length=1024)
@@ -977,60 +1030,46 @@ class Dimension(models.Model):
 
 def resources_file_path(instance, filename):
     extension = filename.split(".")[-1]
-    return (
-        f"resources/{filename}"
-    )
+    return f"resources/{filename}"
 
 
 def datasets_file_path(instance, filename):
     extension = filename.split(".")[-1]
-    return (
-        f"datasets/{filename}"
-    )
+    return f"datasets/{filename}"
+
 
 class Dataset(models.Model):
     title = models.CharField(max_length=1024)
     slug = AutoSlugField(
-        populate_from="title",
-        max_length=200,
-        always_update=True,
-        default='slug'
+        populate_from="title", max_length=200, always_update=True, default="slug"
     )
 
     short_description = models.TextField()
     description = models.TextField()
-    tags = models.ForeignKey(
-        Tag, on_delete=models.CASCADE,
-        blank=True, null=True
-    )
-    organisation = models.ForeignKey(
-        Organisation, on_delete=models.CASCADE
-    )
+    tags = models.ForeignKey(Tag, on_delete=models.CASCADE, blank=True, null=True)
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
     visibility = models.BooleanField()
-    financial_year = models.ForeignKey(
-        FinancialYear, on_delete=models.CASCADE
-    )
-    sphere = models.ForeignKey(
-        Sphere, on_delete=models.CASCADE
-    )
+    financial_year = models.ForeignKey(FinancialYear, on_delete=models.CASCADE)
+    sphere = models.ForeignKey(Sphere, on_delete=models.CASCADE)
 
     government_functions = models.ForeignKey(
-        GovernmentFunction, on_delete=models.CASCADE,
-        blank=True, null=True
+        GovernmentFunction, on_delete=models.CASCADE, blank=True, null=True
     )
     dimensions = models.ForeignKey(
-        Dimension, on_delete=models.CASCADE,
-        null=True, blank=True,
+        Dimension,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
-    province = models.CharField(max_length=1024, default='South Africa')
+    province = models.CharField(max_length=1024, default="South Africa")
 
     dataset_category = models.ForeignKey(
-        DatasetCategory, on_delete=models.CASCADE,
-        default=1
+        DatasetCategory, on_delete=models.CASCADE, default=1
     )
 
     def get_url_path(self):
         return "/datasets/%s/%s" % (self.dataset_category.slug, self.slug)
+
 
 class DatasetResource(models.Model):
     fileName = models.CharField(max_length=1024)
@@ -1056,17 +1095,17 @@ class DatasetResource(models.Model):
     file = models.FileField(upload_to=resources_file_path, blank=True, null=True)
 
     dataset = models.ForeignKey(
-        Dataset, 
-        on_delete=models.CASCADE, 
+        Dataset,
+        on_delete=models.CASCADE,
         related_name="resources",
-          default=None  # Allows easy access to resources from a dataset instance
+        default=None,  # Allows easy access to resources from a dataset instance
     )
 
     def __str__(self):
         return self.fileName
-    
 
-class DatasetUpload(models.Model):    
+
+class DatasetUpload(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True)
     file = models.FileField(upload_to=resources_file_path)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
@@ -1082,10 +1121,11 @@ class DatasetUpload(models.Model):
             ("Consolidation", "Consolidation"),
         ),
     )
-    
+
     financialYear = models.ForeignKey(
         FinancialYear, on_delete=models.CASCADE, related_name="datasetUpload", default=1
-    ) 
+    )
+
 
 class ENEData(models.Model):
     voteNumber = models.IntegerField()
@@ -1100,12 +1140,10 @@ class ENEData(models.Model):
     economicClassification4 = models.CharField(max_length=1024)
     economicClassification5 = models.CharField(max_length=1024)
     functionGroup1 = models.CharField(max_length=1024)
-    budgetYear = models.CharField(
-        max_length=10, default=None, blank=True, null=True)
+    budgetYear = models.CharField(max_length=10, default=None, blank=True, null=True)
     financialYear = models.CharField(max_length=1024)
     budgetPhase = models.CharField(max_length=1024)
-    value = models.DecimalField(
-        max_digits=15, decimal_places=2, default=0)
+    value = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 
 
 class AENEData(models.Model):
@@ -1122,22 +1160,18 @@ class AENEData(models.Model):
     economicClassification5 = models.CharField(max_length=1024)
     financialYear = models.CharField(max_length=1024)
     budgetPhase = models.CharField(max_length=1024)
-    budgetYear = models.CharField(
-        max_length=10, default=None, blank=True, null=True)
+    budgetYear = models.CharField(max_length=10, default=None, blank=True, null=True)
     amountKind = models.CharField(max_length=1024)
-    value = models.DecimalField(
-        max_digits=15, decimal_places=2, default=0)
-      
+    value = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+
 
 class ConsolidationData(models.Model):
     functionGroup = models.CharField(max_length=400)
     economicClassification2 = models.CharField(max_length=400)
-    economicClassification3 = models.CharField(max_length=400)    
+    economicClassification3 = models.CharField(max_length=400)
     financialYear = models.CharField(max_length=400)
-    budgetYear = models.CharField(
-        max_length=10, default=None, blank=True, null=True)
-    value = models.DecimalField(
-        max_digits=15, decimal_places=2, default=0)
+    budgetYear = models.CharField(max_length=10, default=None, blank=True, null=True)
+    value = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 
 
 class EPREData(models.Model):
@@ -1154,13 +1188,13 @@ class EPREData(models.Model):
     economicClassification4 = models.CharField(max_length=400)
     economicClassification5 = models.CharField(max_length=400)
     functionGroup1 = models.CharField(max_length=400)
-    functionGroup2 = models.CharField(max_length=400, default=None, blank=True, null=True)
-    budgetYear = models.CharField(
-        max_length=10, default=None, blank=True, null=True)
+    functionGroup2 = models.CharField(
+        max_length=400, default=None, blank=True, null=True
+    )
+    budgetYear = models.CharField(max_length=10, default=None, blank=True, null=True)
     financialYear = models.CharField(max_length=400)
     budgetPhase = models.CharField(max_length=400)
-    value = models.DecimalField(
-        max_digits=15, decimal_places=0, default=0)
+    value = models.DecimalField(max_digits=15, decimal_places=0, default=0)
 
 
 class BudgetVSActualNationalData(models.Model):
@@ -1177,14 +1211,12 @@ class BudgetVSActualNationalData(models.Model):
     economicClassification4 = models.CharField(max_length=400)
     economicClassification5 = models.CharField(max_length=400)
     functionGroup1 = models.CharField(max_length=400)
-    budgetYear = models.CharField(
-        max_length=10, default=None, blank=True, null=True)
+    budgetYear = models.CharField(max_length=10, default=None, blank=True, null=True)
     financialYear = models.CharField(max_length=400)
     budgetPhase = models.CharField(max_length=400)
     amountKind = models.CharField(max_length=400)
-    value = models.DecimalField(
-        max_digits=15, decimal_places=0, default=0)
-    
+    value = models.DecimalField(max_digits=15, decimal_places=0, default=0)
+
 
 class BudgetVSActualProvincialData(models.Model):
     government = models.CharField(max_length=400)
@@ -1199,33 +1231,38 @@ class BudgetVSActualProvincialData(models.Model):
     economicClassification3 = models.CharField(max_length=400)
     economicClassification4 = models.CharField(max_length=400)
     economicClassification5 = models.CharField(max_length=400)
-    functionGroup1 = models.CharField(max_length=400, default=None, blank=True, null=True)
-    budgetYear = models.CharField(
-        max_length=10, default=None, blank=True, null=True)
+    functionGroup1 = models.CharField(
+        max_length=400, default=None, blank=True, null=True
+    )
+    budgetYear = models.CharField(max_length=10, default=None, blank=True, null=True)
     financialYear = models.CharField(max_length=400)
     budgetPhase = models.CharField(max_length=400)
     amountKind = models.CharField(max_length=400)
-    value = models.DecimalField(
-        max_digits=15, decimal_places=0, default=0)
+    value = models.DecimalField(max_digits=15, decimal_places=0, default=0)
 
-class VoteDocumentUpload(models.Model):    
+
+class VoteDocumentUpload(models.Model):
     file = models.FileField(upload_to=datasets_file_path)
+
 
 def get_default_category():
     return DatasetCategory.objects.get(slug="estimates-of-national-expenditure").id
+
 
 class VoteDocument(models.Model):
     dataset_name = models.CharField(max_length=1024, blank=False, null=False)
     dataset_title = models.CharField(max_length=1024, blank=False, null=False)
     dataset_category = models.ForeignKey(
-        DatasetCategory, on_delete=models.CASCADE,
+        DatasetCategory,
+        on_delete=models.CASCADE,
         default=get_default_category,
     )
 
     document_type = models.CharField(max_length=50, blank=False, null=False)
     document_url = models.CharField(max_length=1024, blank=True, null=True)
-    slug = AutoSlugField(populate_from="dataset_name",
-                        max_length=200, always_update=True)
+    slug = AutoSlugField(
+        populate_from="dataset_name", max_length=200, always_update=True
+    )
 
     government = models.ForeignKey(
         Government, on_delete=models.CASCADE, related_name="voteDocument", default=1
@@ -1237,10 +1274,11 @@ class VoteDocument(models.Model):
 
     financialYear = models.ForeignKey(
         FinancialYear, on_delete=models.CASCADE, related_name="voteDocument", default=1
-    ) 
+    )
 
     class Meta:
         ordering = ["slug"]
+
 
 # @register_snippet
 # class ProcurementResourceLink(ResourceLink):
